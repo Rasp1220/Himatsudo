@@ -1,0 +1,25 @@
+-- migration: 003 create articles table
+CREATE TABLE IF NOT EXISTS articles (
+    id                  INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+    title               VARCHAR(500)    NOT NULL,
+    slug                VARCHAR(500)    NOT NULL,
+    content             LONGTEXT,
+    excerpt             TEXT,
+    eye_catch_image     VARCHAR(1000),
+    category_id         INT UNSIGNED,
+    author_id           INT UNSIGNED    NOT NULL,
+    status              ENUM('draft','published') NOT NULL DEFAULT 'draft',
+    youtube_url         VARCHAR(1000),
+    youtube_video_id    VARCHAR(20),
+    youtube_thumbnail   VARCHAR(1000),
+    published_at        TIMESTAMP       NULL,
+    created_at          TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_articles_slug (slug),
+    CONSTRAINT fk_articles_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
+    CONSTRAINT fk_articles_author   FOREIGN KEY (author_id)   REFERENCES users(id)      ON DELETE RESTRICT,
+    INDEX idx_articles_status       (status),
+    INDEX idx_articles_published_at (published_at),
+    INDEX idx_articles_category_id  (category_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

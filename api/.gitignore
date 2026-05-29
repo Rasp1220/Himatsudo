@@ -1,0 +1,6 @@
+/vendor/
+/.env
+/var/tmp/*
+/var/log/*
+!/var/tmp/.gitkeep
+!/var/log/.gitkeep
