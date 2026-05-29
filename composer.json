@@ -1,0 +1,12 @@
+{
+    "name": "himatsudo/himatsudo",
+    "description": "Himatsudo Article CMS Platform",
+    "type": "project",
+    "license": "proprietary",
+    "scripts": {
+        "serve": "bash -c 'trap \"kill 0\" SIGINT; (cd api && php -S localhost:8080 -t public) & (cd frontend && php -S localhost:8081 -t public) & (cd cms && npm run dev); wait'",
+        "serve:api": "bash -c 'cd api && php -S localhost:8080 -t public'",
+        "serve:frontend": "bash -c 'cd frontend && php -S localhost:8081 -t public'",
+        "serve:cms": "bash -c 'cd cms && npm run dev'"
+    }
+}
