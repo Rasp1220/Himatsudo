@@ -123,6 +123,7 @@
 <script setup lang="ts">
 import { reactive, ref, computed, onMounted } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useArticlesStore } from '@/stores/articles'
 import { useCategoriesStore } from '@/stores/categories'
 import { useAuthStore } from '@/stores/auth'
@@ -155,8 +156,8 @@ const form = reactive({
   youtube_thumbnail: '',
 })
 
-const { items: categories } = categoriesStore
-const youtubeCategory = computed(() => categories.find((c) => c.type === 'youtube'))
+const { items: categories } = storeToRefs(categoriesStore)
+const youtubeCategory = computed(() => categories.value.find((c) => c.type === 'youtube'))
 
 let slugManuallyEdited = false
 

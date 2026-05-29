@@ -16,6 +16,11 @@ class User extends ResourceObject
     #[RequireAuth]
     public function onGet(int $id): static
     {
+        if (($_REQUEST['_auth_role'] ?? '') !== 'admin') {
+            $this->code = 403;
+            $this->body = ['error' => 'Forbidden'];
+            return $this;
+        }
         $user = $this->userRepository->findById($id);
         if ($user === null) {
             $this->code = 404;
@@ -29,6 +34,11 @@ class User extends ResourceObject
     #[RequireAuth]
     public function onPut(int $id, ?string $name = null, ?string $email = null, ?string $password = null, ?string $role = null): static
     {
+        if (($_REQUEST['_auth_role'] ?? '') !== 'admin') {
+            $this->code = 403;
+            $this->body = ['error' => 'Forbidden'];
+            return $this;
+        }
         if ($this->userRepository->findById($id) === null) {
             $this->code = 404;
             $this->body = ['error' => 'User not found'];
@@ -48,6 +58,11 @@ class User extends ResourceObject
     #[RequireAuth]
     public function onDelete(int $id): static
     {
+        if (($_REQUEST['_auth_role'] ?? '') !== 'admin') {
+            $this->code = 403;
+            $this->body = ['error' => 'Forbidden'];
+            return $this;
+        }
         if ($this->userRepository->findById($id) === null) {
             $this->code = 404;
             $this->body = ['error' => 'User not found'];

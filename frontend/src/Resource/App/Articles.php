@@ -34,9 +34,14 @@ class Articles extends ResourceObject
             $bind
         );
 
-        $countBind  = array_filter($bind, fn($k) => !in_array($k, ['limit', 'offset']), ARRAY_FILTER_USE_KEY);
-        $countWhere = str_replace(' a.category_id', ' category_id', $where);
-        $total      = (int) $this->pdo->fetchValue(
+        // Count query uses no table alias to avoid "Unknown column 'a.status'" errors
+        $countWhere = "WHERE status = 'published'";
+        $countBind  = [];
+        if ($category_id !== null) {
+            $countWhere .= ' AND category_id = :category_id';
+            $countBind['category_id'] = $category_id;
+        }
+        $total = (int) $this->pdo->fetchValue(
             "SELECT COUNT(*) FROM articles {$countWhere}",
             $countBind
         );

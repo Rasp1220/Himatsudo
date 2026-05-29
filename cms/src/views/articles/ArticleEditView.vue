@@ -128,6 +128,7 @@
 <script setup lang="ts">
 import { reactive, ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
@@ -160,7 +161,7 @@ const form = reactive({
   youtube_thumbnail: '',
 })
 
-const { items: categories } = categoriesStore
+const { items: categories } = storeToRefs(categoriesStore)
 
 const editor = useEditor({
   extensions: [
@@ -208,7 +209,8 @@ async function handleSubmit(overrideStatus?: ArticleStatus) {
       content: form.content,
       excerpt: form.excerpt,
       eye_catch_image: form.eye_catch_image,
-      category_id: form.category_id,
+      // 0 signals "clear category" to the API (null is indistinguishable from "not provided")
+      category_id: form.category_id ?? 0,
       status: overrideStatus ?? form.status,
       youtube_url: form.youtube_url,
       youtube_video_id: form.youtube_video_id,

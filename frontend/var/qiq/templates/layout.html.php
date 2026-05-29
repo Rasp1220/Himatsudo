@@ -31,6 +31,17 @@
         .pagination { display: flex; gap: .5rem; justify-content: center; margin-top: 2rem; }
         .pagination a, .pagination span { padding: .4rem .8rem; border: 1px solid #e2e8f0; border-radius: .25rem; }
         .pagination .current { background: #2563eb; color: #fff; border-color: #2563eb; }
+        .article-body { font-size: 1rem; line-height: 1.8; }
+        .article-body h1, .article-body h2, .article-body h3 { font-weight: 700; margin: 1.5em 0 .5em; }
+        .article-body p { margin-bottom: 1em; }
+        .article-body img { max-width: 100%; border-radius: .375rem; margin: 1em 0; }
+        .article-body a { color: #2563eb; }
+        .article-body pre { background: #f1f5f9; padding: 1em; border-radius: .375rem; overflow-x: auto; }
+        .article-body code { background: #f1f5f9; padding: .1em .3em; border-radius: .2rem; font-size: .9em; }
+        .article-body blockquote { border-left: 4px solid #e2e8f0; padding-left: 1em; color: #64748b; margin: 1em 0; }
+        .article-body ul, .article-body ol { padding-left: 1.5em; margin-bottom: 1em; }
+        .article-body table { border-collapse: collapse; width: 100%; }
+        .article-body th, .article-body td { border: 1px solid #e2e8f0; padding: .5em .75em; }
     </style>
 </head>
 <body>

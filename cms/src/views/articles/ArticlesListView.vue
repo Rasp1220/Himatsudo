@@ -117,6 +117,7 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useArticlesStore } from '@/stores/articles'
 import { useCategoriesStore } from '@/stores/categories'
 import type { Article } from '@/types'
@@ -126,7 +127,7 @@ import ConfirmModal from '@/components/ui/ConfirmModal.vue'
 
 const articles = useArticlesStore()
 const categoriesStore = useCategoriesStore()
-const { items: categories } = categoriesStore as { items: ReturnType<typeof useCategoriesStore>['items'] }
+const { items: categories } = storeToRefs(categoriesStore)
 
 const filters = reactive<{
   keyword: string

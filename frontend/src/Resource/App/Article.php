@@ -33,8 +33,13 @@ class Article extends ResourceObject
         $categoryType = (string) ($article['category_type'] ?? '');
         $template     = $categoryType === 'youtube' ? 'articles/youtube-detail' : 'articles/detail';
 
+        $categories = $this->pdo->fetchAll(
+            'SELECT id, name, slug, type FROM categories ORDER BY sort_order ASC, id ASC'
+        );
+
         $this->body = [
             'article'    => $article,
+            'categories' => $categories,
             'page_title' => (string) $article['title'],
             '_template'  => $template,
         ];

@@ -46,8 +46,12 @@ class Article extends ResourceObject
         }
         $data = array_filter(compact(
             'title', 'slug', 'status', 'content', 'excerpt', 'eye_catch_image',
-            'category_id', 'youtube_url', 'youtube_video_id', 'youtube_thumbnail'
+            'youtube_url', 'youtube_video_id', 'youtube_thumbnail'
         ), fn($v) => $v !== null);
+        // category_id=0 means "explicitly clear"; any other non-null int sets the category
+        if ($category_id !== null) {
+            $data['category_id'] = $category_id === 0 ? null : $category_id;
+        }
         $this->articleRepository->update($id, $data);
         $this->body = $this->articleRepository->findById($id);
         return $this;

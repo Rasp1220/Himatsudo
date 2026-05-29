@@ -16,6 +16,11 @@ class Users extends ResourceObject
     #[RequireAuth]
     public function onGet(int $page = 1, int $per_page = 20): static
     {
+        if (($_REQUEST['_auth_role'] ?? '') !== 'admin') {
+            $this->code = 403;
+            $this->body = ['error' => 'Forbidden'];
+            return $this;
+        }
         $items = $this->userRepository->findAll($page, $per_page);
         $total = $this->userRepository->count();
         $this->body = [
@@ -31,6 +36,11 @@ class Users extends ResourceObject
     #[RequireAuth]
     public function onPost(string $name, string $email, string $password, string $role = 'editor'): static
     {
+        if (($_REQUEST['_auth_role'] ?? '') !== 'admin') {
+            $this->code = 403;
+            $this->body = ['error' => 'Forbidden'];
+            return $this;
+        }
         if (!in_array($role, ['admin', 'editor'], true)) {
             $this->code = 422;
             $this->body = ['error' => 'Invalid role'];

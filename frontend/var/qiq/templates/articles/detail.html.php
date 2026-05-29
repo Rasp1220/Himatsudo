@@ -31,19 +31,7 @@ $this->page_title = $article['title'] ?? '';
          style="width:100%;max-height:450px;object-fit:cover;border-radius:.5rem;margin-bottom:2rem">
     <?php endif; ?>
 
-    <div class="article-body" style="
-        font-size:1rem;line-height:1.8;
-        h1,h2,h3{font-weight:700;margin:1.5em 0 .5em}
-        p{margin-bottom:1em}
-        img{max-width:100%;border-radius:.375rem;margin:1em 0}
-        a{color:#2563eb}
-        pre{background:#f1f5f9;padding:1em;border-radius:.375rem;overflow-x:auto}
-        code{background:#f1f5f9;padding:.1em .3em;border-radius:.2rem;font-size:.9em}
-        blockquote{border-left:4px solid #e2e8f0;padding-left:1em;color:#64748b;margin:1em 0}
-        ul,ol{padding-left:1.5em;margin-bottom:1em}
-        table{border-collapse:collapse;width:100%}
-        th,td{border:1px solid #e2e8f0;padding:.5em .75em}
-    ">
+    <div class="article-body">
         <?= $article['content'] ?? '' /* Rich-text HTML from CMS; CMS is responsible for sanitising */ ?>
     </div>
 

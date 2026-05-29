@@ -32,5 +32,19 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  return { user, accessToken, refreshToken, isAuthenticated, login, logout }
+  // Re-hydrate the user object after a page refresh when a token is present
+  async function rehydrate() {
+    if (!accessToken.value || user.value) return
+    try {
+      user.value = await authApi.me()
+    } catch {
+      // Token may have expired — clear state and let the router redirect to login
+      accessToken.value = null
+      refreshToken.value = null
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
+    }
+  }
+
+  return { user, accessToken, refreshToken, isAuthenticated, login, logout, rehydrate }
 })

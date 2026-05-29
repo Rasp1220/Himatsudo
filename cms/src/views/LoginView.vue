@@ -63,7 +63,10 @@ async function handleLogin() {
   errorMsg.value = ''
   try {
     await auth.login(form)
-    const redirect = (route.query.redirect as string) ?? '/dashboard'
+    const raw = route.query.redirect as string | undefined
+    const redirect = raw && raw.startsWith('/') && !raw.startsWith('//')
+      ? raw
+      : '/dashboard'
     router.push(redirect)
   } catch {
     errorMsg.value = 'メールアドレスまたはパスワードが正しくありません'

@@ -55,6 +55,7 @@ const routes: RouteRecordRaw[] = [
         path: 'users',
         name: 'Users',
         component: () => import('@/views/users/UsersView.vue'),
+        meta: { adminOnly: true },
       },
     ],
   },
@@ -65,12 +66,24 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const auth = useAuthStore()
+
+  // Rehydrate user from token on every navigation when user object is missing
+  if (auth.isAuthenticated && !auth.user) {
+    await auth.rehydrate()
+  }
+
   if (!to.meta.public && !auth.isAuthenticated) {
     return { name: 'Login', query: { redirect: to.fullPath } }
   }
+
   if (to.name === 'Login' && auth.isAuthenticated) {
+    return { name: 'Dashboard' }
+  }
+
+  // Protect admin-only routes from editor role
+  if (to.meta.adminOnly && auth.user?.role !== 'admin') {
     return { name: 'Dashboard' }
   }
 })

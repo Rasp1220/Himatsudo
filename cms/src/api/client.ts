@@ -5,6 +5,7 @@ import type {
   Category,
   LoginPayload,
   LoginResponse,
+  RefreshResponse,
   PaginatedResponse,
   User,
   YoutubeImportResult,
@@ -30,7 +31,7 @@ function createClient(): AxiosInstance {
         const refreshToken = localStorage.getItem('refresh_token')
         if (refreshToken && error.config && !error.config.url?.includes('/auth/refresh')) {
           try {
-            const { data } = await axios.post<LoginResponse>(`${BASE_URL}/auth/refresh`, {
+            const { data } = await axios.post<RefreshResponse>(`${BASE_URL}/auth/refresh`, {
               refresh_token: refreshToken,
             })
             localStorage.setItem('access_token', data.access_token)
@@ -66,7 +67,9 @@ export const authApi = {
     http.post('/auth/logout', { refresh_token: refreshToken }),
 
   refresh: (refreshToken: string) =>
-    http.post<LoginResponse>('/auth/refresh', { refresh_token: refreshToken }).then((r) => r.data),
+    http.post<RefreshResponse>('/auth/refresh', { refresh_token: refreshToken }).then((r) => r.data),
+
+  me: () => http.get<User>('/auth/me').then((r) => r.data),
 }
 
 // Users
@@ -102,7 +105,7 @@ export const categoriesApi = {
   delete: (id: number) => http.delete(`/category?id=${id}`),
 }
 
-// Articles
+// Articles (admin endpoint for CMS — supports status/keyword filters)
 export const articlesApi = {
   list: (params?: {
     page?: number
@@ -112,7 +115,7 @@ export const articlesApi = {
     keyword?: string | null
   }) =>
     http
-      .get<PaginatedResponse<Article>>('/articles', { params })
+      .get<PaginatedResponse<Article>>('/admin/articles', { params })
       .then((r) => r.data),
 
   get: (id: number) => http.get<Article>(`/article?id=${id}`).then((r) => r.data),
