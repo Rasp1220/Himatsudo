@@ -11,7 +11,7 @@ import type {
   YoutubeImportResult,
 } from '@/types'
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/admin/api'
 
 function createClient(): AxiosInstance {
   const client = axios.create({ baseURL: BASE_URL })
@@ -115,7 +115,7 @@ export const articlesApi = {
     keyword?: string | null
   }) =>
     http
-      .get<PaginatedResponse<Article>>('/admin/articles', { params })
+      .get<PaginatedResponse<Article>>('/articles', { params })
       .then((r) => r.data),
 
   get: (id: number) => http.get<Article>(`/article?id=${id}`).then((r) => r.data),
