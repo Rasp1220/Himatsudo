@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Himatsudo\Api\Resource\App\Articles;
+namespace Himatsudo\Resource\Page\Admin\Api\Articles;
 
 use BEAR\Resource\ResourceObject;
-use Himatsudo\Api\Annotation\RequireAuth;
-use Himatsudo\Api\Service\YoutubeService;
+use Himatsudo\Annotation\RequireAuth;
+use Himatsudo\Service\YoutubeService;
 use RuntimeException;
 
 class YoutubeImport extends ResourceObject

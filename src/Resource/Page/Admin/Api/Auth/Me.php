@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Himatsudo\Api\Resource\App\Auth;
+namespace Himatsudo\Resource\Page\Admin\Api\Auth;
 
 use BEAR\Resource\ResourceObject;
-use Himatsudo\Api\Annotation\RequireAuth;
-use Himatsudo\Api\Repository\UserRepository;
+use Himatsudo\Annotation\RequireAuth;
+use Himatsudo\Repository\UserRepository;
 
 class Me extends ResourceObject
 {

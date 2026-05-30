@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Himatsudo\Api\Interceptor;
+namespace Himatsudo\Interceptor;
 
-use Himatsudo\Api\Auth\JwtService;
+use Himatsudo\Auth\JwtService;
 use Ray\Aop\MethodInterceptor;
 use Ray\Aop\MethodInvocation;
 use Throwable;

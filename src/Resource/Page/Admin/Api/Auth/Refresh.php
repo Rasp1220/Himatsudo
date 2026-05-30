@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Himatsudo\Api\Resource\App\Auth;
+namespace Himatsudo\Resource\Page\Admin\Api\Auth;
 
 use BEAR\Resource\ResourceObject;
 use DateTimeImmutable;
-use Himatsudo\Api\Auth\JwtService;
-use Himatsudo\Api\Repository\RefreshTokenRepository;
-use Himatsudo\Api\Repository\UserRepository;
+use Himatsudo\Auth\JwtService;
+use Himatsudo\Repository\RefreshTokenRepository;
+use Himatsudo\Repository\UserRepository;
 use Throwable;
 
 class Refresh extends ResourceObject

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Himatsudo\Api\Repository;
+namespace Himatsudo\Repository;
 
 use Aura\Sql\ExtendedPdoInterface;
 use PDO;

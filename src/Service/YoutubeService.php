@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Himatsudo\Api\Service;
+namespace Himatsudo\Service;
 
 use RuntimeException;
 

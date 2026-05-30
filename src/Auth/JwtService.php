@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Himatsudo\Api\Auth;
+namespace Himatsudo\Auth;
 
 use DateTimeImmutable;
 use DateTimeZone;

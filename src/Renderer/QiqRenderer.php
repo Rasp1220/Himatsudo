@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Himatsudo\Frontend\Renderer;
+namespace Himatsudo\Renderer;
 
 use BEAR\Resource\RenderInterface;
 use BEAR\Resource\ResourceObject;
@@ -40,16 +40,15 @@ final class QiqRenderer implements RenderInterface
         }
 
         $class = get_class($ro);
-        // Remove namespace prefix: Himatsudo\Frontend\Resource\App\
-        $relative = (string) preg_replace('/^.*\\\\Resource\\\\App\\\\/', '', $class);
-        // Split on backslash
-        $parts = explode('\\', $relative);
+        // Strip namespace down to Resource\Page\... portion
+        $relative = (string) preg_replace('/^.*\\\\Resource\\\\Page\\\\/', '', $class);
+        $parts    = explode('\\', $relative);
 
         return match (true) {
-            $parts === ['Index']                   => 'top/index',
-            $parts === ['Articles']                => 'articles/index',
-            $parts === ['Article']                 => 'articles/detail',
-            default                                => strtolower(implode('/', $parts)),
+            $parts === ['Index']    => 'top/index',
+            $parts === ['Articles'] => 'articles/index',
+            $parts === ['Article']  => 'articles/detail',
+            default                 => strtolower(implode('/', $parts)),
         };
     }
 }

@@ -1,17 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace Himatsudo\Api\Module;
+namespace Himatsudo\Module;
 
 use BEAR\Package\AbstractAppModule;
 use BEAR\Package\PackageModule;
-use Himatsudo\Api\Annotation\RequireAuth;
-use Himatsudo\Api\Interceptor\AuthInterceptor;
-use Himatsudo\Api\Repository\ArticleRepository;
-use Himatsudo\Api\Repository\CategoryRepository;
-use Himatsudo\Api\Repository\RefreshTokenRepository;
-use Himatsudo\Api\Repository\UserRepository;
-use Himatsudo\Api\Service\YoutubeService;
+use Himatsudo\Annotation\RequireAuth;
+use Himatsudo\Interceptor\AuthInterceptor;
+use Himatsudo\Repository\ArticleRepository;
+use Himatsudo\Repository\CategoryRepository;
+use Himatsudo\Repository\RefreshTokenRepository;
+use Himatsudo\Repository\UserRepository;
+use Himatsudo\Service\YoutubeService;
 use Ray\AuraSqlModule\AuraSqlModule;
 use Ray\Di\AbstractModule;
 

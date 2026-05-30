@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Himatsudo\Frontend\Resource\App;
+namespace Himatsudo\Resource\Page;
 
 use Aura\Sql\ExtendedPdoInterface;
 use BEAR\Resource\ResourceObject;

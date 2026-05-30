@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Himatsudo\Api\Annotation;
+namespace Himatsudo\Annotation;
 
 use Attribute;
 
