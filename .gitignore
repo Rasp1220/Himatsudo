@@ -1,3 +1,12 @@
 .DS_Store
 *.swp
 *.swo
+
+# Composer
+vendor/
+
+# BearSunday runtime cache
+var/tmp/
+
+# Environment
+.env
