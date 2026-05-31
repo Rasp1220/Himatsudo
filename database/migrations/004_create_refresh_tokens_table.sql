@@ -1,8 +1,8 @@
 -- migration: 004 create refresh_tokens table
 CREATE TABLE IF NOT EXISTS refresh_tokens (
-    id          INT UNSIGNED    NOT NULL AUTO_INCREMENT,
-    user_id     INT UNSIGNED    NOT NULL,
-    token       VARCHAR(500)    NOT NULL,
+    id          BIGINT          NOT NULL AUTO_INCREMENT,
+    user_id     BIGINT          NOT NULL,
+    token       VARCHAR(191)    NOT NULL,
     expires_at  TIMESTAMP       NOT NULL,
     created_at  TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),

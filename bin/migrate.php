@@ -2,7 +2,8 @@
 <?php
 declare(strict_types=1);
 
-$root = dirname(__DIR__);
+$root  = dirname(__DIR__);
+$fresh = in_array('--fresh', $argv, true);
 
 // Load .env if it exists
 $envFile = $root . '/.env';
@@ -29,6 +30,16 @@ try {
     exit(1);
 }
 
+if ($fresh) {
+    echo "\033[33m⚠ --fresh: テーブルを全削除してから再作成します\033[0m\n";
+    $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
+    foreach (['refresh_tokens', 'articles', 'categories', 'users'] as $table) {
+        $pdo->exec("DROP TABLE IF EXISTS `{$table}`");
+        echo "  dropped {$table}\n";
+    }
+    $pdo->exec('SET FOREIGN_KEY_CHECKS=1');
+}
+
 $dirs = [
     'migrations' => $root . '/database/migrations',
     'seeds'      => $root . '/database/seeds',
@@ -44,7 +55,6 @@ foreach ($dirs as $label => $dir) {
         $name = basename($file);
         try {
             $sql = file_get_contents($file);
-            // Split on semicolons to execute multiple statements
             foreach (array_filter(array_map('trim', explode(';', $sql))) as $stmt) {
                 $pdo->exec($stmt);
             }

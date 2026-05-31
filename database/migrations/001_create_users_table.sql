@@ -1,6 +1,6 @@
 -- migration: 001 create users table
 CREATE TABLE IF NOT EXISTS users (
-    id          INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+    id          BIGINT          NOT NULL AUTO_INCREMENT,
     name        VARCHAR(100)    NOT NULL,
     email       VARCHAR(255)    NOT NULL,
     password    VARCHAR(255)    NOT NULL,

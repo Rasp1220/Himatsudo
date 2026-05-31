@@ -1,6 +1,6 @@
 -- migration: 002 create categories table
 CREATE TABLE IF NOT EXISTS categories (
-    id          INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+    id          BIGINT          NOT NULL AUTO_INCREMENT,
     name        VARCHAR(100)    NOT NULL,
     slug        VARCHAR(100)    NOT NULL,
     type        ENUM('normal','blog','youtube','custom') NOT NULL DEFAULT 'custom',

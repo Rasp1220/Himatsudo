@@ -1,13 +1,13 @@
 -- migration: 003 create articles table
 CREATE TABLE IF NOT EXISTS articles (
-    id                  INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+    id                  BIGINT          NOT NULL AUTO_INCREMENT,
     title               VARCHAR(500)    NOT NULL,
     slug                VARCHAR(500)    NOT NULL,
     content             LONGTEXT,
     excerpt             TEXT,
     eye_catch_image     VARCHAR(1000),
-    category_id         INT UNSIGNED,
-    author_id           INT UNSIGNED    NOT NULL,
+    category_id         BIGINT,
+    author_id           BIGINT          NOT NULL,
     status              ENUM('draft','published') NOT NULL DEFAULT 'draft',
     youtube_url         VARCHAR(1000),
     youtube_video_id    VARCHAR(20),
