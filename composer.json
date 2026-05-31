@@ -24,9 +24,9 @@
         "sort-packages": true
     },
     "scripts": {
-        "serve": "bash bin/serve.sh",
-        "serve:app": "php -S localhost:8080 -t public",
-        "serve:cms": "bash -c 'cd cms && npm run dev'",
+        "serve": "@php bin/serve.php",
+        "serve:app": "@php -S localhost:8080 -t public",
+        "serve:cms": "@php -r \"chdir(getcwd().'/cms'); passthru('npm run dev');\"",
         "migrate": "php bin/migrate.php",
         "migrate:fresh": "php bin/migrate.php --fresh",
         "post-autoload-dump": [
