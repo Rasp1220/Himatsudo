@@ -6,14 +6,10 @@ $root  = dirname(__DIR__);
 $php   = PHP_BINARY;
 $isWin = PHP_OS_FAMILY === 'Windows';
 
-echo "起動中...\n";
-echo "  App : http://localhost:8080\n";
-echo "  CMS : http://localhost:5173\n";
-echo "停止: Ctrl+C\n\n";
-
-$desc = [STDIN, STDOUT, STDERR];
+$desc  = [STDIN, STDOUT, STDERR];
 $pipes = [];
 
+// BearSunday app server
 $app = proc_open(
     [$php, '-S', 'localhost:8080', '-t', $root . '/public'],
     $desc,
@@ -21,26 +17,48 @@ $app = proc_open(
     $root
 );
 
-$cmsCmd = $isWin ? ['cmd', '/c', 'npm run dev'] : ['npm', 'run', 'dev'];
-$cms = proc_open(
-    $cmsCmd,
-    $desc,
-    $pipes,
-    $root . '/cms'
-);
+// CMS dev server
+// Windows: pass as string so cmd.exe /c handles tokenisation correctly
+// Unix:    pass as array to avoid shell quoting issues
+$cmsDir = $root . ($isWin ? '\cms' : '/cms');
+$cmsCmd = $isWin ? 'npm run dev' : ['npm', 'run', 'dev'];
+$cms    = proc_open($cmsCmd, $desc, $pipes, $cmsDir);
 
-if (!is_resource($app) || !is_resource($cms)) {
-    echo "プロセスの起動に失敗しました。\n";
+if (!is_resource($app)) {
+    echo "[ERROR] App サーバーの起動に失敗しました。\n";
     exit(1);
 }
 
-// Poll until either process exits, then terminate both
+echo "起動中...\n";
+echo "  App : http://localhost:8080\n";
+
+if (!is_resource($cms)) {
+    echo "  CMS : 起動失敗 (npm がインストールされているか確認してください)\n";
+    echo "停止: Ctrl+C\n\n";
+    proc_close($app);
+    exit(1);
+}
+
+echo "  CMS : http://localhost:5173\n";
+echo "停止: Ctrl+C\n\n";
+
+// Keep running while both processes are alive
 while (true) {
-    $appRunning = proc_get_status($app)['running'];
-    $cmsRunning = proc_get_status($cms)['running'];
-    if (!$appRunning || !$cmsRunning) {
-        proc_terminate($app);
+    $appStatus = proc_get_status($app);
+    $cmsStatus = proc_get_status($cms);
+
+    if (!$appStatus['running']) {
+        echo "\nApp サーバーが停止しました。\n";
         proc_terminate($cms);
+        break;
+    }
+    if (!$cmsStatus['running']) {
+        echo "\nCMS dev サーバーが停止しました。\n";
+        echo "App サーバーは継続中 (Ctrl+C で停止)\n\n";
+        // Keep app running even if CMS dies
+        while (proc_get_status($app)['running']) {
+            usleep(300000);
+        }
         break;
     }
     usleep(300000);
