@@ -7,9 +7,7 @@
 
   "timezone": "Asia/Tokyo",
 
-  "schedule": ["after 10pm every day"],
-
-  "dependencyDashboard": true,
+"dependencyDashboard": true,
 
   "prConcurrentLimit": 3,
 
