@@ -24,6 +24,7 @@
         "sort-packages": true
     },
     "scripts": {
+        "setup": "@php bin/setup.php",
         "serve": "@php bin/serve.php",
         "serve:app": "@php -S localhost:8080 -t public",
         "serve:cms": "@php -r \"chdir(getcwd().'/cms'); passthru('npm run dev');\"",
