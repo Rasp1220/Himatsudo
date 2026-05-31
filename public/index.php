@@ -49,15 +49,6 @@ try {
     exit(0);
 } catch (Throwable $e) {
     http_response_code(500);
-    $detail = [
-        'error' => $e->getMessage(),
-        'class' => $e::class,
-        'file'  => str_replace(dirname(__DIR__), '', $e->getFile()) . ':' . $e->getLine(),
-        'trace' => array_slice(array_map(
-            static fn($f) => ($f['class'] ?? '') . ($f['type'] ?? '') . ($f['function'] ?? '') . ' ' . str_replace(dirname(__DIR__), '', $f['file'] ?? '') . ':' . ($f['line'] ?? ''),
-            $e->getTrace()
-        ), 0, 8),
-    ];
-    echo json_encode($detail, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    echo json_encode(['error' => $e->getMessage()]);
     exit(1);
 }
