@@ -3,6 +3,6 @@
 INSERT INTO users (name, email, password, role) VALUES (
     '管理者',
     'admin@example.com',
-    '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    '$2y$12$vMw9vu7nI8XAc.xRUs6/YO7nX8pBVA.gvOKCbAtA1KH.EmwemnfZW',
     'admin'
 ) ON DUPLICATE KEY UPDATE name = VALUES(name);
