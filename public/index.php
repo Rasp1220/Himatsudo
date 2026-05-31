@@ -3,7 +3,12 @@ declare(strict_types=1);
 
 namespace Himatsudo;
 
-use BEAR\Package\Bootstrap;
+use BEAR\Package\Injector;
+use BEAR\Resource\ResourceInterface;
+use BEAR\Sunday\Extension\Router\RouterInterface;
+use BEAR\Sunday\Extension\Transfer\HttpCacheInterface;
+use BEAR\Sunday\Extension\Transfer\TransferInterface;
+use Throwable;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -15,7 +20,6 @@ if (str_starts_with($origin, 'http://localhost') || str_starts_with($origin, 'ht
     header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
     header('Access-Control-Allow-Headers: Authorization, Content-Type, Accept');
 }
-// Handle preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
@@ -30,4 +34,21 @@ if (PHP_SAPI === 'cli-server') {
     $context = $isApi ? 'prod-api-app' : 'prod-html-app';
 }
 
-exit((new Bootstrap())->getApp(__NAMESPACE__, $context, dirname(__DIR__))->run());
+$appDir  = dirname(__DIR__);
+$injector = Injector::getInstance(__NAMESPACE__, $context, $appDir);
+
+$injector->getInstance(HttpCacheInterface::class);
+$router  = $injector->getInstance(RouterInterface::class);
+$request = $router->match($GLOBALS, $_SERVER);
+
+try {
+    $resource  = $injector->getInstance(ResourceInterface::class);
+    $ro        = $resource->{$request->method}->uri($request->path)($request->query);
+    $responder = $injector->getInstance(TransferInterface::class);
+    $responder($ro, $_SERVER);
+    exit(0);
+} catch (Throwable $e) {
+    http_response_code(500);
+    echo json_encode(['error' => $e->getMessage()]);
+    exit(1);
+}

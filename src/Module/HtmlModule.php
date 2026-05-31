@@ -11,7 +11,6 @@ class HtmlModule extends AbstractAppModule
 {
     protected function configure(): void
     {
-        $this->install(new AppModule());
         $this->bind(RenderInterface::class)->to(QiqRenderer::class);
     }
 }

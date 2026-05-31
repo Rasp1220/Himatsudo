@@ -7,6 +7,7 @@ use BEAR\Package\AbstractAppModule;
 use BEAR\Package\PackageModule;
 use Himatsudo\Annotation\RequireAuth;
 use Himatsudo\Interceptor\AuthInterceptor;
+use Himatsudo\Auth\JwtService;
 use Himatsudo\Repository\ArticleRepository;
 use Himatsudo\Repository\CategoryRepository;
 use Himatsudo\Repository\RefreshTokenRepository;
@@ -26,6 +27,9 @@ class AppModule extends AbstractAppModule
         $user     = (string) ($_ENV['DB_USER']     ?? 'root');
         $password = (string) ($_ENV['DB_PASSWORD'] ?? '');
         $this->install(new AuraSqlModule($dsn, $user, $password));
+
+        // Services
+        $this->bind(JwtService::class);
 
         // Repositories
         $this->bind(UserRepository::class);

@@ -21,7 +21,7 @@ function run(string $label, string $cmd, string $cwd): void
 
 echo "\n=== Himatsudo セットアップ ===\n\n";
 
-run('PHP 依存パッケージをインストール (composer install)', 'composer install', $root);
+run('PHP 依存パッケージをインストール (composer update)', 'composer update', $root);
 run('CMS npm パッケージをインストール (npm install)', 'npm install', $root . ($isWin ? '\cms' : '/cms'));
 
 echo "\033[32mセットアップ完了！\033[0m\n";
