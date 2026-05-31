@@ -27,6 +27,7 @@
         "serve": "bash bin/serve.sh",
         "serve:app": "php -S localhost:8080 -t public",
         "serve:cms": "bash -c 'cd cms && npm run dev'",
+        "migrate": "php bin/migrate.php",
         "post-autoload-dump": [
             "BEAR\\Package\\Compiler::compile"
         ]
