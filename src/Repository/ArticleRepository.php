@@ -142,6 +142,20 @@ final class ArticleRepository
         );
     }
 
+    /** @return array<int, array<string, mixed>> */
+    public function findLatestByCategory(int $categoryId, int $limit = 8): array
+    {
+        return $this->pdo->fetchAll(
+            "SELECT a.id, a.title, a.slug, a.eye_catch_image, a.youtube_thumbnail,
+                    a.published_at, a.created_at
+             FROM articles a
+             WHERE a.status = 'published' AND a.category_id = :category_id
+             ORDER BY a.published_at DESC, a.created_at DESC
+             LIMIT :limit",
+            ['category_id' => $categoryId, 'limit' => $limit]
+        );
+    }
+
     /** @param array<string, mixed> $data */
     public function create(array $data): int
     {

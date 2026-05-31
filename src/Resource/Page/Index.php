@@ -3,35 +3,35 @@ declare(strict_types=1);
 
 namespace Himatsudo\Resource\Page;
 
-use Aura\Sql\ExtendedPdoInterface;
 use BEAR\Resource\ResourceObject;
+use Himatsudo\Repository\ArticleRepository;
+use Himatsudo\Repository\CategoryRepository;
 
 class Index extends ResourceObject
 {
-    public function __construct(private readonly ExtendedPdoInterface $pdo)
-    {
-    }
+    public function __construct(
+        private readonly ArticleRepository  $articleRepository,
+        private readonly CategoryRepository $categoryRepository,
+    ) {}
 
     public function onGet(): static
     {
-        $latestArticles = $this->pdo->fetchAll(
-            "SELECT a.id, a.title, a.slug, a.excerpt, a.eye_catch_image, a.youtube_thumbnail,
-                    a.published_at, c.name AS category_name, c.slug AS category_slug, c.type AS category_type
-             FROM articles a
-             LEFT JOIN categories c ON c.id = a.category_id
-             WHERE a.status = 'published'
-             ORDER BY a.published_at DESC, a.created_at DESC
-             LIMIT 10"
-        );
+        $categories = $this->categoryRepository->findAll();
 
-        $categories = $this->pdo->fetchAll(
-            'SELECT id, name, slug, type FROM categories ORDER BY sort_order ASC, id ASC'
-        );
+        $categoriesWithArticles = [];
+        foreach ($categories as $category) {
+            $articles = $this->articleRepository->findLatestByCategory((int) $category['id'], 8);
+            if (!empty($articles)) {
+                $categoriesWithArticles[] = [
+                    'category' => $category,
+                    'articles' => $articles,
+                ];
+            }
+        }
 
         $this->body = [
-            'latest_articles' => $latestArticles,
-            'categories'      => $categories,
-            'page_title'      => 'ホーム',
+            'categories_with_articles' => $categoriesWithArticles,
+            'page_title'               => 'ホーム',
         ];
 
         return $this;
