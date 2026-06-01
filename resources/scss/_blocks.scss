@@ -1,0 +1,130 @@
+@use 'variables' as *;
+
+// Article detail page wrapper
+.article-detail {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.article-category {
+  margin-bottom: .75rem;
+}
+
+.article-title {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 1rem;
+  color: $c-text;
+}
+
+.article-meta {
+  display: flex;
+  gap: 1rem;
+  color: $c-text-muted;
+  font-size: .875rem;
+  margin-bottom: 1.5rem;
+}
+
+.article-eyecatch {
+  width: 100%;
+  max-height: 450px;
+  object-fit: cover;
+  border-radius: .5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 16px $c-shadow;
+}
+
+.article-footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $c-border;
+  color: $c-text-muted;
+  font-size: .875rem;
+
+  a { color: $c-text-muted; &:hover { color: $c-primary; } }
+}
+
+// Block-based content
+.article-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.block-text {
+  // inherits .article-body styles
+}
+
+// Heading blocks
+.block-heading {
+  font-weight: 700;
+  line-height: 1.3;
+  color: $c-text;
+  margin: 0;
+}
+
+.block-heading-2 {
+  font-size: 1.625rem;
+  padding-left: .65em;
+  border-left: 4px solid $c-primary;
+}
+
+.block-heading-3 {
+  font-size: 1.25rem;
+  padding-left: .6em;
+  border-left: 3px solid $c-primary-light;
+}
+
+.block-heading-4 {
+  font-size: 1.05rem;
+  color: $c-text-muted;
+}
+
+// Image block
+.block-image {
+  margin: 0;
+
+  .block-image-img {
+    width: 100%;
+    border-radius: .5rem;
+    box-shadow: 0 2px 8px $c-shadow;
+    display: block;
+  }
+
+  .block-image-caption {
+    margin-top: .5rem;
+    font-size: .8125rem;
+    color: $c-text-muted;
+    text-align: center;
+  }
+}
+
+// Video block
+.block-video {
+  margin: 0;
+
+  .block-video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%; // 16:9
+    height: 0;
+    overflow: hidden;
+    border-radius: .5rem;
+    box-shadow: 0 2px 8px $c-shadow;
+
+    .block-video-iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .block-video-caption {
+    margin-top: .5rem;
+    font-size: .8125rem;
+    color: $c-text-muted;
+    text-align: center;
+  }
+}

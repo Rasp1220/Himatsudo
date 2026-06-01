@@ -10,6 +10,7 @@
     </div>
 
     <form @submit.prevent="() => handleSubmit()" class="space-y-5">
+      <!-- Meta fields -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-5 space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">タイトル <span class="text-red-500">*</span></label>
@@ -73,29 +74,10 @@
         </div>
       </div>
 
-      <!-- Rich Text Editor -->
+      <!-- Block editor -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-5">
-        <label class="block text-sm font-medium text-gray-700 mb-2">本文</label>
-        <div class="border border-gray-300 rounded-md overflow-hidden">
-          <div class="flex flex-wrap gap-1 p-2 bg-gray-50 border-b border-gray-200">
-            <button
-              v-for="btn in editorButtons"
-              :key="btn.label"
-              type="button"
-              @click="btn.action()"
-              class="px-2 py-1 text-xs font-medium rounded hover:bg-gray-200 transition-colors"
-              :class="btn.active?.() ? 'bg-gray-200' : ''"
-              :title="btn.label"
-            >
-              {{ btn.icon }}
-            </button>
-          </div>
-          <EditorContent
-            v-if="editor"
-            :editor="editor"
-            class="min-h-64 p-3 text-sm focus:outline-none prose prose-sm max-w-none"
-          />
-        </div>
+        <label class="block text-sm font-medium text-gray-700 mb-3">記事コンテンツ</label>
+        <BlockEditor v-model="form.blocks" />
       </div>
 
       <p v-if="errorMsg" class="text-sm text-red-600 bg-red-50 rounded px-3 py-2">{{ errorMsg }}</p>
@@ -126,13 +108,10 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { reactive, ref, computed, onMounted } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useEditor, EditorContent } from '@tiptap/vue-3'
-import StarterKit from '@tiptap/starter-kit'
-import Image from '@tiptap/extension-image'
-import Link from '@tiptap/extension-link'
+import BlockEditor from '@/components/blocks/BlockEditor.vue'
 import { useArticlesStore } from '@/stores/articles'
 import { useCategoriesStore } from '@/stores/categories'
 import { useAuthStore } from '@/stores/auth'
@@ -151,41 +130,14 @@ const errorMsg = ref('')
 const form = reactive({
   title: '',
   slug: '',
-  content: '',
+  blocks: '[]',
   excerpt: '',
   eye_catch_image: '',
   category_id: null as number | null,
   status: 'draft' as ArticleStatus,
-  youtube_url: '',
-  youtube_video_id: '',
-  youtube_thumbnail: '',
 })
 
 const { items: categories } = storeToRefs(categoriesStore)
-
-const editor = useEditor({
-  extensions: [
-    StarterKit,
-    Image,
-    Link.configure({ openOnClick: false }),
-  ],
-  content: '',
-  onUpdate({ editor: e }) {
-    form.content = e.getHTML()
-  },
-})
-
-const editorButtons = [
-  { icon: 'B', label: 'Bold', action: () => editor.value?.chain().focus().toggleBold().run(), active: () => editor.value?.isActive('bold') ?? false },
-  { icon: 'I', label: 'Italic', action: () => editor.value?.chain().focus().toggleItalic().run(), active: () => editor.value?.isActive('italic') ?? false },
-  { icon: 'H2', label: 'Heading 2', action: () => editor.value?.chain().focus().toggleHeading({ level: 2 }).run(), active: () => editor.value?.isActive('heading', { level: 2 }) ?? false },
-  { icon: 'H3', label: 'Heading 3', action: () => editor.value?.chain().focus().toggleHeading({ level: 3 }).run() },
-  { icon: '—', label: 'HR', action: () => editor.value?.chain().focus().setHorizontalRule().run() },
-  { icon: '•', label: 'Bullet list', action: () => editor.value?.chain().focus().toggleBulletList().run() },
-  { icon: '1.', label: 'Ordered list', action: () => editor.value?.chain().focus().toggleOrderedList().run() },
-  { icon: '❝', label: 'Quote', action: () => editor.value?.chain().focus().toggleBlockquote().run() },
-  { icon: '</>', label: 'Code', action: () => editor.value?.chain().focus().toggleCode().run() },
-]
 
 let slugManuallyEdited = false
 
@@ -203,18 +155,18 @@ async function handleSubmit(overrideStatus?: ArticleStatus) {
   saving.value = true
   errorMsg.value = ''
   try {
-    const payload: Parameters<typeof articlesStore.create>[0] = {
+    const payload = {
       title: form.title,
       slug: form.slug,
-      content: form.content,
+      blocks: form.blocks,
+      content: '',
       excerpt: form.excerpt,
       eye_catch_image: form.eye_catch_image,
-      // 0 signals "clear category" to the API (null is indistinguishable from "not provided")
       category_id: form.category_id ?? 0,
       status: overrideStatus ?? form.status,
-      youtube_url: form.youtube_url,
-      youtube_video_id: form.youtube_video_id,
-      youtube_thumbnail: form.youtube_thumbnail,
+      youtube_url: '',
+      youtube_video_id: '',
+      youtube_thumbnail: '',
       author_id: auth.user?.id ?? 0,
     }
     if (isEdit.value) {
@@ -223,7 +175,7 @@ async function handleSubmit(overrideStatus?: ArticleStatus) {
       await articlesStore.create(payload)
     }
     router.push('/articles')
-  } catch (e: unknown) {
+  } catch {
     errorMsg.value = '保存に失敗しました。入力内容を確認してください。'
   } finally {
     saving.value = false
@@ -246,14 +198,9 @@ onMounted(async () => {
       form.eye_catch_image = a.eye_catch_image ?? ''
       form.category_id = a.category_id
       form.status = a.status
-      form.content = a.content ?? ''
-      editor.value?.commands.setContent(a.content ?? '')
+      form.blocks = a.blocks ?? '[]'
       slugManuallyEdited = true
     }
   }
-})
-
-onBeforeUnmount(() => {
-  editor.value?.destroy()
 })
 </script>

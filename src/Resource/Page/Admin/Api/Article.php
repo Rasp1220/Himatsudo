@@ -32,6 +32,7 @@ class Article extends ResourceObject
         ?string $slug          = null,
         ?string $status        = null,
         ?string $content       = null,
+        ?string $blocks        = null,
         ?string $excerpt       = null,
         ?string $eye_catch_image = null,
         ?int    $category_id   = null,
@@ -45,7 +46,7 @@ class Article extends ResourceObject
             return $this;
         }
         $data = array_filter(compact(
-            'title', 'slug', 'status', 'content', 'excerpt', 'eye_catch_image',
+            'title', 'slug', 'status', 'content', 'blocks', 'excerpt', 'eye_catch_image',
             'youtube_url', 'youtube_video_id', 'youtube_thumbnail'
         ), fn($v) => $v !== null);
         // category_id=0 means "explicitly clear"; any other non-null int sets the category

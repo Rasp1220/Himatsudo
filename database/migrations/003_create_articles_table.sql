@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS articles (
     title               VARCHAR(500)    NOT NULL,
     slug                VARCHAR(500)    NOT NULL,
     content             LONGTEXT,
+    blocks              LONGTEXT,
     excerpt             TEXT,
     eye_catch_image     VARCHAR(1000),
     category_id         BIGINT,

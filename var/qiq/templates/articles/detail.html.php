@@ -1,22 +1,30 @@
 <?php
-/** @var array<string, mixed> $article */
+/**
+ * @var array<string, mixed> $article
+ */
 $this->setLayout('layout');
 $this->page_title = $article['title'] ?? '';
+
+$blocks = null;
+if (!empty($article['blocks'])) {
+    $decoded = json_decode((string) $article['blocks'], true);
+    if (is_array($decoded) && count($decoded) > 0) {
+        $blocks = $decoded;
+    }
+}
 ?>
-<article style="max-width:780px;margin:0 auto">
+<article class="article-detail">
     <?php if (!empty($article['category_name'])): ?>
-    <div style="margin-bottom:.75rem">
+    <div class="article-category">
         <a href="/articles?category_id=<?= (int) $article['category_id'] ?>" class="badge <?= $this->h($article['category_type'] ?? '') ?>">
             <?= $this->h($article['category_name']) ?>
         </a>
     </div>
     <?php endif; ?>
 
-    <h1 style="font-size:2rem;font-weight:700;line-height:1.3;margin-bottom:1rem">
-        <?= $this->h($article['title']) ?>
-    </h1>
+    <h1 class="article-title"><?= $this->h($article['title']) ?></h1>
 
-    <div style="display:flex;gap:1rem;color:#64748b;font-size:.875rem;margin-bottom:1.5rem">
+    <div class="article-meta">
         <?php if (!empty($article['author_name'])): ?>
         <span>by <?= $this->h($article['author_name']) ?></span>
         <?php endif; ?>
@@ -28,14 +36,66 @@ $this->page_title = $article['title'] ?? '';
     <?php if (!empty($article['eye_catch_image'])): ?>
     <img src="<?= $this->h($article['eye_catch_image']) ?>"
          alt="<?= $this->h($article['title']) ?>"
-         style="width:100%;max-height:450px;object-fit:cover;border-radius:.5rem;margin-bottom:2rem">
+         class="article-eyecatch">
     <?php endif; ?>
 
-    <div class="article-body">
-        <?= $article['content'] ?? '' /* Rich-text HTML from CMS; CMS is responsible for sanitising */ ?>
+    <?php if ($blocks !== null): ?>
+    <div class="article-blocks">
+        <?php foreach ($blocks as $block):
+            $type = $block['type'] ?? '';
+        ?>
+        <?php if ($type === 'heading'):
+            $level = (int) ($block['level'] ?? 2);
+            $level = max(2, min(4, $level));
+            $tag   = 'h' . $level;
+        ?>
+        <<?= $tag ?> class="block-heading block-heading-<?= $level ?>">
+            <?= $this->h($block['text'] ?? '') ?>
+        </<?= $tag ?>>
+
+        <?php elseif ($type === 'text'): ?>
+        <div class="article-body block-text">
+            <?= $block['html'] ?? '' /* Rich-text HTML from CMS; CMS is responsible for sanitising */ ?>
+        </div>
+
+        <?php elseif ($type === 'image' && !empty($block['url'])): ?>
+        <figure class="block-image">
+            <img src="<?= $this->h($block['url']) ?>"
+                 alt="<?= $this->h($block['alt'] ?? '') ?>"
+                 class="block-image-img">
+            <?php if (!empty($block['caption'])): ?>
+            <figcaption class="block-image-caption"><?= $this->h($block['caption']) ?></figcaption>
+            <?php endif; ?>
+        </figure>
+
+        <?php elseif ($type === 'video' && !empty($block['video_id'])): ?>
+        <figure class="block-video">
+            <div class="block-video-wrapper">
+                <iframe
+                    src="https://www.youtube.com/embed/<?= $this->h($block['video_id']) ?>"
+                    title="<?= $this->h($block['caption'] ?? 'YouTube') ?>"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    class="block-video-iframe">
+                </iframe>
+            </div>
+            <?php if (!empty($block['caption'])): ?>
+            <figcaption class="block-video-caption"><?= $this->h($block['caption']) ?></figcaption>
+            <?php endif; ?>
+        </figure>
+
+        <?php endif; ?>
+        <?php endforeach; ?>
     </div>
 
-    <div style="margin-top:3rem;padding-top:1.5rem;border-top:1px solid #e2e8f0">
-        <a href="/articles" style="color:#64748b;font-size:.875rem">&larr; 記事一覧に戻る</a>
+    <?php else: ?>
+    <div class="article-body">
+        <?= $article['content'] ?? '' /* Legacy HTML content */ ?>
+    </div>
+    <?php endif; ?>
+
+    <div class="article-footer">
+        <a href="/articles">&larr; 記事一覧に戻る</a>
     </div>
 </article>

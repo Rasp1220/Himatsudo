@@ -24,6 +24,7 @@ export interface Article {
   title: string
   slug: string
   content: string | null
+  blocks: string | null
   excerpt: string | null
   eye_catch_image: string | null
   category_id: number | null
@@ -74,10 +75,43 @@ export interface RefreshResponse {
   expires_in: number
 }
 
+// Block-based article content
+export interface HeadingBlock {
+  id: string
+  type: 'heading'
+  level: 2 | 3 | 4
+  text: string
+}
+
+export interface TextBlock {
+  id: string
+  type: 'text'
+  html: string
+}
+
+export interface ImageBlock {
+  id: string
+  type: 'image'
+  url: string
+  alt: string
+  caption: string
+}
+
+export interface VideoBlock {
+  id: string
+  type: 'video'
+  youtube_url: string
+  video_id: string
+  caption: string
+}
+
+export type ArticleBlock = HeadingBlock | TextBlock | ImageBlock | VideoBlock
+
 export interface ArticleFormData {
   title: string
   slug: string
   content: string
+  blocks?: string
   excerpt: string
   eye_catch_image: string
   category_id: number | null
