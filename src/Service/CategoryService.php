@@ -8,21 +8,26 @@ use Himatsudo\Interfaces\CategoryInterface;
 
 final class CategoryService implements CategoryInterface
 {
-    public function __construct(private readonly ExtendedPdoInterface $pdo) {}
+    private string $sqlDir;
+
+    public function __construct(private readonly ExtendedPdoInterface $pdo)
+    {
+        $this->sqlDir = dirname(__DIR__) . '/sql/';
+    }
+
+    private function sql(string $file): string
+    {
+        return (string) file_get_contents($this->sqlDir . $file);
+    }
 
     public function getAll(): array
     {
-        return $this->pdo->fetchAll(
-            'SELECT id, name, slug, type, sort_order, created_at, updated_at FROM categories ORDER BY sort_order ASC, id ASC'
-        );
+        return $this->pdo->fetchAll($this->sql('categories/get_all.sql'));
     }
 
     public function getById(int $id): ?array
     {
-        $row = $this->pdo->fetchOne(
-            'SELECT id, name, slug, type, sort_order, created_at, updated_at FROM categories WHERE id = :id LIMIT 1',
-            ['id' => $id]
-        );
+        $row = $this->pdo->fetchOne($this->sql('categories/get_by_id.sql'), ['id' => $id]);
         return $row ?: null;
     }
 
@@ -32,8 +37,7 @@ final class CategoryService implements CategoryInterface
             'INSERT INTO categories (name, slug, type, sort_order) VALUES (:name, :slug, :type, :sort_order)',
             ['name' => $name, 'slug' => $slug, 'type' => $type, 'sort_order' => $sortOrder]
         );
-        $id = (int) $this->pdo->lastInsertId();
-        return $this->getById($id) ?? [];
+        return $this->getById((int) $this->pdo->lastInsertId()) ?? [];
     }
 
     public function update(int $id, array $data): ?array
@@ -54,6 +58,6 @@ final class CategoryService implements CategoryInterface
 
     public function delete(int $id): bool
     {
-        return (bool) $this->pdo->perform('DELETE FROM categories WHERE id = :id', ['id' => $id])->rowCount();
+        return (bool) $this->pdo->perform($this->sql('categories/delete.sql'), ['id' => $id])->rowCount();
     }
 }

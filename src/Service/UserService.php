@@ -8,16 +8,23 @@ use Himatsudo\Interfaces\UserInterface;
 
 final class UserService implements UserInterface
 {
-    public function __construct(private readonly ExtendedPdoInterface $pdo) {}
+    private string $sqlDir;
+
+    public function __construct(private readonly ExtendedPdoInterface $pdo)
+    {
+        $this->sqlDir = dirname(__DIR__) . '/sql/';
+    }
+
+    private function sql(string $file): string
+    {
+        return (string) file_get_contents($this->sqlDir . $file);
+    }
 
     public function getList(int $page = 1, int $perPage = 20): array
     {
         $offset = ($page - 1) * $perPage;
-        $items  = $this->pdo->fetchAll(
-            'SELECT id, name, email, role, created_at, updated_at FROM users ORDER BY id DESC LIMIT :limit OFFSET :offset',
-            ['limit' => $perPage, 'offset' => $offset]
-        );
-        $total = (int) $this->pdo->fetchValue('SELECT COUNT(*) FROM users');
+        $items  = $this->pdo->fetchAll($this->sql('users/get_list.sql'), ['limit' => $perPage, 'offset' => $offset]);
+        $total  = (int) $this->pdo->fetchValue('SELECT COUNT(*) FROM users');
         return [
             'items'     => $items,
             'total'     => $total,
@@ -29,19 +36,13 @@ final class UserService implements UserInterface
 
     public function getById(int $id): ?array
     {
-        $row = $this->pdo->fetchOne(
-            'SELECT id, name, email, role, created_at, updated_at FROM users WHERE id = :id LIMIT 1',
-            ['id' => $id]
-        );
+        $row = $this->pdo->fetchOne($this->sql('users/get_by_id.sql'), ['id' => $id]);
         return $row ?: null;
     }
 
     public function getByEmail(string $email): ?array
     {
-        $row = $this->pdo->fetchOne(
-            'SELECT id, name, email, password, role, created_at, updated_at FROM users WHERE email = :email LIMIT 1',
-            ['email' => $email]
-        );
+        $row = $this->pdo->fetchOne($this->sql('users/get_by_email.sql'), ['email' => $email]);
         return $row ?: null;
     }
 
@@ -52,8 +53,7 @@ final class UserService implements UserInterface
             'INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)',
             ['name' => $name, 'email' => $email, 'password' => $hash, 'role' => $role]
         );
-        $id = (int) $this->pdo->lastInsertId();
-        return $this->getById($id) ?? [];
+        return $this->getById((int) $this->pdo->lastInsertId()) ?? [];
     }
 
     public function update(int $id, array $data): ?array
@@ -78,7 +78,7 @@ final class UserService implements UserInterface
 
     public function delete(int $id): bool
     {
-        return (bool) $this->pdo->perform('DELETE FROM users WHERE id = :id', ['id' => $id])->rowCount();
+        return (bool) $this->pdo->perform($this->sql('users/delete.sql'), ['id' => $id])->rowCount();
     }
 
     public function verifyPassword(string $plain, string $hash): bool

@@ -9,7 +9,17 @@ use Himatsudo\Interfaces\ArticleInterface;
 
 final class ArticleService implements ArticleInterface
 {
-    public function __construct(private readonly ExtendedPdoInterface $pdo) {}
+    private string $sqlDir;
+
+    public function __construct(private readonly ExtendedPdoInterface $pdo)
+    {
+        $this->sqlDir = dirname(__DIR__) . '/sql/';
+    }
+
+    private function sql(string $file): string
+    {
+        return (string) file_get_contents($this->sqlDir . $file);
+    }
 
     public function getList(int $page = 1, int $perPage = 15, ?int $categoryId = null, string $status = 'published'): array
     {
@@ -22,17 +32,9 @@ final class ArticleService implements ArticleInterface
             $bind['category_id'] = $categoryId;
         }
 
+        $base  = $this->sql('articles/get_list_base.sql');
         $items = $this->pdo->fetchAll(
-            "SELECT a.id, a.title, a.slug, a.excerpt, a.eye_catch_image, a.status,
-                    a.youtube_thumbnail, a.published_at, a.created_at, a.updated_at,
-                    c.id AS category_id, c.name AS category_name, c.slug AS category_slug, c.type AS category_type,
-                    u.id AS author_id, u.name AS author_name
-             FROM articles a
-             LEFT JOIN categories c ON c.id = a.category_id
-             LEFT JOIN users u      ON u.id = a.author_id
-             {$where}
-             ORDER BY a.published_at DESC, a.created_at DESC
-             LIMIT :limit OFFSET :offset",
+            $base . " {$where} ORDER BY a.published_at DESC, a.created_at DESC LIMIT :limit OFFSET :offset",
             $bind
         );
 
@@ -71,17 +73,9 @@ final class ArticleService implements ArticleInterface
             $bind['keyword'] = '%' . $keyword . '%';
         }
 
+        $base  = $this->sql('articles/get_admin_list_base.sql');
         $items = $this->pdo->fetchAll(
-            "SELECT a.id, a.title, a.slug, a.excerpt, a.eye_catch_image, a.status,
-                    a.youtube_thumbnail, a.published_at, a.created_at, a.updated_at,
-                    c.id AS category_id, c.name AS category_name, c.type AS category_type,
-                    u.id AS author_id, u.name AS author_name
-             FROM articles a
-             LEFT JOIN categories c ON c.id = a.category_id
-             LEFT JOIN users u      ON u.id = a.author_id
-             {$where}
-             ORDER BY a.created_at DESC
-             LIMIT :limit OFFSET :offset",
+            $base . " {$where} ORDER BY a.created_at DESC LIMIT :limit OFFSET :offset",
             $bind
         );
 
@@ -99,56 +93,28 @@ final class ArticleService implements ArticleInterface
 
     public function getBySlug(string $slug, bool $publishedOnly = true): ?array
     {
-        $where = 'WHERE a.slug = :slug' . ($publishedOnly ? " AND a.status = 'published'" : '');
-        $row   = $this->pdo->fetchOne(
-            "SELECT a.*, c.name AS category_name, c.slug AS category_slug, c.type AS category_type,
-                    u.name AS author_name
-             FROM articles a
-             LEFT JOIN categories c ON c.id = a.category_id
-             LEFT JOIN users u      ON u.id = a.author_id
-             {$where} LIMIT 1",
-            ['slug' => $slug]
-        );
+        $extra = $publishedOnly ? " AND a.status = 'published'" : '';
+        $sql   = rtrim($this->sql('articles/get_by_slug.sql'));
+        $sql   = str_replace('WHERE a.slug = :slug', "WHERE a.slug = :slug{$extra}", $sql);
+        $row   = $this->pdo->fetchOne($sql, ['slug' => $slug]);
         return $row ?: null;
     }
 
     public function getById(int $id): ?array
     {
-        $row = $this->pdo->fetchOne(
-            "SELECT a.*, c.name AS category_name, c.slug AS category_slug, c.type AS category_type,
-                    u.name AS author_name
-             FROM articles a
-             LEFT JOIN categories c ON c.id = a.category_id
-             LEFT JOIN users u      ON u.id = a.author_id
-             WHERE a.id = :id LIMIT 1",
-            ['id' => $id]
-        );
+        $row = $this->pdo->fetchOne($this->sql('articles/get_by_id.sql'), ['id' => $id]);
         return $row ?: null;
     }
 
     public function getLatest(int $limit = 10): array
     {
-        return $this->pdo->fetchAll(
-            "SELECT a.id, a.title, a.slug, a.excerpt, a.eye_catch_image, a.youtube_thumbnail,
-                    a.published_at, c.name AS category_name, c.slug AS category_slug, c.type AS category_type
-             FROM articles a
-             LEFT JOIN categories c ON c.id = a.category_id
-             WHERE a.status = 'published'
-             ORDER BY a.published_at DESC, a.created_at DESC
-             LIMIT :limit",
-            ['limit' => $limit]
-        );
+        return $this->pdo->fetchAll($this->sql('articles/get_latest.sql'), ['limit' => $limit]);
     }
 
     public function getLatestByCategory(int $categoryId, int $limit = 8): array
     {
         return $this->pdo->fetchAll(
-            "SELECT a.id, a.title, a.slug, a.eye_catch_image, a.youtube_thumbnail,
-                    a.published_at, a.created_at
-             FROM articles a
-             WHERE a.status = 'published' AND a.category_id = :category_id
-             ORDER BY a.published_at DESC, a.created_at DESC
-             LIMIT :limit",
+            $this->sql('articles/get_latest_by_category.sql'),
             ['category_id' => $categoryId, 'limit' => $limit]
         );
     }
@@ -159,10 +125,11 @@ final class ArticleService implements ArticleInterface
             $data['published_at'] = (new DateTimeImmutable())->format('Y-m-d H:i:s');
         }
         $fields = array_keys($data);
-        $sql    = 'INSERT INTO articles (' . implode(', ', $fields) . ') VALUES (:' . implode(', :', $fields) . ')';
-        $this->pdo->perform($sql, $data);
-        $id = (int) $this->pdo->lastInsertId();
-        return $this->getById($id) ?? [];
+        $this->pdo->perform(
+            'INSERT INTO articles (' . implode(', ', $fields) . ') VALUES (:' . implode(', :', $fields) . ')',
+            $data
+        );
+        return $this->getById((int) $this->pdo->lastInsertId()) ?? [];
     }
 
     public function update(int $id, array $data): ?array
@@ -175,13 +142,12 @@ final class ArticleService implements ArticleInterface
         }
         $sets      = array_map(fn($f) => "{$f} = :{$f}", array_keys($data));
         $data['id'] = $id;
-        $sql        = 'UPDATE articles SET ' . implode(', ', $sets) . ' WHERE id = :id';
-        $this->pdo->perform($sql, $data);
+        $this->pdo->perform('UPDATE articles SET ' . implode(', ', $sets) . ' WHERE id = :id', $data);
         return $this->getById($id);
     }
 
     public function delete(int $id): bool
     {
-        return (bool) $this->pdo->perform('DELETE FROM articles WHERE id = :id', ['id' => $id])->rowCount();
+        return (bool) $this->pdo->perform($this->sql('articles/delete.sql'), ['id' => $id])->rowCount();
     }
 }
