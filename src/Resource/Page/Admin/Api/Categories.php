@@ -5,7 +5,7 @@ namespace Himatsudo\Resource\Page\Admin\Api;
 
 use BEAR\Resource\ResourceObject;
 use Himatsudo\Annotation\RequireAuth;
-use Himatsudo\Contract\Service\CategoryServiceInterface;
+use Himatsudo\Interfaces\CategoryInterface as CategoryServiceInterface;
 
 class Categories extends ResourceObject
 {

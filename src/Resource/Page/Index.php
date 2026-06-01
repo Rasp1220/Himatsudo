@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Himatsudo\Resource\Page;
 
 use BEAR\Resource\ResourceObject;
-use Himatsudo\Contract\Service\ArticleServiceInterface;
-use Himatsudo\Contract\Service\CategoryServiceInterface;
+use Himatsudo\Interfaces\ArticleInterface as ArticleServiceInterface;
+use Himatsudo\Interfaces\CategoryInterface as CategoryServiceInterface;
 
 class Index extends ResourceObject
 {

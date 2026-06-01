@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Himatsudo\Contract\Service;
+namespace Himatsudo\Interfaces;
 
-interface ArticleServiceInterface
+interface ArticleInterface
 {
     /**
      * @return array{items: array<int, array<string, mixed>>, total: int, page: int, per_page: int, last_page: int}

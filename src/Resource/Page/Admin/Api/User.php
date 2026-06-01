@@ -5,7 +5,7 @@ namespace Himatsudo\Resource\Page\Admin\Api;
 
 use BEAR\Resource\ResourceObject;
 use Himatsudo\Annotation\RequireAuth;
-use Himatsudo\Contract\Service\UserServiceInterface;
+use Himatsudo\Interfaces\UserInterface as UserServiceInterface;
 
 class User extends ResourceObject
 {

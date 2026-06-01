@@ -1,15 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Himatsudo\Repository;
+namespace Himatsudo\Service;
 
 use Aura\Sql\ExtendedPdoInterface;
 
-final class RefreshTokenRepository
+final class RefreshTokenService
 {
-    public function __construct(private readonly ExtendedPdoInterface $pdo)
-    {
-    }
+    public function __construct(private readonly ExtendedPdoInterface $pdo) {}
 
     public function save(int $userId, string $token, string $expiresAt): void
     {

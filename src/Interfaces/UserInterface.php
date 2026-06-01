@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Himatsudo\Contract\Service;
+namespace Himatsudo\Interfaces;
 
-interface UserServiceInterface
+interface UserInterface
 {
     /**
      * @return array{items: array<int, array<string, mixed>>, total: int, page: int, per_page: int, last_page: int}
@@ -16,9 +16,7 @@ interface UserServiceInterface
     /** @return array<string, mixed>|null */
     public function getByEmail(string $email): ?array;
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function create(string $name, string $email, string $password, string $role = 'editor'): array;
 
     /**

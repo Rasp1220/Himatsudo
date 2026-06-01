@@ -6,23 +6,23 @@ namespace Himatsudo\Resource\Page\Admin\Api\Auth;
 use BEAR\Resource\ResourceObject;
 use DateTimeImmutable;
 use Himatsudo\Auth\JwtService;
-use Himatsudo\Repository\RefreshTokenRepository;
-use Himatsudo\Repository\UserRepository;
+use Himatsudo\Interfaces\UserInterface;
+use Himatsudo\Service\RefreshTokenService;
 
 class Login extends ResourceObject
 {
     public function __construct(
-        private readonly UserRepository         $userRepository,
-        private readonly RefreshTokenRepository $refreshTokenRepository,
-        private readonly JwtService             $jwtService
+        private readonly UserInterface        $userService,
+        private readonly RefreshTokenService  $refreshTokenService,
+        private readonly JwtService           $jwtService
     ) {
     }
 
     public function onPost(string $email, string $password): static
     {
-        $user = $this->userRepository->findByEmail($email);
+        $user = $this->userService->getByEmail($email);
 
-        if ($user === null || !$this->userRepository->verifyPassword($password, (string) $user['password'])) {
+        if ($user === null || !$this->userService->verifyPassword($password, (string) $user['password'])) {
             $this->code = 401;
             $this->body = ['error' => 'Invalid credentials'];
             return $this;
@@ -34,7 +34,7 @@ class Login extends ResourceObject
         $refreshToken = $this->jwtService->issueRefreshToken($userId);
 
         $expiresAt = (new DateTimeImmutable())->modify('+30 days')->format('Y-m-d H:i:s');
-        $this->refreshTokenRepository->save($userId, $refreshToken, $expiresAt);
+        $this->refreshTokenService->save($userId, $refreshToken, $expiresAt);
 
         $this->code = 200;
         $this->body = [
