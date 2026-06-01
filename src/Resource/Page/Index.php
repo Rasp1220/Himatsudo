@@ -4,23 +4,23 @@ declare(strict_types=1);
 namespace Himatsudo\Resource\Page;
 
 use BEAR\Resource\ResourceObject;
-use Himatsudo\Repository\ArticleRepository;
-use Himatsudo\Repository\CategoryRepository;
+use Himatsudo\Contract\Service\ArticleServiceInterface;
+use Himatsudo\Contract\Service\CategoryServiceInterface;
 
 class Index extends ResourceObject
 {
     public function __construct(
-        private readonly ArticleRepository  $articleRepository,
-        private readonly CategoryRepository $categoryRepository,
+        private readonly ArticleServiceInterface  $articleService,
+        private readonly CategoryServiceInterface $categoryService,
     ) {}
 
     public function onGet(): static
     {
-        $categories = $this->categoryRepository->findAll();
+        $categories = $this->categoryService->getAll();
 
         $categoriesWithArticles = [];
         foreach ($categories as $category) {
-            $articles = $this->articleRepository->findLatestByCategory((int) $category['id'], 8);
+            $articles = $this->articleService->getLatestByCategory((int) $category['id'], 8);
             if (!empty($articles)) {
                 $categoriesWithArticles[] = [
                     'category' => $category,

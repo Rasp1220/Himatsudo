@@ -4,9 +4,10 @@ declare(strict_types=1);
 namespace Himatsudo\Repository;
 
 use Aura\Sql\ExtendedPdoInterface;
+use Himatsudo\Contract\Repository\UserRepositoryInterface;
 use PDO;
 
-final class UserRepository
+final class UserRepository implements UserRepositoryInterface
 {
     public function __construct(private readonly ExtendedPdoInterface $pdo)
     {

@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace Himatsudo\Repository;
 
 use Aura\Sql\ExtendedPdoInterface;
+use Himatsudo\Contract\Repository\CategoryRepositoryInterface;
 
-final class CategoryRepository
+final class CategoryRepository implements CategoryRepositoryInterface
 {
     public function __construct(private readonly ExtendedPdoInterface $pdo)
     {

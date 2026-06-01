@@ -5,17 +5,17 @@ namespace Himatsudo\Resource\Page\Admin\Api;
 
 use BEAR\Resource\ResourceObject;
 use Himatsudo\Annotation\RequireAuth;
-use Himatsudo\Repository\ArticleRepository;
+use Himatsudo\Contract\Service\ArticleServiceInterface;
 
 class Article extends ResourceObject
 {
-    public function __construct(private readonly ArticleRepository $articleRepository)
+    public function __construct(private readonly ArticleServiceInterface $articleService)
     {
     }
 
     public function onGet(int $id): static
     {
-        $article = $this->articleRepository->findById($id);
+        $article = $this->articleService->getById($id);
         if ($article === null) {
             $this->code = 404;
             $this->body = ['error' => 'Article not found'];
@@ -41,7 +41,7 @@ class Article extends ResourceObject
         ?string $youtube_thumbnail = null,
         ?string $published_at  = null
     ): static {
-        if ($this->articleRepository->findById($id) === null) {
+        if ($this->articleService->getById($id) === null) {
             $this->code = 404;
             $this->body = ['error' => 'Article not found'];
             return $this;
@@ -54,20 +54,19 @@ class Article extends ResourceObject
         if ($category_id !== null) {
             $data['category_id'] = $category_id === 0 ? null : $category_id;
         }
-        $this->articleRepository->update($id, $data);
-        $this->body = $this->articleRepository->findById($id);
+        $this->body = $this->articleService->update($id, $data);
         return $this;
     }
 
     #[RequireAuth]
     public function onDelete(int $id): static
     {
-        if ($this->articleRepository->findById($id) === null) {
+        if ($this->articleService->getById($id) === null) {
             $this->code = 404;
             $this->body = ['error' => 'Article not found'];
             return $this;
         }
-        $this->articleRepository->delete($id);
+        $this->articleService->delete($id);
         $this->code = 204;
         $this->body = null;
         return $this;

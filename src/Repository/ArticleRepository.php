@@ -5,8 +5,9 @@ namespace Himatsudo\Repository;
 
 use Aura\Sql\ExtendedPdoInterface;
 use DateTimeImmutable;
+use Himatsudo\Contract\Repository\ArticleRepositoryInterface;
 
-final class ArticleRepository
+final class ArticleRepository implements ArticleRepositoryInterface
 {
     public function __construct(private readonly ExtendedPdoInterface $pdo)
     {

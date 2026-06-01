@@ -5,17 +5,17 @@ namespace Himatsudo\Resource\Page\Admin\Api;
 
 use BEAR\Resource\ResourceObject;
 use Himatsudo\Annotation\RequireAuth;
-use Himatsudo\Repository\CategoryRepository;
+use Himatsudo\Contract\Service\CategoryServiceInterface;
 
 class Categories extends ResourceObject
 {
-    public function __construct(private readonly CategoryRepository $categoryRepository)
+    public function __construct(private readonly CategoryServiceInterface $categoryService)
     {
     }
 
     public function onGet(): static
     {
-        $this->body = $this->categoryRepository->findAll();
+        $this->body = $this->categoryService->getAll();
         return $this;
     }
 
@@ -28,9 +28,8 @@ class Categories extends ResourceObject
             $this->body = ['error' => 'Invalid type'];
             return $this;
         }
-        $id = $this->categoryRepository->create($name, $slug, $type, $sort_order);
         $this->code = 201;
-        $this->body = $this->categoryRepository->findById($id);
+        $this->body = $this->categoryService->create($name, $slug, $type, $sort_order);
         return $this;
     }
 }

@@ -8,13 +8,21 @@ use BEAR\Package\PackageModule;
 use Himatsudo\Annotation\RequireAuth;
 use Himatsudo\Interceptor\AuthInterceptor;
 use Himatsudo\Auth\JwtService;
+use Himatsudo\Contract\Repository\ArticleRepositoryInterface;
+use Himatsudo\Contract\Repository\CategoryRepositoryInterface;
+use Himatsudo\Contract\Repository\UserRepositoryInterface;
+use Himatsudo\Contract\Service\ArticleServiceInterface;
+use Himatsudo\Contract\Service\CategoryServiceInterface;
+use Himatsudo\Contract\Service\UserServiceInterface;
 use Himatsudo\Repository\ArticleRepository;
 use Himatsudo\Repository\CategoryRepository;
 use Himatsudo\Repository\RefreshTokenRepository;
 use Himatsudo\Repository\UserRepository;
+use Himatsudo\Service\ArticleService;
+use Himatsudo\Service\CategoryService;
+use Himatsudo\Service\UserService;
 use Himatsudo\Service\YoutubeService;
 use Ray\AuraSqlModule\AuraSqlModule;
-use Ray\Di\AbstractModule;
 
 class AppModule extends AbstractAppModule
 {
@@ -30,13 +38,20 @@ class AppModule extends AbstractAppModule
 
         // Services
         $this->bind(JwtService::class);
-
-        // Repositories
-        $this->bind(UserRepository::class);
-        $this->bind(CategoryRepository::class);
-        $this->bind(ArticleRepository::class);
-        $this->bind(RefreshTokenRepository::class);
         $this->bind(YoutubeService::class);
+
+        // Repository interface bindings
+        $this->bind(ArticleRepositoryInterface::class)->to(ArticleRepository::class);
+        $this->bind(CategoryRepositoryInterface::class)->to(CategoryRepository::class);
+        $this->bind(UserRepositoryInterface::class)->to(UserRepository::class);
+
+        // Service interface bindings
+        $this->bind(ArticleServiceInterface::class)->to(ArticleService::class);
+        $this->bind(CategoryServiceInterface::class)->to(CategoryService::class);
+        $this->bind(UserServiceInterface::class)->to(UserService::class);
+
+        // Concrete repository bindings (for direct injection if needed)
+        $this->bind(RefreshTokenRepository::class);
 
         // Auth interceptor on methods annotated with #[RequireAuth]
         $this->bindInterceptor(
