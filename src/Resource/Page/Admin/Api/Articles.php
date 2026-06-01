@@ -45,12 +45,14 @@ class Articles extends ResourceObject
         ?int    $category_id       = null,
         ?string $youtube_url       = null,
         ?string $youtube_video_id  = null,
-        ?string $youtube_thumbnail = null
+        ?string $youtube_thumbnail = null,
+        ?string $published_at      = null
     ): static {
         $data = array_filter(compact(
             'title', 'slug', 'author_id', 'status', 'content', 'blocks', 'excerpt',
-            'eye_catch_image', 'category_id', 'youtube_url', 'youtube_video_id', 'youtube_thumbnail'
-        ), fn($v) => $v !== null);
+            'eye_catch_image', 'category_id', 'youtube_url', 'youtube_video_id', 'youtube_thumbnail',
+            'published_at'
+        ), fn($v) => $v !== null && $v !== '');
         $id = $this->articleRepository->create($data);
         $this->code = 201;
         $this->body = $this->articleRepository->findById($id);

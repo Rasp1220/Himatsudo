@@ -171,7 +171,7 @@ final class ArticleRepository
     /** @param array<string, mixed> $data */
     public function update(int $id, array $data): bool
     {
-        if (!empty($data['status']) && $data['status'] === 'published') {
+        if (!empty($data['status']) && $data['status'] === 'published' && !array_key_exists('published_at', $data)) {
             $current = $this->findById($id);
             if ($current && empty($current['published_at'])) {
                 $data['published_at'] = (new DateTimeImmutable())->format('Y-m-d H:i:s');

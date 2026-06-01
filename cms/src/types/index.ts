@@ -116,6 +116,7 @@ export interface ArticleFormData {
   eye_catch_image: string
   category_id: number | null
   status: ArticleStatus
+  published_at?: string | null
   youtube_url: string
   youtube_video_id: string
   youtube_thumbnail: string

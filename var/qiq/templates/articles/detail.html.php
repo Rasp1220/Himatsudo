@@ -5,12 +5,18 @@
 $this->setLayout('layout');
 $this->page_title = $article['title'] ?? '';
 
-$blocks = null;
+$blocks   = null;
+$richHtml = null;
 if (!empty($article['blocks'])) {
     $decoded = json_decode((string) $article['blocks'], true);
     if (is_array($decoded) && count($decoded) > 0) {
-        $blocks = $decoded;
+        $blocks = $decoded;           // legacy block-editor JSON
+    } else {
+        $richHtml = (string) $article['blocks'];  // TinyMCE HTML stored in blocks field
     }
+}
+if ($richHtml === null && !empty($article['content'])) {
+    $richHtml = (string) $article['content'];
 }
 ?>
 <article class="article-detail">
@@ -89,9 +95,14 @@ if (!empty($article['blocks'])) {
         <?php endforeach; ?>
     </div>
 
+    <?php elseif ($richHtml !== null): ?>
+    <div class="article-body tinymce-content">
+        <?= $richHtml ?>
+    </div>
+
     <?php else: ?>
     <div class="article-body">
-        <?= $article['content'] ?? '' /* Legacy HTML content */ ?>
+        <!-- 本文なし -->
     </div>
     <?php endif; ?>
 

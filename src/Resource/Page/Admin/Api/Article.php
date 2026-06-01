@@ -38,7 +38,8 @@ class Article extends ResourceObject
         ?int    $category_id   = null,
         ?string $youtube_url   = null,
         ?string $youtube_video_id  = null,
-        ?string $youtube_thumbnail = null
+        ?string $youtube_thumbnail = null,
+        ?string $published_at  = null
     ): static {
         if ($this->articleRepository->findById($id) === null) {
             $this->code = 404;
@@ -47,8 +48,8 @@ class Article extends ResourceObject
         }
         $data = array_filter(compact(
             'title', 'slug', 'status', 'content', 'blocks', 'excerpt', 'eye_catch_image',
-            'youtube_url', 'youtube_video_id', 'youtube_thumbnail'
-        ), fn($v) => $v !== null);
+            'youtube_url', 'youtube_video_id', 'youtube_thumbnail', 'published_at'
+        ), fn($v) => $v !== null && $v !== '');
         // category_id=0 means "explicitly clear"; any other non-null int sets the category
         if ($category_id !== null) {
             $data['category_id'] = $category_id === 0 ? null : $category_id;
