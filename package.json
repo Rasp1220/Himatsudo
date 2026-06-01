@@ -1,0 +1,11 @@
+{
+  "name": "himatsudo",
+  "private": true,
+  "scripts": {
+    "build:css": "sass resources/scss/main.scss public/css/main.build.css --style=compressed --no-source-map",
+    "watch:css": "sass resources/scss/main.scss public/css/main.build.css --watch --no-source-map"
+  },
+  "devDependencies": {
+    "sass": "^1.77.0"
+  }
+}

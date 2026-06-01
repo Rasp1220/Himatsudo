@@ -1,0 +1,85 @@
+@use 'variables' as *;
+
+.container {
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: 0 $container-pad;
+}
+
+// ─── Header ──────────────────────────────────────────────────
+.site-header {
+  background: $c-header-bg;
+  color: $c-header-text;
+  padding: 1rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+
+  .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  a { color: $c-header-text; }
+}
+
+.site-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  color: $c-white;
+
+  span {
+    display: inline-block;
+    width: .5em;
+    height: .5em;
+    background: $c-primary;
+    border-radius: 50%;
+    margin-right: .3em;
+    vertical-align: middle;
+  }
+}
+
+.site-nav {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+
+  a {
+    font-size: .9rem;
+    font-weight: 600;
+    opacity: .85;
+    transition: opacity .2s;
+
+    &:hover {
+      opacity: 1;
+      text-decoration: none;
+      color: $c-primary;
+    }
+  }
+}
+
+// ─── Main ─────────────────────────────────────────────────────
+.main-content {
+  padding: 2.5rem 0;
+  min-height: calc(100vh - 120px);
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  padding-bottom: .75rem;
+  border-bottom: 3px solid $c-primary;
+  color: $c-text;
+}
+
+// ─── Footer ──────────────────────────────────────────────────
+.site-footer {
+  background: $c-footer-bg;
+  color: $c-footer-text;
+  text-align: center;
+  padding: 2rem 0;
+  margin-top: 4rem;
+  font-size: .875rem;
+  border-top: 3px solid $c-primary;
+}

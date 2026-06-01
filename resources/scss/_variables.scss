@@ -1,0 +1,38 @@
+// ─── 水色テーマ (Water-blue theme) ───────────────────────────
+$c-primary:        #29aae1;   // 水色 core
+$c-primary-dark:   #1a7ab5;
+$c-primary-hover:  #1e96d1;
+$c-primary-light:  #d6eaf8;   // very pale sky
+$c-primary-xlight: #ebf5fb;
+
+$c-bg:             #eaf6fd;   // page background
+$c-header-bg:      #1a3a5c;   // deep navy
+$c-header-text:    #ffffff;
+$c-footer-bg:      #1a3a5c;
+$c-footer-text:    #9ec9e4;
+
+$c-text:           #1e3a4a;
+$c-text-muted:     #5d7f94;
+$c-border:         #a9d4ec;
+$c-border-light:   #d6eaf8;
+$c-white:          #ffffff;
+$c-shadow:         rgba(41, 170, 225, 0.12);
+
+// Badge colors
+$c-badge-default:  #d6eaf8;
+$c-badge-text:     #1a5276;
+$c-badge-youtube:  #fde8e8;
+$c-badge-youtube-text: #922b21;
+$c-badge-blog:     #d5f5e3;
+$c-badge-blog-text: #1d6a3d;
+
+// ─── Typography ──────────────────────────────────────────────
+$font-base: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+
+// ─── Layout ──────────────────────────────────────────────────
+$container-max: 1100px;
+$container-pad: 1.25rem;
+
+// ─── Breakpoints ─────────────────────────────────────────────
+$bp-tablet: 768px;
+$bp-mobile: 480px;

@@ -5,6 +5,9 @@
 # Composer
 vendor/
 
+# Node
+node_modules/
+
 # BearSunday runtime cache
 var/tmp/
 

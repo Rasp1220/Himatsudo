@@ -1,0 +1,26 @@
+@use 'variables' as *;
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: $font-base;
+  color: $c-text;
+  background: $c-bg;
+  line-height: 1.7;
+}
+
+a {
+  color: $c-primary-dark;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}

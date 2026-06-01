@@ -56,39 +56,6 @@ if (empty($categories_with_articles)):
 </section>
 <?php endforeach; ?>
 
-<style>
-.cat-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
-.cat-title  { font-size:1.25rem; font-weight:700; }
-.cat-more   { font-size:.875rem; color:#2563eb; font-weight:600; }
-.cat-more:hover { text-decoration:underline; }
-
-.carousel { position:relative; display:flex; align-items:center; gap:.5rem; }
-.carousel-viewport { overflow:hidden; flex:1; }
-.carousel-track { display:flex; gap:1rem; transition:transform .35s ease; will-change:transform; }
-
-.carousel-card { flex:0 0 calc(33.333% - .667rem); min-width:0; }
-@media(max-width:768px){ .carousel-card { flex:0 0 calc(50% - .5rem); } }
-@media(max-width:480px){ .carousel-card { flex:0 0 100%; } }
-
-.carousel-card-link { display:block; text-decoration:none; color:inherit; background:#fff;
-    border-radius:.5rem; box-shadow:0 1px 3px rgba(0,0,0,.1); overflow:hidden;
-    transition:transform .2s; }
-.carousel-card-link:hover { transform:translateY(-3px); }
-
-.carousel-thumb img { width:100%; height:180px; object-fit:cover; display:block; }
-.carousel-no-thumb  { width:100%; height:180px; background:#e2e8f0; }
-
-.carousel-info  { padding:.75rem; }
-.carousel-title { font-size:.9rem; font-weight:600; line-height:1.4; margin-bottom:.4rem;
-    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.carousel-date  { font-size:.75rem; color:#64748b; }
-
-.carousel-btn { flex-shrink:0; width:2rem; height:2rem; border-radius:50%; border:1px solid #e2e8f0;
-    background:#fff; font-size:1.25rem; line-height:1; cursor:pointer; color:#334155;
-    box-shadow:0 1px 2px rgba(0,0,0,.1); display:flex; align-items:center; justify-content:center; }
-.carousel-btn:hover { background:#f1f5f9; }
-</style>
-
 <script>
 (function() {
     var states = {};
