@@ -20,14 +20,14 @@
 mysql -u root -p -e "CREATE DATABASE himatsudo CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 
 # Run migrations (in order)
-mysql -u root -p himatsudo < database/migrations/001_create_users_table.sql
-mysql -u root -p himatsudo < database/migrations/002_create_categories_table.sql
-mysql -u root -p himatsudo < database/migrations/003_create_articles_table.sql
-mysql -u root -p himatsudo < database/migrations/004_create_refresh_tokens_table.sql
+mysql -u root -p himatsudo < var/db/migrations/001_create_users_table.sql
+mysql -u root -p himatsudo < var/db/migrations/002_create_categories_table.sql
+mysql -u root -p himatsudo < var/db/migrations/003_create_articles_table.sql
+mysql -u root -p himatsudo < var/db/migrations/004_create_refresh_tokens_table.sql
 
 # Seed initial data
-mysql -u root -p himatsudo < database/seeds/001_seed_admin_user.sql
-mysql -u root -p himatsudo < database/seeds/002_seed_default_categories.sql
+mysql -u root -p himatsudo < var/db/seeds/001_seed_admin_user.sql
+mysql -u root -p himatsudo < var/db/seeds/002_seed_default_categories.sql
 ```
 
 ---
