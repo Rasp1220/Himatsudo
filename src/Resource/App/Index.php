@@ -31,8 +31,8 @@ class Index extends ResourceObject
 
         $this->body = [
             'latest_articles'          => $this->articleService->getLatest(20),
-            'regular_articles'         => $this->articleService->getLatestExcludeType('youtube', 20),
             'categories_with_articles' => $categoriesWithArticles,
+            'categories'               => $categories,
             'page_title'               => 'ホーム',
         ];
 

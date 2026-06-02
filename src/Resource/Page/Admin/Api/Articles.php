@@ -43,9 +43,13 @@ class Articles extends ResourceObject
     ): static {
         $data = array_filter(compact(
             'title', 'slug', 'author_id', 'status', 'content', 'blocks', 'excerpt',
-            'eye_catch_image', 'category_id', 'youtube_url', 'youtube_video_id', 'youtube_thumbnail',
+            'eye_catch_image', 'youtube_url', 'youtube_video_id', 'youtube_thumbnail',
             'published_at'
         ), fn($v) => $v !== null && $v !== '');
+        // category_id=0 means "no category" (CMS sends 0 when unselected)
+        if ($category_id !== null) {
+            $data['category_id'] = $category_id === 0 ? null : $category_id;
+        }
         $this->code = 201;
         $this->body = $this->articleService->create($data);
         return $this;

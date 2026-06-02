@@ -14,7 +14,7 @@ class Index extends ResourceObject
     {
         $ro = $this->resource->get->uri('app://self/index')->eager->request();
 
-        $this->body = $ro->body + ['_template' => 'index'];
+        $this->body = $ro->body;
         return $this;
     }
 }

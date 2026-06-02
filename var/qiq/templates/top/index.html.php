@@ -1,35 +1,37 @@
 <?php
 /**
- * @var array<int,array<string,mixed>>                                                  $latest_articles
- * @var array<int,array<string,mixed>>                                                  $regular_articles
+ * @var array<int,array<string,mixed>>                                                   $latest_articles
  * @var array<int,array{category:array<string,mixed>,articles:array<int,array<string,mixed>>}> $categories_with_articles
+ * @var array<int,array<string,mixed>>                                                   $categories
  */
 $this->setLayout('layout');
 $this->page_title = 'ホーム';
 
-// ─── セクション一覧を組み立て ─────────────────────────────────
-$sections = [];
-
-if (!empty($latest_articles)) {
-    $sections[] = ['title' => '新着記事', 'badge' => '',     'uid' => 'swiper-latest',  'articles' => $latest_articles,  'href' => '/articles'];
-}
-if (!empty($regular_articles)) {
-    $sections[] = ['title' => '通常記事', 'badge' => 'blog', 'uid' => 'swiper-regular', 'articles' => $regular_articles, 'href' => '/articles'];
-}
+// カテゴリID → 記事配列 のマップを作る
+$articlesByCategory = [];
 foreach ($categories_with_articles as $group) {
-    $cat      = $group['category'];
+    $articlesByCategory[(int) $group['category']['id']] = $group['articles'];
+}
+
+// セクション一覧を組み立て（カテゴリが 0 件でも新着は常に表示）
+$sections = [];
+$sections[] = [
+    'title'    => '新着記事',
+    'badge'    => '',
+    'uid'      => 'swiper-latest',
+    'articles' => $latest_articles,
+    'href'     => '/articles',
+];
+foreach ($categories as $cat) {
     $sections[] = [
         'title'    => $cat['name'],
         'badge'    => $cat['type'] ?? '',
         'uid'      => 'swiper-cat-' . (int) $cat['id'],
-        'articles' => $group['articles'],
+        'articles' => $articlesByCategory[(int) $cat['id']] ?? [],
         'href'     => '/articles?category_id=' . (int) $cat['id'],
     ];
 }
-
-if (empty($sections)): ?>
-<p style="color:#64748b;padding:3rem 0;text-align:center">まだ記事がありません。</p>
-<?php return; endif; ?>
+?>
 
 <?php foreach ($sections as $s): ?>
 <section class="cat-section">
@@ -43,6 +45,11 @@ if (empty($sections)): ?>
         <button class="cat-swiper-btn cat-swiper-prev" data-target="<?= $this->h($s['uid']) ?>" aria-label="前へ">&#8249;</button>
         <div class="swiper cat-swiper" id="<?= $this->h($s['uid']) ?>">
             <div class="swiper-wrapper">
+                <?php if (empty($s['articles'])): ?>
+                <div class="swiper-slide swiper-slide--empty">
+                    <p class="no-articles-msg">まだ記事がありません</p>
+                </div>
+                <?php else: ?>
                 <?php foreach ($s['articles'] as $a):
                     $thumb = $a['eye_catch_image'] ?? $a['youtube_thumbnail'] ?? null;
                     $date  = $a['published_at'] ?? $a['created_at'] ?? null;
@@ -65,6 +72,7 @@ if (empty($sections)): ?>
                     </a>
                 </div>
                 <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </div>
         <button class="cat-swiper-btn cat-swiper-next" data-target="<?= $this->h($s['uid']) ?>" aria-label="次へ">&#8250;</button>
@@ -75,6 +83,7 @@ if (empty($sections)): ?>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.cat-swiper').forEach(function (el) {
+        if (el.querySelector('.swiper-slide--empty')) return;
         var outer = el.closest('.cat-swiper-outer');
         new Swiper(el, {
             grabCursor: true,

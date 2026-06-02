@@ -15,7 +15,7 @@ class Articles extends ResourceObject
         $query = array_filter(['page' => $page, 'category_id' => $category_id, 'per_page' => $per_page], fn($v) => $v !== null);
         $ro    = $this->resource->get->uri('app://self/articles')->withQuery($query)->eager->request();
 
-        $this->body = $ro->body + ['_template' => 'articles/list'];
+        $this->body = $ro->body;
         return $this;
     }
 }

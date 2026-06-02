@@ -126,3 +126,15 @@
   font-size: .7rem;
   color: $c-text-muted;
 }
+
+// ─── 記事なし状態 ─────────────────────────────────────────────
+.swiper-slide--empty {
+  width: 100% !important;
+}
+
+.no-articles-msg {
+  padding: 2rem 0;
+  color: $c-text-muted;
+  font-size: .875rem;
+  text-align: center;
+}
