@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import { RouterView, useRoute } from 'vue-router'
+import AppHeader from './AppHeader.vue'
+import AppSidebar from './AppSidebar.vue'
+
+const route = useRoute()
+</script>
+
 <template>
   <div class="flex h-screen bg-gray-50 overflow-hidden">
     <AppSidebar />
@@ -12,11 +20,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { RouterView, useRoute } from 'vue-router'
-import AppHeader from './AppHeader.vue'
-import AppSidebar from './AppSidebar.vue'
-
-const route = useRoute()
-</script>

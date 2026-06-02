@@ -1,3 +1,77 @@
+<script setup lang="ts">
+import { reactive, ref, onMounted } from 'vue'
+import { useCategoriesStore } from '@/stores/categories'
+import type { Category } from '@/types'
+import DataTable from '@/components/ui/DataTable.vue'
+import ConfirmModal from '@/components/ui/ConfirmModal.vue'
+
+const categoriesStore = useCategoriesStore()
+
+const columns = [
+  { key: 'name', label: 'カテゴリ名' },
+  { key: 'slug', label: 'スラッグ' },
+  { key: 'type', label: 'タイプ', width: '100px' },
+  { key: 'sort_order', label: '表示順', width: '80px' },
+  { key: 'actions', label: '', width: '100px' },
+]
+
+const showModal = ref(false)
+const editTarget = ref<Category | null>(null)
+const modalLoading = ref(false)
+const modalError = ref('')
+const modalForm = reactive({ name: '', slug: '', type: 'custom' as Category['type'], sort_order: 0 })
+
+const showDeleteModal = ref(false)
+const deleteTarget = ref<Category | null>(null)
+
+function typeLabel(type: string): string {
+  const map: Record<string, string> = { normal: '通常', blog: 'ブログ', youtube: 'YouTube', custom: 'カスタム' }
+  return map[type] ?? type
+}
+
+function openCreate() {
+  editTarget.value = null
+  Object.assign(modalForm, { name: '', slug: '', type: 'custom', sort_order: 0 })
+  showModal.value = true
+}
+
+function openEdit(c: Category) {
+  editTarget.value = c
+  Object.assign(modalForm, { name: c.name, slug: c.slug, type: c.type, sort_order: c.sort_order })
+  showModal.value = true
+}
+
+async function handleSave() {
+  modalLoading.value = true
+  modalError.value = ''
+  try {
+    if (editTarget.value) {
+      await categoriesStore.update(editTarget.value.id, modalForm)
+    } else {
+      await categoriesStore.create(modalForm)
+    }
+    showModal.value = false
+  } catch {
+    modalError.value = '保存に失敗しました。スラッグが重複していないか確認してください。'
+  } finally {
+    modalLoading.value = false
+  }
+}
+
+function confirmDelete(c: Category) {
+  deleteTarget.value = c
+  showDeleteModal.value = true
+}
+
+async function executeDelete() {
+  if (!deleteTarget.value) return
+  await categoriesStore.remove(deleteTarget.value.id)
+  deleteTarget.value = null
+}
+
+onMounted(() => categoriesStore.fetchAll())
+</script>
+
 <template>
   <div class="max-w-2xl">
     <div class="flex items-center justify-between mb-6">
@@ -87,77 +161,3 @@
     />
   </div>
 </template>
-
-<script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
-import { useCategoriesStore } from '@/stores/categories'
-import type { Category } from '@/types'
-import DataTable from '@/components/ui/DataTable.vue'
-import ConfirmModal from '@/components/ui/ConfirmModal.vue'
-
-const categoriesStore = useCategoriesStore()
-
-const columns = [
-  { key: 'name', label: 'カテゴリ名' },
-  { key: 'slug', label: 'スラッグ' },
-  { key: 'type', label: 'タイプ', width: '100px' },
-  { key: 'sort_order', label: '表示順', width: '80px' },
-  { key: 'actions', label: '', width: '100px' },
-]
-
-const showModal = ref(false)
-const editTarget = ref<Category | null>(null)
-const modalLoading = ref(false)
-const modalError = ref('')
-const modalForm = reactive({ name: '', slug: '', type: 'custom' as Category['type'], sort_order: 0 })
-
-const showDeleteModal = ref(false)
-const deleteTarget = ref<Category | null>(null)
-
-function typeLabel(type: string): string {
-  const map: Record<string, string> = { normal: '通常', blog: 'ブログ', youtube: 'YouTube', custom: 'カスタム' }
-  return map[type] ?? type
-}
-
-function openCreate() {
-  editTarget.value = null
-  Object.assign(modalForm, { name: '', slug: '', type: 'custom', sort_order: 0 })
-  showModal.value = true
-}
-
-function openEdit(c: Category) {
-  editTarget.value = c
-  Object.assign(modalForm, { name: c.name, slug: c.slug, type: c.type, sort_order: c.sort_order })
-  showModal.value = true
-}
-
-async function handleSave() {
-  modalLoading.value = true
-  modalError.value = ''
-  try {
-    if (editTarget.value) {
-      await categoriesStore.update(editTarget.value.id, modalForm)
-    } else {
-      await categoriesStore.create(modalForm)
-    }
-    showModal.value = false
-  } catch {
-    modalError.value = '保存に失敗しました。スラッグが重複していないか確認してください。'
-  } finally {
-    modalLoading.value = false
-  }
-}
-
-function confirmDelete(c: Category) {
-  deleteTarget.value = c
-  showDeleteModal.value = true
-}
-
-async function executeDelete() {
-  if (!deleteTarget.value) return
-  await categoriesStore.remove(deleteTarget.value.id)
-  deleteTarget.value = null
-}
-
-onMounted(() => categoriesStore.fetchAll())
-</script>

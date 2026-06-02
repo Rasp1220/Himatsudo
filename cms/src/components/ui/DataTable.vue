@@ -1,3 +1,17 @@
+<script setup lang="ts">
+interface Column {
+  key: string
+  label: string
+  width?: string
+}
+
+defineProps<{
+  columns: Column[]
+  rows: unknown[]
+  loading?: boolean
+}>()
+</script>
+
 <template>
   <div class="overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-200">
@@ -44,17 +58,3 @@
     </table>
   </div>
 </template>
-
-<script setup lang="ts">
-interface Column {
-  key: string
-  label: string
-  width?: string
-}
-
-defineProps<{
-  columns: Column[]
-  rows: unknown[]
-  loading?: boolean
-}>()
-</script>

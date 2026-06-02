@@ -1,3 +1,27 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+
+const props = defineProps<{ currentPage: number; lastPage: number }>()
+defineEmits<{ change: [page: number] }>()
+
+const pages = computed(() => {
+  const result: (number | string)[] = []
+  const range = 2
+  for (let i = 1; i <= props.lastPage; i++) {
+    if (
+      i === 1 ||
+      i === props.lastPage ||
+      (i >= props.currentPage - range && i <= props.currentPage + range)
+    ) {
+      result.push(i)
+    } else if (result[result.length - 1] !== '...') {
+      result.push('...')
+    }
+  }
+  return result
+})
+</script>
+
 <template>
   <div v-if="lastPage > 1" class="flex items-center gap-1 justify-center mt-6">
     <button
@@ -31,27 +55,3 @@
     </button>
   </div>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-
-const props = defineProps<{ currentPage: number; lastPage: number }>()
-defineEmits<{ change: [page: number] }>()
-
-const pages = computed(() => {
-  const result: (number | string)[] = []
-  const range = 2
-  for (let i = 1; i <= props.lastPage; i++) {
-    if (
-      i === 1 ||
-      i === props.lastPage ||
-      (i >= props.currentPage - range && i <= props.currentPage + range)
-    ) {
-      result.push(i)
-    } else if (result[result.length - 1] !== '...') {
-      result.push('...')
-    }
-  }
-  return result
-})
-</script>

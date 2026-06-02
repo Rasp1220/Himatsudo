@@ -1,3 +1,30 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
+import { articlesApi, categoriesApi, usersApi } from '@/api/client'
+
+const statCards = ref([
+  { icon: '📝', label: '記事数', value: '—' },
+  { icon: '🗂️', label: 'カテゴリ数', value: '—' },
+  { icon: '👤', label: 'ユーザー数', value: '—' },
+])
+
+onMounted(async () => {
+  try {
+    const [articles, categories, users] = await Promise.all([
+      articlesApi.list({ per_page: 1 }),
+      categoriesApi.list(),
+      usersApi.list(1, 1),
+    ])
+    statCards.value[0].value = String(articles.total)
+    statCards.value[1].value = String(categories.length)
+    statCards.value[2].value = String(users.total)
+  } catch {
+    // silently ignore dashboard load failures
+  }
+})
+</script>
+
 <template>
   <div>
     <h2 class="text-xl font-bold text-gray-800 mb-6">ダッシュボード</h2>
@@ -41,30 +68,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { RouterLink } from 'vue-router'
-import { articlesApi, categoriesApi, usersApi } from '@/api/client'
-
-const statCards = ref([
-  { icon: '📝', label: '記事数', value: '—' },
-  { icon: '🗂️', label: 'カテゴリ数', value: '—' },
-  { icon: '👤', label: 'ユーザー数', value: '—' },
-])
-
-onMounted(async () => {
-  try {
-    const [articles, categories, users] = await Promise.all([
-      articlesApi.list({ per_page: 1 }),
-      categoriesApi.list(),
-      usersApi.list(1, 1),
-    ])
-    statCards.value[0].value = String(articles.total)
-    statCards.value[1].value = String(categories.length)
-    statCards.value[2].value = String(users.total)
-  } catch {
-    // silently ignore dashboard load failures
-  }
-})
-</script>

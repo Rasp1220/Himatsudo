@@ -1,12 +1,3 @@
-<template>
-  <Editor
-    v-model="localValue"
-    license-key="gpl"
-    :init="editorConfig"
-    :disabled="disabled"
-  />
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
 import Editor from '@tinymce/tinymce-vue'
@@ -86,3 +77,12 @@ const editorConfig = computed(() => ({
   promotion: false,
 }))
 </script>
+
+<template>
+  <Editor
+    v-model="localValue"
+    license-key="gpl"
+    :init="editorConfig"
+    :disabled="disabled"
+  />
+</template>

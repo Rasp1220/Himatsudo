@@ -1,24 +1,3 @@
-<template>
-  <div class="border border-gray-300 rounded-md overflow-hidden">
-    <div class="flex flex-wrap gap-1 p-2 bg-gray-50 border-b border-gray-200">
-      <button
-        v-for="btn in editorButtons"
-        :key="btn.label"
-        type="button"
-        @click="btn.action()"
-        :title="btn.label"
-        class="px-2 py-1 text-xs font-medium rounded hover:bg-gray-200 transition-colors"
-        :class="btn.active?.() ? 'bg-gray-200' : ''"
-      >{{ btn.icon }}</button>
-    </div>
-    <EditorContent
-      v-if="editor"
-      :editor="editor"
-      class="min-h-32 p-3 text-sm focus:outline-none prose prose-sm max-w-none"
-    />
-  </div>
-</template>
-
 <script setup lang="ts">
 import { onBeforeUnmount, watch } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
@@ -58,3 +37,24 @@ const editorButtons = [
 
 onBeforeUnmount(() => editor.value?.destroy())
 </script>
+
+<template>
+  <div class="border border-gray-300 rounded-md overflow-hidden">
+    <div class="flex flex-wrap gap-1 p-2 bg-gray-50 border-b border-gray-200">
+      <button
+        v-for="btn in editorButtons"
+        :key="btn.label"
+        type="button"
+        @click="btn.action()"
+        :title="btn.label"
+        class="px-2 py-1 text-xs font-medium rounded hover:bg-gray-200 transition-colors"
+        :class="btn.active?.() ? 'bg-gray-200' : ''"
+      >{{ btn.icon }}</button>
+    </div>
+    <EditorContent
+      v-if="editor"
+      :editor="editor"
+      class="min-h-32 p-3 text-sm focus:outline-none prose prose-sm max-w-none"
+    />
+  </div>
+</template>

@@ -1,3 +1,21 @@
+<script setup lang="ts">
+defineProps<{
+  modelValue: boolean
+  title?: string
+  message?: string
+  confirmLabel?: string
+}>()
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean]
+  confirm: []
+}>()
+
+function handleConfirm() {
+  emit('confirm')
+  emit('update:modelValue', false)
+}
+</script>
+
 <template>
   <Teleport to="body">
     <div
@@ -26,21 +44,3 @@
     </div>
   </Teleport>
 </template>
-
-<script setup lang="ts">
-defineProps<{
-  modelValue: boolean
-  title?: string
-  message?: string
-  confirmLabel?: string
-}>()
-const emit = defineEmits<{
-  'update:modelValue': [value: boolean]
-  confirm: []
-}>()
-
-function handleConfirm() {
-  emit('confirm')
-  emit('update:modelValue', false)
-}
-</script>

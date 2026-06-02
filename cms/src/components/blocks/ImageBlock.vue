@@ -1,3 +1,17 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import type { ImageBlock } from '@/types'
+
+const props = defineProps<{ modelValue: ImageBlock }>()
+const emit = defineEmits<{ (e: 'update:modelValue', v: ImageBlock): void }>()
+
+const imageError = ref(false)
+
+function update<K extends keyof ImageBlock>(key: K, value: ImageBlock[K]) {
+  emit('update:modelValue', { ...props.modelValue, [key]: value })
+}
+</script>
+
 <template>
   <div class="space-y-3">
     <div>
@@ -42,17 +56,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue'
-import type { ImageBlock } from '@/types'
-
-const props = defineProps<{ modelValue: ImageBlock }>()
-const emit = defineEmits<{ (e: 'update:modelValue', v: ImageBlock): void }>()
-
-const imageError = ref(false)
-
-function update<K extends keyof ImageBlock>(key: K, value: ImageBlock[K]) {
-  emit('update:modelValue', { ...props.modelValue, [key]: value })
-}
-</script>
