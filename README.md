@@ -7,7 +7,7 @@ A full-stack article CMS platform consisting of:
 | REST API | PHP 8.1+ · BearSunday · MySQL | `api/` |
 | Frontend (public site) | PHP 8.1+ · BearSunday · Qiq templates | `frontend/` |
 | CMS (admin panel) | Vue 3 · TypeScript · Tailwind CSS | `cms/` |
-| Database | MySQL 8.0+ | `database/` |
+| Database | MySQL 8.0+ | `var/db/` |
 
 ---
 
@@ -15,12 +15,12 @@ A full-stack article CMS platform consisting of:
 
 ### 1. Database
 ```bash
-mysql -u root -p < database/migrations/001_create_users_table.sql
-mysql -u root -p < database/migrations/002_create_categories_table.sql
-mysql -u root -p < database/migrations/003_create_articles_table.sql
-mysql -u root -p < database/migrations/004_create_refresh_tokens_table.sql
-mysql -u root -p < database/seeds/001_seed_admin_user.sql
-mysql -u root -p < database/seeds/002_seed_default_categories.sql
+mysql -u root -p < var/db/migrations/001_create_users_table.sql
+mysql -u root -p < var/db/migrations/002_create_categories_table.sql
+mysql -u root -p < var/db/migrations/003_create_articles_table.sql
+mysql -u root -p < var/db/migrations/004_create_refresh_tokens_table.sql
+mysql -u root -p < var/db/seeds/001_seed_admin_user.sql
+mysql -u root -p < var/db/seeds/002_seed_default_categories.sql
 ```
 Default admin: `admin@example.com` / `Admin1234!`
 

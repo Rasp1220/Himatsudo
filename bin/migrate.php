@@ -41,8 +41,8 @@ if ($fresh) {
 }
 
 $dirs = [
-    'migrations' => $root . '/database/migrations',
-    'seeds'      => $root . '/database/seeds',
+    'migrations' => $root . '/var/db/migrations',
+    'seeds'      => $root . '/var/db/seeds',
 ];
 
 foreach ($dirs as $label => $dir) {
