@@ -1,53 +1,70 @@
 <template>
-  <div class="max-w-2xl">
-    <div class="flex items-center gap-4 mb-6">
-      <RouterLink to="/articles" class="text-gray-400 hover:text-gray-600 text-sm">
-        &larr; 記事一覧
-      </RouterLink>
-      <h2 class="text-xl font-bold text-gray-800">
-        {{ isEdit ? 'YouTube記事を編集' : 'YouTube記事を新規作成' }}
-      </h2>
+  <div class="flex flex-col h-full">
+    <!-- ヘッダーバー -->
+    <div class="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-200 flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <RouterLink to="/articles" class="text-gray-400 hover:text-gray-600 text-sm">
+          &larr; 記事一覧
+        </RouterLink>
+        <span class="text-gray-300">|</span>
+        <h2 class="text-base font-bold text-gray-800">
+          {{ isEdit ? 'YouTube記事を編集' : 'YouTube記事を新規作成' }}
+        </h2>
+      </div>
+      <div class="flex items-center gap-2">
+        <p v-if="errorMsg" class="text-sm text-red-600 mr-3">{{ errorMsg }}</p>
+        <button
+          type="button"
+          @click="handleSubmit"
+          :disabled="saving"
+          class="px-5 py-1.5 bg-blue-600 text-white text-sm font-semibold rounded-md hover:bg-blue-700 disabled:opacity-50"
+        >
+          {{ saving ? '保存中…' : (isEdit ? '更新する' : '作成する') }}
+        </button>
+        <RouterLink to="/articles" class="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700">
+          キャンセル
+        </RouterLink>
+      </div>
     </div>
 
-    <form @submit.prevent="handleSubmit" class="space-y-5">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-5 space-y-4">
-        <!-- YouTube URL input -->
+    <!-- メインエリア -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- 左: 設定パネル -->
+      <aside class="w-80 flex-shrink-0 overflow-y-auto border-r border-gray-200 bg-white p-4 space-y-4">
+        <!-- YouTube URL -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">YouTube URL または 動画ID</label>
+          <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">YouTube URL または 動画ID</label>
           <div class="flex gap-2">
             <input
               v-model="youtubeInput"
               class="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="https://www.youtube.com/watch?v=... または dQw4w9WgXcQ"
+              placeholder="https://www.youtube.com/watch?v=..."
             />
             <button
               type="button"
               @click="importYoutube"
               :disabled="importLoading"
-              class="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-md hover:bg-red-700 disabled:opacity-50 whitespace-nowrap"
+              class="px-3 py-2 bg-red-600 text-white text-xs font-semibold rounded-md hover:bg-red-700 disabled:opacity-50 whitespace-nowrap"
             >
-              {{ importLoading ? '取得中…' : '動画情報を取得' }}
+              {{ importLoading ? '取得中…' : '取得' }}
             </button>
           </div>
           <p v-if="importError" class="text-xs text-red-500 mt-1">{{ importError }}</p>
         </div>
 
-        <!-- Preview -->
-        <div v-if="form.youtube_video_id" class="flex gap-4 items-start bg-gray-50 rounded-md p-3">
+        <!-- プレビュー -->
+        <div v-if="form.youtube_video_id" class="bg-gray-50 rounded-md p-3 space-y-2">
           <img
             v-if="form.youtube_thumbnail"
             :src="form.youtube_thumbnail"
             :alt="form.title"
-            class="w-32 rounded object-cover flex-shrink-0"
+            class="w-full rounded object-cover"
           />
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-gray-700 truncate">{{ form.title || '（タイトル未設定）' }}</p>
-            <p class="text-xs text-gray-400 mt-0.5 font-mono">ID: {{ form.youtube_video_id }}</p>
-          </div>
+          <p class="text-xs text-gray-500 font-mono">ID: {{ form.youtube_video_id }}</p>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">タイトル <span class="text-red-500">*</span></label>
+          <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">タイトル <span class="text-red-500">*</span></label>
           <input
             v-model="form.title"
             @input="autoSlug"
@@ -55,8 +72,9 @@
             class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
+
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">スラッグ <span class="text-red-500">*</span></label>
+          <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">スラッグ <span class="text-red-500">*</span></label>
           <input
             v-model="form.slug"
             required
@@ -64,66 +82,65 @@
             class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 font-mono"
           />
         </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">カテゴリ</label>
-            <select v-model="form.category_id" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md">
-              <option :value="youtubeCategory?.id ?? null">
-                {{ youtubeCategory?.name ?? 'YouTube' }}
-              </option>
-              <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">ステータス</label>
-            <select v-model="form.status" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md">
-              <option value="draft">下書き</option>
-              <option value="published">公開</option>
-            </select>
-          </div>
-        </div>
+
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">説明文</label>
-          <textarea
-            v-model="form.content"
-            rows="5"
-            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 resize-y"
-            placeholder="動画の説明・補足テキスト"
+          <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">カテゴリ</label>
+          <select v-model="form.category_id" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md">
+            <option :value="youtubeCategory?.id ?? null">
+              {{ youtubeCategory?.name ?? 'YouTube' }}
+            </option>
+            <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">ステータス</label>
+          <select v-model="form.status" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md">
+            <option value="draft">下書き</option>
+            <option value="published">公開</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">公開日時</label>
+          <input
+            v-model="form.published_at"
+            type="datetime-local"
+            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
+          <p class="text-xs text-gray-400 mt-0.5">空欄の場合は保存時に自動設定</p>
         </div>
+
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">抜粋</label>
+          <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">抜粋</label>
           <textarea
             v-model="form.excerpt"
-            rows="2"
+            rows="3"
             class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none resize-none"
             placeholder="一覧ページに表示される概要"
           />
         </div>
-      </div>
+      </aside>
 
-      <p v-if="errorMsg" class="text-sm text-red-600 bg-red-50 rounded px-3 py-2">{{ errorMsg }}</p>
-
-      <div class="flex gap-3">
-        <button
-          type="submit"
-          :disabled="saving"
-          class="px-6 py-2 bg-blue-600 text-white text-sm font-semibold rounded-md hover:bg-blue-700 disabled:opacity-50"
-        >
-          {{ saving ? '保存中…' : (isEdit ? '更新する' : '作成する') }}
-        </button>
-        <RouterLink to="/articles" class="px-4 py-2 text-sm text-gray-600 hover:underline">
-          キャンセル
-        </RouterLink>
-      </div>
-    </form>
+      <!-- 右: 説明文 TinyMCE -->
+      <main class="flex-1 overflow-hidden bg-gray-50 p-4 flex flex-col">
+        <label class="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">説明文・補足テキスト</label>
+        <div class="flex-1 min-h-0">
+          <TinyMceEditor
+            v-model="form.content"
+            :height="editorHeight"
+          />
+        </div>
+      </main>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, computed, onMounted } from 'vue'
+import { reactive, ref, computed, onMounted, onUnmounted } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
+import TinyMceEditor from '@/components/TinyMceEditor.vue'
 import { useArticlesStore } from '@/stores/articles'
 import { useCategoriesStore } from '@/stores/categories'
 import { useAuthStore } from '@/stores/auth'
@@ -142,6 +159,7 @@ const errorMsg = ref('')
 const youtubeInput = ref('')
 const importLoading = ref(false)
 const importError = ref('')
+const editorHeight = ref(600)
 
 const form = reactive({
   title: '',
@@ -151,6 +169,7 @@ const form = reactive({
   eye_catch_image: '',
   category_id: null as number | null,
   status: 'draft' as ArticleStatus,
+  published_at: '',
   youtube_url: '',
   youtube_video_id: '',
   youtube_thumbnail: '',
@@ -169,6 +188,20 @@ function autoSlug() {
       .replace(/[^a-z0-9\-]/g, '')
       .slice(0, 80)
   }
+}
+
+function dbToInputDate(dbDate: string | null | undefined): string {
+  if (!dbDate) return ''
+  return dbDate.replace(' ', 'T').substring(0, 16)
+}
+
+function inputToDbDate(inputDate: string): string | null {
+  if (!inputDate) return null
+  return inputDate.replace('T', ' ') + ':00'
+}
+
+function updateEditorHeight() {
+  editorHeight.value = Math.max(400, window.innerHeight - 180)
 }
 
 async function importYoutube() {
@@ -195,15 +228,27 @@ async function handleSubmit() {
   saving.value = true
   errorMsg.value = ''
   try {
-    const payload = {
-      ...form,
-      author_id: auth.user?.id ?? 0,
+    const publishedAt = inputToDbDate(form.published_at)
+    const payload: Record<string, unknown> = {
+      title: form.title,
+      slug: form.slug,
+      content: form.content,
+      excerpt: form.excerpt,
+      eye_catch_image: form.eye_catch_image,
       category_id: form.category_id ?? youtubeCategory.value?.id ?? null,
+      status: form.status,
+      youtube_url: form.youtube_url,
+      youtube_video_id: form.youtube_video_id,
+      youtube_thumbnail: form.youtube_thumbnail,
+      author_id: auth.user?.id ?? 0,
+    }
+    if (publishedAt !== null) {
+      payload.published_at = publishedAt
     }
     if (isEdit.value) {
-      await articlesStore.update(Number(route.params.id), payload)
+      await articlesStore.update(Number(route.params.id), payload as Parameters<typeof articlesStore.update>[1])
     } else {
-      await articlesStore.create(payload)
+      await articlesStore.create(payload as Parameters<typeof articlesStore.create>[0])
     }
     router.push('/articles')
   } catch {
@@ -214,6 +259,9 @@ async function handleSubmit() {
 }
 
 onMounted(async () => {
+  updateEditorHeight()
+  window.addEventListener('resize', updateEditorHeight)
+
   await categoriesStore.fetchAll()
   form.category_id = youtubeCategory.value?.id ?? null
   if (isEdit.value) {
@@ -226,6 +274,7 @@ onMounted(async () => {
       form.excerpt = a.excerpt ?? ''
       form.category_id = a.category_id
       form.status = a.status
+      form.published_at = dbToInputDate(a.published_at)
       form.youtube_url = a.youtube_url ?? ''
       form.youtube_video_id = a.youtube_video_id ?? ''
       form.youtube_thumbnail = a.youtube_thumbnail ?? ''
@@ -233,5 +282,9 @@ onMounted(async () => {
       slugManuallyEdited = true
     }
   }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateEditorHeight)
 })
 </script>

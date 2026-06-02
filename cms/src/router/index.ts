@@ -30,21 +30,25 @@ const routes: RouteRecordRaw[] = [
         path: 'articles/new',
         name: 'ArticleNew',
         component: () => import('@/views/articles/ArticleEditView.vue'),
+        meta: { fullscreen: true },
       },
       {
         path: 'articles/:id/edit',
         name: 'ArticleEdit',
         component: () => import('@/views/articles/ArticleEditView.vue'),
+        meta: { fullscreen: true },
       },
       {
         path: 'articles/youtube/new',
         name: 'YoutubeArticleNew',
         component: () => import('@/views/articles/YoutubeArticleEditView.vue'),
+        meta: { fullscreen: true },
       },
       {
         path: 'articles/youtube/:id/edit',
         name: 'YoutubeArticleEdit',
         component: () => import('@/views/articles/YoutubeArticleEditView.vue'),
+        meta: { fullscreen: true },
       },
       {
         path: 'categories',

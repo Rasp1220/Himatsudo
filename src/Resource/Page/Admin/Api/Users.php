@@ -5,11 +5,11 @@ namespace Himatsudo\Resource\Page\Admin\Api;
 
 use BEAR\Resource\ResourceObject;
 use Himatsudo\Annotation\RequireAuth;
-use Himatsudo\Repository\UserRepository;
+use Himatsudo\Interfaces\UserInterface as UserServiceInterface;
 
 class Users extends ResourceObject
 {
-    public function __construct(private readonly UserRepository $userRepository)
+    public function __construct(private readonly UserServiceInterface $userService)
     {
     }
 
@@ -21,15 +21,7 @@ class Users extends ResourceObject
             $this->body = ['error' => 'Forbidden'];
             return $this;
         }
-        $items = $this->userRepository->findAll($page, $per_page);
-        $total = $this->userRepository->count();
-        $this->body = [
-            'items'     => $items,
-            'total'     => $total,
-            'page'      => $page,
-            'per_page'  => $per_page,
-            'last_page' => (int) ceil($total / $per_page),
-        ];
+        $this->body = $this->userService->getList($page, $per_page);
         return $this;
     }
 
@@ -46,9 +38,8 @@ class Users extends ResourceObject
             $this->body = ['error' => 'Invalid role'];
             return $this;
         }
-        $id = $this->userRepository->create($name, $email, $password, $role);
         $this->code = 201;
-        $this->body = $this->userRepository->findById($id);
+        $this->body = $this->userService->create($name, $email, $password, $role);
         return $this;
     }
 }

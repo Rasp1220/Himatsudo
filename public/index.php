@@ -28,6 +28,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $uri   = $_SERVER['REQUEST_URI'] ?? '/';
 $isApi = str_starts_with(strtok($uri, '?'), '/admin/api/');
 
+// Route /articles/{slug} → Article::onGet(slug: ...)
+if (!$isApi) {
+    $path = strtok($uri, '?');
+    if (preg_match('#^/articles/([a-z0-9][a-z0-9\-]*)$#', (string) $path, $m)) {
+        $_SERVER['REQUEST_URI'] = '/article?slug=' . urlencode($m[1]);
+        $_GET['slug'] = $m[1];
+    }
+}
+
 if (PHP_SAPI === 'cli-server') {
     $context = $isApi ? 'api-app' : 'html-app';
 } else {

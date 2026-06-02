@@ -5,17 +5,17 @@ namespace Himatsudo\Resource\Page\Admin\Api;
 
 use BEAR\Resource\ResourceObject;
 use Himatsudo\Annotation\RequireAuth;
-use Himatsudo\Repository\ArticleRepository;
+use Himatsudo\Interfaces\ArticleInterface as ArticleServiceInterface;
 
 class Article extends ResourceObject
 {
-    public function __construct(private readonly ArticleRepository $articleRepository)
+    public function __construct(private readonly ArticleServiceInterface $articleService)
     {
     }
 
     public function onGet(int $id): static
     {
-        $article = $this->articleRepository->findById($id);
+        $article = $this->articleService->getById($id);
         if ($article === null) {
             $this->code = 404;
             $this->body = ['error' => 'Article not found'];
@@ -38,35 +38,35 @@ class Article extends ResourceObject
         ?int    $category_id   = null,
         ?string $youtube_url   = null,
         ?string $youtube_video_id  = null,
-        ?string $youtube_thumbnail = null
+        ?string $youtube_thumbnail = null,
+        ?string $published_at  = null
     ): static {
-        if ($this->articleRepository->findById($id) === null) {
+        if ($this->articleService->getById($id) === null) {
             $this->code = 404;
             $this->body = ['error' => 'Article not found'];
             return $this;
         }
         $data = array_filter(compact(
             'title', 'slug', 'status', 'content', 'blocks', 'excerpt', 'eye_catch_image',
-            'youtube_url', 'youtube_video_id', 'youtube_thumbnail'
-        ), fn($v) => $v !== null);
+            'youtube_url', 'youtube_video_id', 'youtube_thumbnail', 'published_at'
+        ), fn($v) => $v !== null && $v !== '');
         // category_id=0 means "explicitly clear"; any other non-null int sets the category
         if ($category_id !== null) {
             $data['category_id'] = $category_id === 0 ? null : $category_id;
         }
-        $this->articleRepository->update($id, $data);
-        $this->body = $this->articleRepository->findById($id);
+        $this->body = $this->articleService->update($id, $data);
         return $this;
     }
 
     #[RequireAuth]
     public function onDelete(int $id): static
     {
-        if ($this->articleRepository->findById($id) === null) {
+        if ($this->articleService->getById($id) === null) {
             $this->code = 404;
             $this->body = ['error' => 'Article not found'];
             return $this;
         }
-        $this->articleRepository->delete($id);
+        $this->articleService->delete($id);
         $this->code = 204;
         $this->body = null;
         return $this;

@@ -8,13 +8,15 @@ use BEAR\Package\PackageModule;
 use Himatsudo\Annotation\RequireAuth;
 use Himatsudo\Interceptor\AuthInterceptor;
 use Himatsudo\Auth\JwtService;
-use Himatsudo\Repository\ArticleRepository;
-use Himatsudo\Repository\CategoryRepository;
-use Himatsudo\Repository\RefreshTokenRepository;
-use Himatsudo\Repository\UserRepository;
+use Himatsudo\Interfaces\ArticleInterface;
+use Himatsudo\Interfaces\CategoryInterface;
+use Himatsudo\Interfaces\UserInterface;
+use Himatsudo\Service\ArticleService;
+use Himatsudo\Service\CategoryService;
+use Himatsudo\Service\RefreshTokenService;
+use Himatsudo\Service\UserService;
 use Himatsudo\Service\YoutubeService;
 use Ray\AuraSqlModule\AuraSqlModule;
-use Ray\Di\AbstractModule;
 
 class AppModule extends AbstractAppModule
 {
@@ -28,15 +30,15 @@ class AppModule extends AbstractAppModule
         $password = (string) ($_ENV['DB_PASSWORD'] ?? '');
         $this->install(new AuraSqlModule($dsn, $user, $password));
 
-        // Services
+        // Standalone services
         $this->bind(JwtService::class);
-
-        // Repositories
-        $this->bind(UserRepository::class);
-        $this->bind(CategoryRepository::class);
-        $this->bind(ArticleRepository::class);
-        $this->bind(RefreshTokenRepository::class);
         $this->bind(YoutubeService::class);
+        $this->bind(RefreshTokenService::class);
+
+        // Interface bindings
+        $this->bind(ArticleInterface::class)->to(ArticleService::class);
+        $this->bind(CategoryInterface::class)->to(CategoryService::class);
+        $this->bind(UserInterface::class)->to(UserService::class);
 
         // Auth interceptor on methods annotated with #[RequireAuth]
         $this->bindInterceptor(

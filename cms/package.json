@@ -13,14 +13,10 @@
   "dependencies": {
     "axios": "^1.7.2",
     "pinia": "^2.1.7",
+    "tinymce": "^7.3.0",
+    "@tinymce/tinymce-vue": "^6.0.1",
     "vue": "^3.4.31",
-    "vue-router": "^4.4.0",
-    "@tiptap/vue-3": "^2.4.0",
-    "@tiptap/pm": "^2.4.0",
-    "@tiptap/starter-kit": "^2.4.0",
-    "@tiptap/extension-image": "^2.4.0",
-    "@tiptap/extension-link": "^2.4.0",
-    "@tiptap/extension-placeholder": "^2.4.0"
+    "vue-router": "^4.4.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",
@@ -30,6 +26,7 @@
     "tailwindcss": "^3.4.7",
     "typescript": "^5.5.3",
     "vite": "^5.3.4",
+    "vite-plugin-static-copy": "^1.0.6",
     "vue-tsc": "^2.0.29"
   }
 }

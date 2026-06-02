@@ -5,11 +5,11 @@ namespace Himatsudo\Resource\Page\Admin\Api;
 
 use BEAR\Resource\ResourceObject;
 use Himatsudo\Annotation\RequireAuth;
-use Himatsudo\Repository\UserRepository;
+use Himatsudo\Interfaces\UserInterface as UserServiceInterface;
 
 class User extends ResourceObject
 {
-    public function __construct(private readonly UserRepository $userRepository)
+    public function __construct(private readonly UserServiceInterface $userService)
     {
     }
 
@@ -21,7 +21,7 @@ class User extends ResourceObject
             $this->body = ['error' => 'Forbidden'];
             return $this;
         }
-        $user = $this->userRepository->findById($id);
+        $user = $this->userService->getById($id);
         if ($user === null) {
             $this->code = 404;
             $this->body = ['error' => 'User not found'];
@@ -39,7 +39,7 @@ class User extends ResourceObject
             $this->body = ['error' => 'Forbidden'];
             return $this;
         }
-        if ($this->userRepository->findById($id) === null) {
+        if ($this->userService->getById($id) === null) {
             $this->code = 404;
             $this->body = ['error' => 'User not found'];
             return $this;
@@ -50,8 +50,7 @@ class User extends ResourceObject
             $this->body = ['error' => 'Invalid role'];
             return $this;
         }
-        $this->userRepository->update($id, $data);
-        $this->body = $this->userRepository->findById($id);
+        $this->body = $this->userService->update($id, $data);
         return $this;
     }
 
@@ -63,12 +62,12 @@ class User extends ResourceObject
             $this->body = ['error' => 'Forbidden'];
             return $this;
         }
-        if ($this->userRepository->findById($id) === null) {
+        if ($this->userService->getById($id) === null) {
             $this->code = 404;
             $this->body = ['error' => 'User not found'];
             return $this;
         }
-        $this->userRepository->delete($id);
+        $this->userService->delete($id);
         $this->code = 204;
         $this->body = null;
         return $this;
