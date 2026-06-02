@@ -68,11 +68,14 @@
   .site-nav-desktop {
     display: none;
   }
+  .hamburger-btn {
+    display: flex;
+  }
 }
 
 // ─── Hamburger button ─────────────────────────────────────────
 .hamburger-btn {
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: center;
   gap: 5px;
