@@ -60,7 +60,7 @@ if (empty($categories_with_articles)):
 <?php endforeach; ?>
 
 <script>
-(function () {
+document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.cat-swiper').forEach(function (el) {
         var outer = el.closest('.cat-swiper-outer');
         new Swiper(el, {
@@ -77,5 +77,5 @@ if (empty($categories_with_articles)):
             },
         });
     });
-}());
+});
 </script>
