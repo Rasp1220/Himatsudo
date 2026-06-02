@@ -11,7 +11,7 @@ class ApiModule extends AbstractAppModule
 {
     protected function configure(): void
     {
-        $this->bind()->annotatedWith(DefaultSchemeHost::class)->toInstance('app://self');
-        $this->bind()->annotatedWith(ContextScheme::class)->toInstance('app://self');
+        $this->bind()->annotatedWith(DefaultSchemeHost::class)->toInstance('page://self');
+        $this->bind()->annotatedWith(ContextScheme::class)->toInstance('page://self');
     }
 }

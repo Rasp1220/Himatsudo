@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Himatsudo\Resource\App\Admin\Api\Articles;
+namespace Himatsudo\Resource\Page\Admin\Api\Articles;
 
 use BEAR\Resource\ResourceObject;
 use Himatsudo\Annotation\RequireAuth;

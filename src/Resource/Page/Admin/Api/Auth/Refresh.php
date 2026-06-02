@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Himatsudo\Resource\App\Admin\Api\Auth;
+namespace Himatsudo\Resource\Page\Admin\Api\Auth;
 
 use BEAR\Resource\ResourceObject;
 use DateTimeImmutable;
