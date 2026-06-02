@@ -1,3 +1,34 @@
+<script setup lang="ts">
+import { reactive, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const auth = useAuthStore()
+const router = useRouter()
+const route = useRoute()
+
+const form = reactive({ email: '', password: '' })
+const loading = ref(false)
+const errorMsg = ref('')
+
+async function handleLogin() {
+  loading.value = true
+  errorMsg.value = ''
+  try {
+    await auth.login(form)
+    const raw = route.query.redirect as string | undefined
+    const redirect = raw && raw.startsWith('/') && !raw.startsWith('//')
+      ? raw
+      : '/dashboard'
+    router.push(redirect)
+  } catch {
+    errorMsg.value = 'メールアドレスまたはパスワードが正しくありません'
+  } finally {
+    loading.value = false
+  }
+}
+</script>
+
 <template>
   <div class="min-h-screen flex items-center justify-center bg-slate-800">
     <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
@@ -44,34 +75,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { reactive, ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-
-const auth = useAuthStore()
-const router = useRouter()
-const route = useRoute()
-
-const form = reactive({ email: '', password: '' })
-const loading = ref(false)
-const errorMsg = ref('')
-
-async function handleLogin() {
-  loading.value = true
-  errorMsg.value = ''
-  try {
-    await auth.login(form)
-    const raw = route.query.redirect as string | undefined
-    const redirect = raw && raw.startsWith('/') && !raw.startsWith('//')
-      ? raw
-      : '/dashboard'
-    router.push(redirect)
-  } catch {
-    errorMsg.value = 'メールアドレスまたはパスワードが正しくありません'
-  } finally {
-    loading.value = false
-  }
-}
-</script>

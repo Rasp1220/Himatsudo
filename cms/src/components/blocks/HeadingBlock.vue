@@ -1,3 +1,20 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import type { HeadingBlock } from '@/types'
+
+const props = defineProps<{ modelValue: HeadingBlock }>()
+const emit = defineEmits<{ (e: 'update:modelValue', v: HeadingBlock): void }>()
+
+const levelPlaceholder = computed(() => {
+  const map: Record<number, string> = { 2: '大見出しを入力…', 3: '中見出しを入力…', 4: '小見出しを入力…' }
+  return map[props.modelValue.level] ?? '見出しを入力…'
+})
+
+function update<K extends keyof HeadingBlock>(key: K, value: HeadingBlock[K]) {
+  emit('update:modelValue', { ...props.modelValue, [key]: value })
+}
+</script>
+
 <template>
   <div class="space-y-2">
     <div class="flex items-center gap-2">
@@ -24,20 +41,3 @@
     />
   </div>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-import type { HeadingBlock } from '@/types'
-
-const props = defineProps<{ modelValue: HeadingBlock }>()
-const emit = defineEmits<{ (e: 'update:modelValue', v: HeadingBlock): void }>()
-
-const levelPlaceholder = computed(() => {
-  const map: Record<number, string> = { 2: '大見出しを入力…', 3: '中見出しを入力…', 4: '小見出しを入力…' }
-  return map[props.modelValue.level] ?? '見出しを入力…'
-})
-
-function update<K extends keyof HeadingBlock>(key: K, value: HeadingBlock[K]) {
-  emit('update:modelValue', { ...props.modelValue, [key]: value })
-}
-</script>

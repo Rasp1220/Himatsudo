@@ -1,83 +1,3 @@
-<template>
-  <div class="space-y-3">
-    <!-- Block list -->
-    <div v-for="(block, idx) in blocks" :key="block.id" class="block-item bg-white border border-gray-200 rounded-lg overflow-hidden">
-      <!-- Block header -->
-      <div class="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-200">
-        <span class="flex items-center gap-2">
-          <span class="text-xs font-semibold px-2 py-0.5 rounded" :class="badgeClass(block.type)">
-            {{ blockLabel(block.type) }}
-          </span>
-        </span>
-        <div class="flex items-center gap-1">
-          <button
-            type="button"
-            @click="moveUp(idx)"
-            :disabled="idx === 0"
-            title="上へ移動"
-            class="p-1 text-gray-400 hover:text-gray-700 disabled:opacity-30"
-          >▲</button>
-          <button
-            type="button"
-            @click="moveDown(idx)"
-            :disabled="idx === blocks.length - 1"
-            title="下へ移動"
-            class="p-1 text-gray-400 hover:text-gray-700 disabled:opacity-30"
-          >▼</button>
-          <button
-            type="button"
-            @click="removeBlock(idx)"
-            title="削除"
-            class="p-1 text-red-400 hover:text-red-600 ml-1"
-          >✕</button>
-        </div>
-      </div>
-      <!-- Block body -->
-      <div class="p-3">
-        <HeadingBlock
-          v-if="block.type === 'heading'"
-          :modelValue="block"
-          @update:modelValue="updateBlock(idx, $event)"
-        />
-        <TextBlock
-          v-else-if="block.type === 'text'"
-          :modelValue="block"
-          @update:modelValue="updateBlock(idx, $event)"
-        />
-        <ImageBlock
-          v-else-if="block.type === 'image'"
-          :modelValue="block"
-          @update:modelValue="updateBlock(idx, $event)"
-        />
-        <VideoBlock
-          v-else-if="block.type === 'video'"
-          :modelValue="block"
-          @update:modelValue="updateBlock(idx, $event)"
-        />
-      </div>
-    </div>
-
-    <!-- Empty state -->
-    <div v-if="blocks.length === 0" class="text-center py-8 text-gray-400 text-sm border-2 border-dashed border-gray-200 rounded-lg">
-      下のボタンからブロックを追加してください
-    </div>
-
-    <!-- Add block buttons -->
-    <div class="flex flex-wrap gap-2 pt-1">
-      <button
-        v-for="type in blockTypes"
-        :key="type.value"
-        type="button"
-        @click="addBlock(type.value)"
-        class="flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors"
-      >
-        <span>＋</span>
-        <span>{{ type.label }}</span>
-      </button>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import type { ArticleBlock } from '@/types'
@@ -179,3 +99,83 @@ function badgeClass(type: string): string {
   return map[type] ?? 'bg-gray-100 text-gray-600'
 }
 </script>
+
+<template>
+  <div class="space-y-3">
+    <!-- Block list -->
+    <div v-for="(block, idx) in blocks" :key="block.id" class="block-item bg-white border border-gray-200 rounded-lg overflow-hidden">
+      <!-- Block header -->
+      <div class="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-200">
+        <span class="flex items-center gap-2">
+          <span class="text-xs font-semibold px-2 py-0.5 rounded" :class="badgeClass(block.type)">
+            {{ blockLabel(block.type) }}
+          </span>
+        </span>
+        <div class="flex items-center gap-1">
+          <button
+            type="button"
+            @click="moveUp(idx)"
+            :disabled="idx === 0"
+            title="上へ移動"
+            class="p-1 text-gray-400 hover:text-gray-700 disabled:opacity-30"
+          >▲</button>
+          <button
+            type="button"
+            @click="moveDown(idx)"
+            :disabled="idx === blocks.length - 1"
+            title="下へ移動"
+            class="p-1 text-gray-400 hover:text-gray-700 disabled:opacity-30"
+          >▼</button>
+          <button
+            type="button"
+            @click="removeBlock(idx)"
+            title="削除"
+            class="p-1 text-red-400 hover:text-red-600 ml-1"
+          >✕</button>
+        </div>
+      </div>
+      <!-- Block body -->
+      <div class="p-3">
+        <HeadingBlock
+          v-if="block.type === 'heading'"
+          :modelValue="block"
+          @update:modelValue="updateBlock(idx, $event)"
+        />
+        <TextBlock
+          v-else-if="block.type === 'text'"
+          :modelValue="block"
+          @update:modelValue="updateBlock(idx, $event)"
+        />
+        <ImageBlock
+          v-else-if="block.type === 'image'"
+          :modelValue="block"
+          @update:modelValue="updateBlock(idx, $event)"
+        />
+        <VideoBlock
+          v-else-if="block.type === 'video'"
+          :modelValue="block"
+          @update:modelValue="updateBlock(idx, $event)"
+        />
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div v-if="blocks.length === 0" class="text-center py-8 text-gray-400 text-sm border-2 border-dashed border-gray-200 rounded-lg">
+      下のボタンからブロックを追加してください
+    </div>
+
+    <!-- Add block buttons -->
+    <div class="flex flex-wrap gap-2 pt-1">
+      <button
+        v-for="type in blockTypes"
+        :key="type.value"
+        type="button"
+        @click="addBlock(type.value)"
+        class="flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors"
+      >
+        <span>＋</span>
+        <span>{{ type.label }}</span>
+      </button>
+    </div>
+  </div>
+</template>

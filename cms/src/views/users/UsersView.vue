@@ -1,3 +1,83 @@
+<script setup lang="ts">
+import { reactive, ref, onMounted } from 'vue'
+import { useUsersStore } from '@/stores/users'
+import type { User } from '@/types'
+import DataTable from '@/components/ui/DataTable.vue'
+import Pagination from '@/components/ui/Pagination.vue'
+import ConfirmModal from '@/components/ui/ConfirmModal.vue'
+
+const usersStore = useUsersStore()
+
+const columns = [
+  { key: 'name', label: '名前' },
+  { key: 'email', label: 'メールアドレス' },
+  { key: 'role', label: 'ロール', width: '100px' },
+  { key: 'created_at', label: '登録日', width: '120px' },
+  { key: 'actions', label: '', width: '100px' },
+]
+
+const showModal = ref(false)
+const editTarget = ref<User | null>(null)
+const modalLoading = ref(false)
+const modalError = ref('')
+const modalForm = reactive({ name: '', email: '', password: '', role: 'editor' as User['role'] })
+
+const showDeleteModal = ref(false)
+const deleteTarget = ref<User | null>(null)
+
+function formatDate(d: string): string {
+  return new Date(d).toLocaleDateString('ja-JP')
+}
+
+function openCreate() {
+  editTarget.value = null
+  Object.assign(modalForm, { name: '', email: '', password: '', role: 'editor' })
+  showModal.value = true
+}
+
+function openEdit(u: User) {
+  editTarget.value = u
+  Object.assign(modalForm, { name: u.name, email: u.email, password: '', role: u.role })
+  showModal.value = true
+}
+
+async function handleSave() {
+  modalLoading.value = true
+  modalError.value = ''
+  try {
+    if (editTarget.value) {
+      const payload: Partial<User> & { password?: string } = { name: modalForm.name, email: modalForm.email, role: modalForm.role }
+      if (modalForm.password) payload.password = modalForm.password
+      await usersStore.update(editTarget.value.id, payload)
+    } else {
+      await usersStore.create({ name: modalForm.name, email: modalForm.email, password: modalForm.password, role: modalForm.role })
+    }
+    showModal.value = false
+  } catch {
+    modalError.value = '保存に失敗しました。メールアドレスが既に使われていないか確認してください。'
+  } finally {
+    modalLoading.value = false
+  }
+}
+
+function confirmDelete(u: User) {
+  deleteTarget.value = u
+  showDeleteModal.value = true
+}
+
+async function executeDelete() {
+  if (!deleteTarget.value) return
+  await usersStore.remove(deleteTarget.value.id)
+  deleteTarget.value = null
+}
+
+async function fetchPage(page: number) {
+  await usersStore.fetchList(page, 20)
+}
+
+onMounted(() => usersStore.fetchList())
+</script>
+
 <template>
   <div class="max-w-3xl">
     <div class="flex items-center justify-between mb-6">
@@ -102,83 +182,3 @@
     />
   </div>
 </template>
-
-<script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
-import { useUsersStore } from '@/stores/users'
-import type { User } from '@/types'
-import DataTable from '@/components/ui/DataTable.vue'
-import Pagination from '@/components/ui/Pagination.vue'
-import ConfirmModal from '@/components/ui/ConfirmModal.vue'
-
-const usersStore = useUsersStore()
-
-const columns = [
-  { key: 'name', label: '名前' },
-  { key: 'email', label: 'メールアドレス' },
-  { key: 'role', label: 'ロール', width: '100px' },
-  { key: 'created_at', label: '登録日', width: '120px' },
-  { key: 'actions', label: '', width: '100px' },
-]
-
-const showModal = ref(false)
-const editTarget = ref<User | null>(null)
-const modalLoading = ref(false)
-const modalError = ref('')
-const modalForm = reactive({ name: '', email: '', password: '', role: 'editor' as User['role'] })
-
-const showDeleteModal = ref(false)
-const deleteTarget = ref<User | null>(null)
-
-function formatDate(d: string): string {
-  return new Date(d).toLocaleDateString('ja-JP')
-}
-
-function openCreate() {
-  editTarget.value = null
-  Object.assign(modalForm, { name: '', email: '', password: '', role: 'editor' })
-  showModal.value = true
-}
-
-function openEdit(u: User) {
-  editTarget.value = u
-  Object.assign(modalForm, { name: u.name, email: u.email, password: '', role: u.role })
-  showModal.value = true
-}
-
-async function handleSave() {
-  modalLoading.value = true
-  modalError.value = ''
-  try {
-    if (editTarget.value) {
-      const payload: Partial<User> & { password?: string } = { name: modalForm.name, email: modalForm.email, role: modalForm.role }
-      if (modalForm.password) payload.password = modalForm.password
-      await usersStore.update(editTarget.value.id, payload)
-    } else {
-      await usersStore.create({ name: modalForm.name, email: modalForm.email, password: modalForm.password, role: modalForm.role })
-    }
-    showModal.value = false
-  } catch {
-    modalError.value = '保存に失敗しました。メールアドレスが既に使われていないか確認してください。'
-  } finally {
-    modalLoading.value = false
-  }
-}
-
-function confirmDelete(u: User) {
-  deleteTarget.value = u
-  showDeleteModal.value = true
-}
-
-async function executeDelete() {
-  if (!deleteTarget.value) return
-  await usersStore.remove(deleteTarget.value.id)
-  deleteTarget.value = null
-}
-
-async function fetchPage(page: number) {
-  await usersStore.fetchList(page, 20)
-}
-
-onMounted(() => usersStore.fetchList())
-</script>

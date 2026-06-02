@@ -1,3 +1,24 @@
+<script setup lang="ts">
+import { RouterLink, useRoute } from 'vue-router'
+
+const route = useRoute()
+
+const navItems = [
+  { name: 'Dashboard', label: 'ダッシュボード', icon: '🏠', to: '/dashboard' },
+  { name: 'ArticlesList', label: '記事管理', icon: '📝', to: '/articles' },
+  { name: 'Categories', label: 'カテゴリ管理', icon: '🗂️', to: '/categories' },
+  { name: 'Users', label: 'ユーザー管理', icon: '👤', to: '/users' },
+]
+
+function isActive(name: string): boolean {
+  const routeName = String(route.name ?? '')
+  if (name === 'ArticlesList') {
+    return routeName.startsWith('Article') || routeName.startsWith('Youtube')
+  }
+  return routeName === name
+}
+</script>
+
 <template>
   <aside class="w-60 bg-slate-800 text-white flex flex-col flex-shrink-0">
     <div class="px-6 py-4 border-b border-slate-700">
@@ -22,24 +43,3 @@
     </nav>
   </aside>
 </template>
-
-<script setup lang="ts">
-import { RouterLink, useRoute } from 'vue-router'
-
-const route = useRoute()
-
-const navItems = [
-  { name: 'Dashboard', label: 'ダッシュボード', icon: '🏠', to: '/dashboard' },
-  { name: 'ArticlesList', label: '記事管理', icon: '📝', to: '/articles' },
-  { name: 'Categories', label: 'カテゴリ管理', icon: '🗂️', to: '/categories' },
-  { name: 'Users', label: 'ユーザー管理', icon: '👤', to: '/users' },
-]
-
-function isActive(name: string): boolean {
-  const routeName = String(route.name ?? '')
-  if (name === 'ArticlesList') {
-    return routeName.startsWith('Article') || routeName.startsWith('Youtube')
-  }
-  return routeName === name
-}
-</script>

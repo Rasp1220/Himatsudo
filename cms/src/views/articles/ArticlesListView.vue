@@ -1,3 +1,83 @@
+<script setup lang="ts">
+import { reactive, ref, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
+import { storeToRefs } from 'pinia'
+import { useArticlesStore } from '@/stores/articles'
+import { useCategoriesStore } from '@/stores/categories'
+import type { Article } from '@/types'
+import DataTable from '@/components/ui/DataTable.vue'
+import Pagination from '@/components/ui/Pagination.vue'
+import ConfirmModal from '@/components/ui/ConfirmModal.vue'
+
+const articles = useArticlesStore()
+const categoriesStore = useCategoriesStore()
+const { items: categories } = storeToRefs(categoriesStore)
+
+const filters = reactive<{
+  keyword: string
+  category_id: number | null
+  status: string | null
+}>({ keyword: '', category_id: null, status: null })
+
+const showDeleteModal = ref(false)
+const deleteTarget = ref<Article | null>(null)
+
+const columns = [
+  { key: 'title', label: 'タイトル' },
+  { key: 'category_name', label: 'カテゴリ', width: '140px' },
+  { key: 'status', label: 'ステータス', width: '100px' },
+  { key: 'published_at', label: '公開日', width: '120px' },
+  { key: 'actions', label: '', width: '100px' },
+]
+
+let debounceTimer: ReturnType<typeof setTimeout> | null = null
+function debouncedFetch() {
+  if (debounceTimer) clearTimeout(debounceTimer)
+  debounceTimer = setTimeout(() => fetchPage(1), 400)
+}
+
+async function fetchPage(page: number) {
+  await articles.fetchList({
+    page,
+    per_page: 20,
+    category_id: filters.category_id,
+    status: filters.status,
+    keyword: filters.keyword || null,
+  })
+}
+
+function editPath(article: Article): string {
+  return article.category_type === 'youtube'
+    ? `/articles/youtube/${article.id}/edit`
+    : `/articles/${article.id}/edit`
+}
+
+function categoryBadgeClass(type: string | null): string {
+  if (type === 'youtube') return 'bg-red-100 text-red-700'
+  if (type === 'blog') return 'bg-green-100 text-green-700'
+  return 'bg-blue-100 text-blue-700'
+}
+
+function formatDate(d: string): string {
+  return new Date(d).toLocaleDateString('ja-JP')
+}
+
+function confirmDelete(article: Article) {
+  deleteTarget.value = article
+  showDeleteModal.value = true
+}
+
+async function executeDelete() {
+  if (!deleteTarget.value) return
+  await articles.remove(deleteTarget.value.id)
+  deleteTarget.value = null
+}
+
+onMounted(async () => {
+  await Promise.all([fetchPage(1), categoriesStore.fetchAll()])
+})
+</script>
+
 <template>
   <div>
     <div class="flex items-center justify-between mb-6">
@@ -113,83 +193,3 @@
     />
   </div>
 </template>
-
-<script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
-import { RouterLink } from 'vue-router'
-import { storeToRefs } from 'pinia'
-import { useArticlesStore } from '@/stores/articles'
-import { useCategoriesStore } from '@/stores/categories'
-import type { Article } from '@/types'
-import DataTable from '@/components/ui/DataTable.vue'
-import Pagination from '@/components/ui/Pagination.vue'
-import ConfirmModal from '@/components/ui/ConfirmModal.vue'
-
-const articles = useArticlesStore()
-const categoriesStore = useCategoriesStore()
-const { items: categories } = storeToRefs(categoriesStore)
-
-const filters = reactive<{
-  keyword: string
-  category_id: number | null
-  status: string | null
-}>({ keyword: '', category_id: null, status: null })
-
-const showDeleteModal = ref(false)
-const deleteTarget = ref<Article | null>(null)
-
-const columns = [
-  { key: 'title', label: 'タイトル' },
-  { key: 'category_name', label: 'カテゴリ', width: '140px' },
-  { key: 'status', label: 'ステータス', width: '100px' },
-  { key: 'published_at', label: '公開日', width: '120px' },
-  { key: 'actions', label: '', width: '100px' },
-]
-
-let debounceTimer: ReturnType<typeof setTimeout> | null = null
-function debouncedFetch() {
-  if (debounceTimer) clearTimeout(debounceTimer)
-  debounceTimer = setTimeout(() => fetchPage(1), 400)
-}
-
-async function fetchPage(page: number) {
-  await articles.fetchList({
-    page,
-    per_page: 20,
-    category_id: filters.category_id,
-    status: filters.status,
-    keyword: filters.keyword || null,
-  })
-}
-
-function editPath(article: Article): string {
-  return article.category_type === 'youtube'
-    ? `/articles/youtube/${article.id}/edit`
-    : `/articles/${article.id}/edit`
-}
-
-function categoryBadgeClass(type: string | null): string {
-  if (type === 'youtube') return 'bg-red-100 text-red-700'
-  if (type === 'blog') return 'bg-green-100 text-green-700'
-  return 'bg-blue-100 text-blue-700'
-}
-
-function formatDate(d: string): string {
-  return new Date(d).toLocaleDateString('ja-JP')
-}
-
-function confirmDelete(article: Article) {
-  deleteTarget.value = article
-  showDeleteModal.value = true
-}
-
-async function executeDelete() {
-  if (!deleteTarget.value) return
-  await articles.remove(deleteTarget.value.id)
-  deleteTarget.value = null
-}
-
-onMounted(async () => {
-  await Promise.all([fetchPage(1), categoriesStore.fetchAll()])
-})
-</script>

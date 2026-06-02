@@ -1,3 +1,130 @@
+<script setup lang="ts">
+import { reactive, ref, computed, onMounted, onUnmounted } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
+import TinyMceEditor from '@/components/TinyMceEditor.vue'
+import { useArticlesStore } from '@/stores/articles'
+import { useCategoriesStore } from '@/stores/categories'
+import { useAuthStore } from '@/stores/auth'
+import type { ArticleStatus } from '@/types'
+
+const route = useRoute()
+const router = useRouter()
+const articlesStore = useArticlesStore()
+const categoriesStore = useCategoriesStore()
+const auth = useAuthStore()
+
+const isEdit = computed(() => !!route.params.id)
+const saving = ref(false)
+const errorMsg = ref('')
+const editorHeight = ref(600)
+
+const form = reactive({
+  title: '',
+  slug: '',
+  content: '',
+  excerpt: '',
+  eye_catch_image: '',
+  category_id: null as number | null,
+  status: 'draft' as ArticleStatus,
+  published_at: '',
+})
+
+const { items: categories } = storeToRefs(categoriesStore)
+
+let slugManuallyEdited = false
+
+function autoSlug() {
+  if (!slugManuallyEdited && !isEdit.value) {
+    form.slug = form.title
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9\-]/g, '')
+      .slice(0, 80)
+  }
+}
+
+function dbToInputDate(dbDate: string | null | undefined): string {
+  if (!dbDate) return ''
+  return dbDate.replace(' ', 'T').substring(0, 16)
+}
+
+function inputToDbDate(inputDate: string): string | null {
+  if (!inputDate) return null
+  return inputDate.replace('T', ' ') + ':00'
+}
+
+function updateEditorHeight() {
+  // AppHeader(~57px) + edit header bar(~52px) + label(~32px) + padding(~32px) = ~173px
+  editorHeight.value = Math.max(400, window.innerHeight - 180)
+}
+
+async function handleSubmit(overrideStatus?: ArticleStatus) {
+  saving.value = true
+  errorMsg.value = ''
+  try {
+    const publishedAt = inputToDbDate(form.published_at)
+    const payload: Record<string, unknown> = {
+      title: form.title,
+      slug: form.slug,
+      content: form.content,
+      blocks: '',
+      excerpt: form.excerpt,
+      eye_catch_image: form.eye_catch_image,
+      category_id: form.category_id ?? 0,
+      status: overrideStatus ?? form.status,
+      youtube_url: '',
+      youtube_video_id: '',
+      youtube_thumbnail: '',
+      author_id: auth.user?.id ?? 0,
+    }
+    if (publishedAt !== null) {
+      payload.published_at = publishedAt
+    }
+    if (isEdit.value) {
+      await articlesStore.update(Number(route.params.id), payload as Parameters<typeof articlesStore.update>[1])
+    } else {
+      await articlesStore.create(payload as Parameters<typeof articlesStore.create>[0])
+    }
+    router.push('/articles')
+  } catch {
+    errorMsg.value = '保存に失敗しました。入力内容を確認してください。'
+  } finally {
+    saving.value = false
+  }
+}
+
+function saveDraft() {
+  handleSubmit('draft')
+}
+
+onMounted(async () => {
+  updateEditorHeight()
+  window.addEventListener('resize', updateEditorHeight)
+
+  await categoriesStore.fetchAll()
+  if (isEdit.value) {
+    await articlesStore.fetchOne(Number(route.params.id))
+    const a = articlesStore.current
+    if (a) {
+      form.title = a.title
+      form.slug = a.slug
+      form.excerpt = a.excerpt ?? ''
+      form.eye_catch_image = a.eye_catch_image ?? ''
+      form.category_id = a.category_id
+      form.status = a.status
+      form.published_at = dbToInputDate(a.published_at)
+      form.content = a.content ?? ''
+      slugManuallyEdited = true
+    }
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateEditorHeight)
+})
+</script>
+
 <template>
   <div class="flex flex-col h-full">
     <!-- ヘッダーバー -->
@@ -132,130 +259,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { reactive, ref, computed, onMounted, onUnmounted } from 'vue'
-import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { storeToRefs } from 'pinia'
-import TinyMceEditor from '@/components/TinyMceEditor.vue'
-import { useArticlesStore } from '@/stores/articles'
-import { useCategoriesStore } from '@/stores/categories'
-import { useAuthStore } from '@/stores/auth'
-import type { ArticleStatus } from '@/types'
-
-const route = useRoute()
-const router = useRouter()
-const articlesStore = useArticlesStore()
-const categoriesStore = useCategoriesStore()
-const auth = useAuthStore()
-
-const isEdit = computed(() => !!route.params.id)
-const saving = ref(false)
-const errorMsg = ref('')
-const editorHeight = ref(600)
-
-const form = reactive({
-  title: '',
-  slug: '',
-  content: '',
-  excerpt: '',
-  eye_catch_image: '',
-  category_id: null as number | null,
-  status: 'draft' as ArticleStatus,
-  published_at: '',
-})
-
-const { items: categories } = storeToRefs(categoriesStore)
-
-let slugManuallyEdited = false
-
-function autoSlug() {
-  if (!slugManuallyEdited && !isEdit.value) {
-    form.slug = form.title
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9\-]/g, '')
-      .slice(0, 80)
-  }
-}
-
-function dbToInputDate(dbDate: string | null | undefined): string {
-  if (!dbDate) return ''
-  return dbDate.replace(' ', 'T').substring(0, 16)
-}
-
-function inputToDbDate(inputDate: string): string | null {
-  if (!inputDate) return null
-  return inputDate.replace('T', ' ') + ':00'
-}
-
-function updateEditorHeight() {
-  // AppHeader(~57px) + edit header bar(~52px) + label(~32px) + padding(~32px) = ~173px
-  editorHeight.value = Math.max(400, window.innerHeight - 180)
-}
-
-async function handleSubmit(overrideStatus?: ArticleStatus) {
-  saving.value = true
-  errorMsg.value = ''
-  try {
-    const publishedAt = inputToDbDate(form.published_at)
-    const payload: Record<string, unknown> = {
-      title: form.title,
-      slug: form.slug,
-      content: form.content,
-      blocks: '',
-      excerpt: form.excerpt,
-      eye_catch_image: form.eye_catch_image,
-      category_id: form.category_id ?? 0,
-      status: overrideStatus ?? form.status,
-      youtube_url: '',
-      youtube_video_id: '',
-      youtube_thumbnail: '',
-      author_id: auth.user?.id ?? 0,
-    }
-    if (publishedAt !== null) {
-      payload.published_at = publishedAt
-    }
-    if (isEdit.value) {
-      await articlesStore.update(Number(route.params.id), payload as Parameters<typeof articlesStore.update>[1])
-    } else {
-      await articlesStore.create(payload as Parameters<typeof articlesStore.create>[0])
-    }
-    router.push('/articles')
-  } catch {
-    errorMsg.value = '保存に失敗しました。入力内容を確認してください。'
-  } finally {
-    saving.value = false
-  }
-}
-
-function saveDraft() {
-  handleSubmit('draft')
-}
-
-onMounted(async () => {
-  updateEditorHeight()
-  window.addEventListener('resize', updateEditorHeight)
-
-  await categoriesStore.fetchAll()
-  if (isEdit.value) {
-    await articlesStore.fetchOne(Number(route.params.id))
-    const a = articlesStore.current
-    if (a) {
-      form.title = a.title
-      form.slug = a.slug
-      form.excerpt = a.excerpt ?? ''
-      form.eye_catch_image = a.eye_catch_image ?? ''
-      form.category_id = a.category_id
-      form.status = a.status
-      form.published_at = dbToInputDate(a.published_at)
-      form.content = a.content ?? ''
-      slugManuallyEdited = true
-    }
-  }
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', updateEditorHeight)
-})
-</script>
