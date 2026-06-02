@@ -24,53 +24,52 @@
   font-size: .875rem;
   color: $c-primary;
   font-weight: 600;
-
   &:hover { text-decoration: underline; }
 }
 
-// ─── Swiper wrapper ───────────────────────────────────────────
+// ─── 外側ラッパー (ナビボタン + Swiper を横並びに) ────────────
+.cat-swiper-outer {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+// ─── Swiper 本体 ──────────────────────────────────────────────
 .cat-swiper {
-  // prev/next ボタンを左右に出すための余白
-  padding: 0 2.75rem;
+  flex: 1;
+  min-width: 0;   // flex 子要素のはみ出し防止
+}
 
-  @media (max-width: $bp-mobile) {
-    padding: 0 2.25rem;
+// ─── ナビボタン (現行デザインをそのまま踏襲) ─────────────────
+.cat-swiper-btn {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 2px solid $c-border;
+  background: $c-white;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  color: $c-primary-dark;
+  box-shadow: 0 2px 6px $c-shadow;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, border-color .15s, color .15s;
+  padding: 0;
+
+  &:hover {
+    background: $c-primary;
+    border-color: $c-primary;
+    color: $c-white;
   }
 
-  // ─── Prev / Next ボタンを現行デザインに合わせる ──────────
-  .swiper-button-prev,
-  .swiper-button-next {
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 50%;
-    border: 2px solid $c-border;
-    background: $c-white;
-    color: $c-primary-dark;
-    box-shadow: 0 2px 6px $c-shadow;
-    top: 50%;
-    transform: translateY(-50%);
-    margin-top: 0;
-    transition: background .15s, border-color .15s, color .15s;
-
-    &::after {
-      font-size: 1rem;
-      font-weight: 700;
-    }
-
-    &:hover {
-      background: $c-primary;
-      border-color: $c-primary;
-      color: $c-white;
-    }
-
-    &.swiper-button-disabled {
-      opacity: .3;
-      pointer-events: none;
-    }
+  // Swiper が disabled クラスを付与したとき
+  &.swiper-button-disabled {
+    opacity: .3;
+    pointer-events: none;
   }
-
-  .swiper-button-prev { left: 0; }
-  .swiper-button-next { right: 0; }
 }
 
 // ─── カード共通 ───────────────────────────────────────────────

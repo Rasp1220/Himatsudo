@@ -23,34 +23,38 @@ if (empty($categories_with_articles)):
         <a href="/articles?category_id=<?= (int) $cat['id'] ?>" class="cat-more">もっと見る →</a>
     </div>
 
-    <div class="swiper cat-swiper" id="<?= $uid ?>">
-        <div class="swiper-wrapper">
-            <?php foreach ($articles as $article):
-                $thumb = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null;
-                $date  = $article['published_at'] ?? $article['created_at'] ?? null;
-            ?>
-            <div class="swiper-slide">
-                <a href="/articles/<?= $this->h($article['slug']) ?>" class="carousel-card-link">
-                    <div class="carousel-thumb">
-                        <?php if ($thumb): ?>
-                        <img src="<?= $this->h($thumb) ?>" alt="<?= $this->h($article['title']) ?>">
-                        <?php else: ?>
-                        <div class="carousel-no-thumb"></div>
-                        <?php endif; ?>
-                    </div>
-                    <div class="carousel-info">
-                        <p class="carousel-title"><?= $this->h($article['title']) ?></p>
-                        <?php if ($date): ?>
-                        <time class="carousel-date"><?= date('Y年m月d日', strtotime((string) $date)) ?></time>
-                        <?php endif; ?>
-                    </div>
-                </a>
+    <!-- ナビボタンを外側ラッパーに配置して overflow: hidden の影響を避ける -->
+    <div class="cat-swiper-outer">
+        <button class="cat-swiper-btn cat-swiper-prev" data-target="<?= $uid ?>" aria-label="前へ">&#8249;</button>
+
+        <div class="swiper cat-swiper" id="<?= $uid ?>">
+            <div class="swiper-wrapper">
+                <?php foreach ($articles as $article):
+                    $thumb = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null;
+                    $date  = $article['published_at'] ?? $article['created_at'] ?? null;
+                ?>
+                <div class="swiper-slide">
+                    <a href="/articles/<?= $this->h($article['slug']) ?>" class="carousel-card-link">
+                        <div class="carousel-thumb">
+                            <?php if ($thumb): ?>
+                            <img src="<?= $this->h($thumb) ?>" alt="<?= $this->h($article['title']) ?>">
+                            <?php else: ?>
+                            <div class="carousel-no-thumb"></div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="carousel-info">
+                            <p class="carousel-title"><?= $this->h($article['title']) ?></p>
+                            <?php if ($date): ?>
+                            <time class="carousel-date"><?= date('Y年m月d日', strtotime((string) $date)) ?></time>
+                            <?php endif; ?>
+                        </div>
+                    </a>
+                </div>
+                <?php endforeach; ?>
             </div>
-            <?php endforeach; ?>
         </div>
 
-        <div class="swiper-button-prev cat-swiper-prev"></div>
-        <div class="swiper-button-next cat-swiper-next"></div>
+        <button class="cat-swiper-btn cat-swiper-next" data-target="<?= $uid ?>" aria-label="次へ">&#8250;</button>
     </div>
 </section>
 <?php endforeach; ?>
@@ -58,12 +62,13 @@ if (empty($categories_with_articles)):
 <script>
 (function () {
     document.querySelectorAll('.cat-swiper').forEach(function (el) {
+        var outer = el.closest('.cat-swiper-outer');
         new Swiper(el, {
             slidesPerView: 3,
             spaceBetween: 16,
             navigation: {
-                prevEl: el.querySelector('.cat-swiper-prev'),
-                nextEl: el.querySelector('.cat-swiper-next'),
+                prevEl: outer ? outer.querySelector('.cat-swiper-prev') : null,
+                nextEl: outer ? outer.querySelector('.cat-swiper-next') : null,
             },
             breakpoints: {
                 0:   { slidesPerView: 1, spaceBetween: 12 },
