@@ -5,11 +5,11 @@ namespace Himatsudo\Resource\Page\Admin\Api\Auth;
 
 use BEAR\Resource\ResourceObject;
 use Himatsudo\Annotation\RequireAuth;
-use Himatsudo\Repository\RefreshTokenRepository;
+use Himatsudo\Service\RefreshTokenService;
 
 class Logout extends ResourceObject
 {
-    public function __construct(private readonly RefreshTokenRepository $refreshTokenRepository)
+    public function __construct(private readonly RefreshTokenService $refreshTokenService)
     {
     }
 
@@ -17,7 +17,7 @@ class Logout extends ResourceObject
     public function onPost(?string $refresh_token = null): static
     {
         if ($refresh_token !== null) {
-            $this->refreshTokenRepository->delete($refresh_token);
+            $this->refreshTokenService->delete($refresh_token);
         }
         $this->code = 204;
         $this->body = null;

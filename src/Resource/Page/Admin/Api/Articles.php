@@ -5,11 +5,11 @@ namespace Himatsudo\Resource\Page\Admin\Api;
 
 use BEAR\Resource\ResourceObject;
 use Himatsudo\Annotation\RequireAuth;
-use Himatsudo\Repository\ArticleRepository;
+use Himatsudo\Interfaces\ArticleInterface as ArticleServiceInterface;
 
 class Articles extends ResourceObject
 {
-    public function __construct(private readonly ArticleRepository $articleRepository)
+    public function __construct(private readonly ArticleServiceInterface $articleService)
     {
     }
 
@@ -21,14 +21,7 @@ class Articles extends ResourceObject
         ?string $status      = null,
         ?string $keyword     = null
     ): static {
-        $result = $this->articleRepository->findAllAdmin($page, $per_page, $category_id, $status, $keyword);
-        $this->body = [
-            'items'     => $result['items'],
-            'total'     => $result['total'],
-            'page'      => $page,
-            'per_page'  => $per_page,
-            'last_page' => (int) ceil($result['total'] / max(1, $per_page)),
-        ];
+        $this->body = $this->articleService->getAdminList($page, $per_page, $category_id, $status, $keyword);
         return $this;
     }
 
@@ -45,15 +38,16 @@ class Articles extends ResourceObject
         ?int    $category_id       = null,
         ?string $youtube_url       = null,
         ?string $youtube_video_id  = null,
-        ?string $youtube_thumbnail = null
+        ?string $youtube_thumbnail = null,
+        ?string $published_at      = null
     ): static {
         $data = array_filter(compact(
             'title', 'slug', 'author_id', 'status', 'content', 'blocks', 'excerpt',
-            'eye_catch_image', 'category_id', 'youtube_url', 'youtube_video_id', 'youtube_thumbnail'
-        ), fn($v) => $v !== null);
-        $id = $this->articleRepository->create($data);
+            'eye_catch_image', 'category_id', 'youtube_url', 'youtube_video_id', 'youtube_thumbnail',
+            'published_at'
+        ), fn($v) => $v !== null && $v !== '');
         $this->code = 201;
-        $this->body = $this->articleRepository->findById($id);
+        $this->body = $this->articleService->create($data);
         return $this;
     }
 }
