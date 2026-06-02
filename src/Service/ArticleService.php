@@ -119,6 +119,14 @@ final class ArticleService implements ArticleInterface
         );
     }
 
+    public function getLatestExcludeType(string $excludeType, int $limit = 20): array
+    {
+        return $this->pdo->fetchAll(
+            $this->sql('articles/get_latest_exclude_type.sql'),
+            ['exclude_type' => $excludeType, 'limit' => $limit]
+        );
+    }
+
     public function create(array $data): array
     {
         if (!empty($data['status']) && $data['status'] === 'published' && empty($data['published_at'])) {

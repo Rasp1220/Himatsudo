@@ -35,6 +35,10 @@ interface ArticleInterface
     #[SqlQuery('articles/get_latest_by_category.sql', ['category_id', 'limit'])]
     public function getLatestByCategory(int $categoryId, int $limit = 8): array;
 
+    /** @return array<int, array<string, mixed>> */
+    #[SqlQuery('articles/get_latest_exclude_type.sql', ['exclude_type', 'limit'])]
+    public function getLatestExcludeType(string $excludeType, int $limit = 20): array;
+
     /**
      * @param array<string, mixed> $data
      * @return array<string, mixed>

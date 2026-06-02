@@ -20,7 +20,7 @@ class Index extends ResourceObject
 
         $categoriesWithArticles = [];
         foreach ($categories as $category) {
-            $articles = $this->articleService->getLatestByCategory((int) $category['id'], 8);
+            $articles = $this->articleService->getLatestByCategory((int) $category['id'], 20);
             if (!empty($articles)) {
                 $categoriesWithArticles[] = [
                     'category' => $category,
@@ -30,6 +30,8 @@ class Index extends ResourceObject
         }
 
         $this->body = [
+            'latest_articles'          => $this->articleService->getLatest(20),
+            'regular_articles'         => $this->articleService->getLatestExcludeType('youtube', 20),
             'categories_with_articles' => $categoriesWithArticles,
             'page_title'               => 'ホーム',
         ];
