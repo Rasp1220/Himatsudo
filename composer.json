@@ -1,0 +1,39 @@
+{
+    "name": "himatsudo/himatsudo",
+    "description": "Himatsudo Article CMS Platform (BearSunday + Qiq + Vue CMS)",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.1",
+        "bear/sunday": "^1.6",
+        "bear/package": "^1.8",
+        "ray/aura-sql-module": "^1.11",
+        "aura/sql": "^6.0",
+        "doctrine/cache": "^1.0",
+        "lcobucci/jwt": "^5.4",
+        "lcobucci/clock": "^3.0",
+        "qiq/qiq": "^3.0",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Himatsudo\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "scripts": {
+        "setup": "@php bin/setup.php",
+        "build:css": "npm run build:css",
+        "serve": "@php bin/serve.php",
+        "serve:app": "@php -S localhost:8080 -t public",
+        "serve:cms": "@php -r \"chdir(getcwd().'/cms'); passthru('npm run dev');\"",
+        "migrate": "php bin/migrate.php",
+        "migrate:fresh": "php bin/migrate.php --fresh",
+        "post-autoload-dump": [
+            "BEAR\\Package\\Compiler::compile"
+        ]
+    }
+}

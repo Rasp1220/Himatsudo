@@ -1,0 +1,15 @@
+.DS_Store
+*.swp
+*.swo
+
+# Composer
+vendor/
+
+# Node
+node_modules/
+
+# BearSunday runtime cache
+var/tmp/
+
+# Environment
+.env

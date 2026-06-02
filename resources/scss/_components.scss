@@ -1,0 +1,122 @@
+@use 'variables' as *;
+
+// ─── Card ─────────────────────────────────────────────────────
+.card {
+  background: $c-white;
+  border-radius: .5rem;
+  box-shadow: 0 2px 8px $c-shadow;
+  border: 1px solid $c-border-light;
+  overflow: hidden;
+  transition: transform .2s, box-shadow .2s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px $c-shadow;
+  }
+}
+
+.card-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.card-body { padding: 1rem; }
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: .5rem;
+  color: $c-text;
+}
+
+.card-meta {
+  font-size: .8rem;
+  color: $c-text-muted;
+}
+
+// ─── Articles grid ────────────────────────────────────────────
+.articles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+// ─── Badge ────────────────────────────────────────────────────
+.badge {
+  display: inline-block;
+  padding: .2em .65em;
+  border-radius: .25rem;
+  font-size: .75rem;
+  font-weight: 700;
+  background: $c-badge-default;
+  color: $c-badge-text;
+
+  &.youtube {
+    background: $c-badge-youtube;
+    color: $c-badge-youtube-text;
+  }
+
+  &.blog {
+    background: $c-badge-blog;
+    color: $c-badge-blog-text;
+  }
+}
+
+// ─── Pagination ───────────────────────────────────────────────
+.pagination {
+  display: flex;
+  gap: .5rem;
+  justify-content: center;
+  margin-top: 2rem;
+
+  a, span {
+    padding: .4rem .8rem;
+    border: 1px solid $c-border;
+    border-radius: .25rem;
+    color: $c-primary-dark;
+    transition: background .15s;
+
+    &:hover { background: $c-primary-light; text-decoration: none; }
+  }
+
+  .current {
+    background: $c-primary;
+    color: $c-white;
+    border-color: $c-primary;
+  }
+}
+
+// ─── Buttons ──────────────────────────────────────────────────
+.btn-primary {
+  display: inline-block;
+  padding: .6rem 2rem;
+  background: $c-primary;
+  color: $c-white;
+  border-radius: .375rem;
+  font-weight: 600;
+  transition: background .2s;
+
+  &:hover {
+    background: $c-primary-dark;
+    text-decoration: none;
+    color: $c-white;
+  }
+}
+
+// ─── Category tag links ───────────────────────────────────────
+.category-link {
+  padding: .5rem 1.25rem;
+  background: $c-white;
+  border: 1px solid $c-border;
+  border-radius: 2rem;
+  font-weight: 600;
+  color: $c-text;
+  transition: background .15s, border-color .15s;
+
+  &:hover {
+    background: $c-primary-light;
+    border-color: $c-primary;
+    text-decoration: none;
+  }
+}
