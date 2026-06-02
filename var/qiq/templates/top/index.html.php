@@ -79,10 +79,16 @@ document.addEventListener('DOMContentLoaded', function () {
         new Swiper(el, {
             grabCursor: true,
             slidesPerView: 10,
-            spaceBetween: 8,
+            spaceBetween: 12,
             navigation: {
                 prevEl: outer ? outer.querySelector('.cat-swiper-prev') : null,
                 nextEl: outer ? outer.querySelector('.cat-swiper-next') : null,
+            },
+            breakpoints: {
+                0:   { slidesPerView: 2.3, spaceBetween: 8  },
+                481: { slidesPerView: 4.5, spaceBetween: 10 },
+                769: { slidesPerView: 7,   spaceBetween: 12 },
+                1024:{ slidesPerView: 10,  spaceBetween: 12 },
             },
         });
     });
