@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $this->h($this->page_title ?? 'Himatsudo') ?> | Himatsudo</title>
     <link rel="stylesheet" href="/css/main.build.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 </head>
 <body>
 <?php $this->setLayout(null) // prevent recursion ?>
@@ -15,5 +16,6 @@
     </div>
 </main>
 <?= $this->render('components/footer') ?>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 </body>
 </html>
