@@ -3,37 +3,18 @@ declare(strict_types=1);
 
 namespace Himatsudo\Resource\Page;
 
+use BEAR\Resource\ResourceInterface;
 use BEAR\Resource\ResourceObject;
-use Himatsudo\Interfaces\ArticleInterface as ArticleServiceInterface;
-use Himatsudo\Interfaces\CategoryInterface as CategoryServiceInterface;
 
 class Index extends ResourceObject
 {
-    public function __construct(
-        private readonly ArticleServiceInterface  $articleService,
-        private readonly CategoryServiceInterface $categoryService,
-    ) {}
+    public function __construct(private readonly ResourceInterface $resource) {}
 
     public function onGet(): static
     {
-        $categories = $this->categoryService->getAll();
+        $ro = $this->resource->get->uri('app://self/index')->eager->request();
 
-        $categoriesWithArticles = [];
-        foreach ($categories as $category) {
-            $articles = $this->articleService->getLatestByCategory((int) $category['id'], 8);
-            if (!empty($articles)) {
-                $categoriesWithArticles[] = [
-                    'category' => $category,
-                    'articles' => $articles,
-                ];
-            }
-        }
-
-        $this->body = [
-            'categories_with_articles' => $categoriesWithArticles,
-            'page_title'               => 'ホーム',
-        ];
-
+        $this->body = $ro->body + ['_template' => 'index'];
         return $this;
     }
 }

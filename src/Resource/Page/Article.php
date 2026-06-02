@@ -3,39 +3,27 @@ declare(strict_types=1);
 
 namespace Himatsudo\Resource\Page;
 
+use BEAR\Resource\ResourceInterface;
 use BEAR\Resource\ResourceObject;
-use Himatsudo\Interfaces\ArticleInterface as ArticleServiceInterface;
-use Himatsudo\Interfaces\CategoryInterface as CategoryServiceInterface;
 
 class Article extends ResourceObject
 {
-    public function __construct(
-        private readonly ArticleServiceInterface  $articleService,
-        private readonly CategoryServiceInterface $categoryService,
-    ) {}
+    public function __construct(private readonly ResourceInterface $resource) {}
 
     public function onGet(string $slug): static
     {
-        $article = $this->articleService->getBySlug($slug, true);
+        $ro = $this->resource->get->uri('app://self/article')->withQuery(['slug' => $slug])->eager->request();
 
-        if ($article === null) {
+        if ($ro->code === 404) {
             $this->code = 404;
             $this->body = ['error' => '記事が見つかりません', '_template' => 'error/404'];
             return $this;
         }
 
-        $categoryType = (string) ($article['category_type'] ?? '');
+        $categoryType = (string) ($ro->body['article']['category_type'] ?? '');
         $template     = $categoryType === 'youtube' ? 'articles/youtube-detail' : 'articles/detail';
 
-        $categories = $this->categoryService->getAll();
-
-        $this->body = [
-            'article'    => $article,
-            'categories' => $categories,
-            'page_title' => (string) $article['title'],
-            '_template'  => $template,
-        ];
-
+        $this->body = $ro->body + ['_template' => $template];
         return $this;
     }
 }
