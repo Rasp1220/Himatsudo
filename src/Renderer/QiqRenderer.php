@@ -29,7 +29,7 @@ final class QiqRenderer implements RenderInterface
             $this->template->$key = $value;
         }
 
-        return $this->template->render($templateName);
+        return ($this->template)($templateName);
     }
 
     private function resolveTemplateName(ResourceObject $ro): string
