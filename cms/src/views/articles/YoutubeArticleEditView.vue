@@ -108,9 +108,9 @@ async function handleSubmit() {
       payload.published_at = publishedAt
     }
     if (isEdit.value) {
-      await articlesStore.update(Number(route.params.id), payload as Parameters<typeof articlesStore.update>[1])
+      await articlesStore.update(Number(route.params.id), payload as unknown as Parameters<typeof articlesStore.update>[1])
     } else {
-      await articlesStore.create(payload as Parameters<typeof articlesStore.create>[0])
+      await articlesStore.create(payload as unknown as Parameters<typeof articlesStore.create>[0])
     }
     router.push('/articles')
   } catch {
