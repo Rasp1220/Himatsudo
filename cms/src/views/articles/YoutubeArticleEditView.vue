@@ -22,6 +22,8 @@ const youtubeInput = ref('')
 const importLoading = ref(false)
 const importError = ref('')
 const editorHeight = ref(600)
+const publishedAtFromYoutube = ref(false)
+const excerptFromYoutube = ref(false)
 
 const form = reactive({
   title: '',
@@ -66,6 +68,12 @@ function updateEditorHeight() {
   editorHeight.value = Math.max(400, window.innerHeight - 180)
 }
 
+function isoToInputDate(iso: string): string {
+  if (!iso) return ''
+  // ISO 8601 "2023-01-15T10:00:00Z" -> "2023-01-15T10:00"
+  return iso.substring(0, 16)
+}
+
 async function importYoutube() {
   if (!youtubeInput.value.trim()) return
   importLoading.value = true
@@ -78,6 +86,14 @@ async function importYoutube() {
     if (!form.title && data.title) {
       form.title = data.title
       autoSlug()
+    }
+    if (!form.excerpt && data.description) {
+      form.excerpt = data.description.slice(0, 200)
+      excerptFromYoutube.value = true
+    }
+    if (!form.published_at && data.published_at) {
+      form.published_at = isoToInputDate(data.published_at)
+      publishedAtFromYoutube.value = true
     }
   } catch {
     importError.value = '動画情報の取得に失敗しました。URLまたはIDを確認してください。'
@@ -255,7 +271,10 @@ onUnmounted(() => {
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">公開日時</label>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">公開日時</label>
+            <span v-if="publishedAtFromYoutube" class="text-xs text-red-500 font-medium">YouTube投稿日</span>
+          </div>
           <input
             v-model="form.published_at"
             type="datetime-local"
@@ -265,7 +284,10 @@ onUnmounted(() => {
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">抜粋</label>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide">抜粋</label>
+            <span v-if="excerptFromYoutube" class="text-xs text-red-500 font-medium">YouTube説明文</span>
+          </div>
           <textarea
             v-model="form.excerpt"
             rows="3"
