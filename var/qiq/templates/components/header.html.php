@@ -5,7 +5,7 @@
             <nav class="site-nav-desktop">
                 <ul class="site-nav">
                     <li><a href="/articles">記事一覧</a></li>
-                    <?php foreach ($this->categories ?? [] as $cat): ?>
+                    <?php foreach ($categories ?? [] as $cat): ?>
                         <?php if (in_array($cat['type'], ['blog', 'youtube'], true)): ?>
                         <li>
                             <a href="/articles?category_id=<?= (int) $cat['id'] ?>">
@@ -30,7 +30,7 @@
     <button class="hamburger-close" id="hamburgerClose" aria-label="メニューを閉じる">&#x2715;</button>
     <ul>
         <li><a href="/articles">記事一覧</a></li>
-        <?php foreach ($this->categories ?? [] as $cat): ?>
+        <?php foreach ($categories ?? [] as $cat): ?>
             <?php if (in_array($cat['type'], ['blog', 'youtube'], true)): ?>
             <li>
                 <a href="/articles?category_id=<?= (int) $cat['id'] ?>">

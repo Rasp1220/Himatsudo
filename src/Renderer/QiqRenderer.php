@@ -25,11 +25,9 @@ final class QiqRenderer implements RenderInterface
         $templateName = $this->resolveTemplateName($ro);
         $body         = (array) ($ro->body ?? []);
 
-        foreach ($body as $key => $value) {
-            $this->template->$key = $value;
-        }
-
-        return ($this->template)($templateName);
+        $this->template->setData($body);
+        $this->template->setView($templateName);
+        return ($this->template)();
     }
 
     private function resolveTemplateName(ResourceObject $ro): string
