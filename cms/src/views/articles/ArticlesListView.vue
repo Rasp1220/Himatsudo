@@ -24,6 +24,7 @@ const deleteTarget = ref<Article | null>(null)
 
 const columns = [
   { key: 'title', label: 'タイトル' },
+  { key: 'thumbnail', label: 'サムネイル', width: '72px' },
   { key: 'category_name', label: 'カテゴリ', width: '140px' },
   { key: 'status', label: 'ステータス', width: '100px' },
   { key: 'published_at', label: '公開日', width: '120px' },
@@ -131,8 +132,21 @@ onMounted(async () => {
         <template #title="{ row }">
           <RouterLink
             :to="editPath(row as Article)"
-            class="font-medium text-blue-700 hover:underline line-clamp-1"
+            class="font-medium text-blue-700 hover:underline line-clamp-2"
           >{{ (row as Article).title }}</RouterLink>
+        </template>
+        <template #thumbnail="{ row }">
+          <div class="relative overflow-hidden rounded bg-gray-100" style="width:40px;aspect-ratio:3/4">
+            <img
+              v-if="(row as Article).eye_catch_image || (row as Article).youtube_thumbnail"
+              :src="((row as Article).eye_catch_image || (row as Article).youtube_thumbnail)!"
+              :alt="(row as Article).title"
+              class="absolute inset-0 w-full h-full object-contain"
+            />
+            <div v-else class="absolute inset-0 flex items-center justify-center text-gray-400 text-xs font-medium">
+              NO
+            </div>
+          </div>
         </template>
         <template #category_name="{ row }">
           <span

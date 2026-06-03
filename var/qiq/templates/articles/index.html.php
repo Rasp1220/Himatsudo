@@ -78,14 +78,16 @@ $articleUrl = static function (array $article): string {
             ?>
             <article class="card">
                 <a href="<?= $this->h($articleUrl($article)) ?>">
-                    <?php if ($thumb): ?>
-                    <img src="<?= $this->h($thumb) ?>"
-                         alt="<?= $this->h($article['title']) ?>"
-                         class="card-img"
-                         loading="lazy">
-                    <?php else: ?>
-                    <div class="card-no-img">NO IMAGE</div>
-                    <?php endif; ?>
+                    <div class="card-thumb">
+                        <?php if ($thumb): ?>
+                        <img src="<?= $this->h($thumb) ?>"
+                             alt="<?= $this->h($article['title']) ?>"
+                             class="card-img"
+                             loading="lazy">
+                        <?php else: ?>
+                        <span class="card-no-img">NO IMAGE</span>
+                        <?php endif; ?>
+                    </div>
                     <div class="card-body">
                         <?php if (!empty($article['category_name'])): ?>
                         <span class="badge <?= $this->h($catType) ?>"

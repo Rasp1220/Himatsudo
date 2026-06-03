@@ -62,7 +62,11 @@ $request = $router->match($GLOBALS, $_SERVER);
 
 try {
     $resource  = $injector->getInstance(ResourceInterface::class);
-    $ro        = $resource->{$request->method}->uri($request->path)($request->query);
+    // BEAR.Sunday replaces $request->query with the JSON body for PUT/DELETE,
+    // dropping URL query-string params (e.g. ?id=N). Re-merge $_GET so that
+    // resource methods always receive both the body and the URL parameters.
+    $query = array_merge((array) $request->query, $_GET);
+    $ro        = $resource->{$request->method}->uri($request->path)($query);
     $responder = $injector->getInstance(TransferInterface::class);
     $responder($ro, $_SERVER);
     exit(0);
