@@ -221,6 +221,86 @@
   max-width: 240px;
 }
 
+// ─── Header logo ─────────────────────────────────────────────
+.site-header__logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: $c-white;
+  letter-spacing: .05em;
+
+  &:hover { text-decoration: none; color: $c-primary; }
+}
+
+// ─── Top hero ────────────────────────────────────────────────
+.top-hero {
+  text-align: center;
+  padding: 3rem 0 2.5rem;
+  margin-bottom: 2rem;
+
+  &__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: $c-text;
+    margin-bottom: .75rem;
+  }
+
+  &__lead {
+    font-size: 1.05rem;
+    color: $c-text-muted;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+
+// ─── Top sections ─────────────────────────────────────────────
+.top-section {
+  margin-bottom: 3rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: .5rem;
+    border-bottom: 2px solid $c-border-light;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $c-text;
+    margin: 0;
+  }
+
+  &__more {
+    font-size: .875rem;
+    color: $c-primary;
+    font-weight: 600;
+
+    &:hover { text-decoration: underline; }
+  }
+
+  &__cat-link {
+    color: $c-text;
+
+    &:hover { color: $c-primary; text-decoration: none; }
+  }
+}
+
+.top-empty {
+  padding: 3rem 0;
+  text-align: center;
+  color: $c-text-muted;
+}
+
+// ─── Article list page ────────────────────────────────────────
+.article-list-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: 1.75rem;
+}
+
 // ─── Main ─────────────────────────────────────────────────────
 .main-content {
   padding: 2.5rem 0;
