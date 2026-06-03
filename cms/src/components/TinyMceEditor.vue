@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onBeforeUnmount } from 'vue'
 import Editor from '@tinymce/tinymce-vue'
 import 'tinymce/tinymce'
 import 'tinymce/themes/silver'
@@ -36,9 +36,20 @@ const emit = defineEmits<{
   'update:modelValue': [value: string]
 }>()
 
+const editorId = `tinymce-${Math.random().toString(36).slice(2, 9)}`
+
 const localValue = computed({
   get: () => props.modelValue,
   set: (v: string) => emit('update:modelValue', v),
+})
+
+onBeforeUnmount(() => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const tinymce = (window as any).tinymce
+  if (tinymce) {
+    const ed = tinymce.get(editorId)
+    if (ed) ed.remove()
+  }
 })
 
 const editorConfig = computed(() => ({
@@ -80,6 +91,7 @@ const editorConfig = computed(() => ({
 
 <template>
   <Editor
+    :id="editorId"
     v-model="localValue"
     license-key="gpl"
     :init="editorConfig"

@@ -133,3 +133,16 @@ export const articlesApi = {
       .post<YoutubeImportResult>('/articles/youtube-import', { url })
       .then((r) => r.data),
 }
+
+// File upload
+export const uploadApi = {
+  upload: (file: File): Promise<{ url: string }> => {
+    const formData = new FormData()
+    formData.append('file', file)
+    return http
+      .post<{ url: string }>('/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      .then((r) => r.data)
+  },
+}

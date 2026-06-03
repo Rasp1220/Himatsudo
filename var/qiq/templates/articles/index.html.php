@@ -22,8 +22,8 @@ $this->page_title = $page_title ?? '記事一覧';
                 <?php $thumb = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null; ?>
                 <?php if ($thumb): ?>
                 <img src="<?= $this->h($thumb) ?>" alt="<?= $this->h($article['title']) ?>" class="card-img">
-                <?php elseif (($article['category_type'] ?? '') === 'youtube'): ?>
-                <div style="height:180px;background:#fee2e2;display:flex;align-items:center;justify-content:center;font-size:2rem">▶</div>
+                <?php else: ?>
+                <div class="card-no-img">NO IMAGE</div>
                 <?php endif; ?>
                 <div class="card-body">
                     <?php if (!empty($article['category_name'])): ?>

@@ -177,6 +177,50 @@
   }
 }
 
+// ─── Breadcrumb ───────────────────────────────────────────────
+.breadcrumb {
+  margin-bottom: 1.25rem;
+}
+
+.breadcrumb-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  list-style: none;
+  gap: 0;
+  font-size: .8rem;
+  color: $c-text-muted;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+
+  &::after {
+    content: '›';
+    margin: 0 .4em;
+    color: $c-border;
+  }
+
+  &:last-child::after {
+    display: none;
+  }
+
+  a {
+    color: $c-primary-dark;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+.breadcrumb-current {
+  color: $c-text-muted;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 240px;
+}
+
 // ─── Main ─────────────────────────────────────────────────────
 .main-content {
   padding: 2.5rem 0;

@@ -103,7 +103,17 @@
 .carousel-no-thumb {
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: linear-gradient(135deg, $c-primary-light, $c-border-light);
+  background: $c-primary-light;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  span {
+    font-size: .7rem;
+    font-weight: 600;
+    color: $c-text-muted;
+    letter-spacing: .05em;
+  }
 }
 
 .carousel-info {
