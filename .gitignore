@@ -11,5 +11,8 @@ node_modules/
 # BearSunday runtime cache
 var/tmp/
 
+# Qiq compiled template cache
+var/qiq/cache/
+
 # Environment
 .env

@@ -17,6 +17,7 @@ final class QiqRenderer implements RenderInterface
         $this->template = Template::new(
             paths: [$appDir . '/var/qiq/templates'],
             extension: '.html.php',
+            cacheDir: $appDir . '/var/qiq/cache',
         );
     }
 
