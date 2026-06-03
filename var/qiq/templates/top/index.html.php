@@ -23,12 +23,17 @@ $sections[] = [
     'href'     => '/articles',
 ];
 foreach ($categories as $cat) {
+    $href = match($cat['type'] ?? '') {
+        'blog'    => '/blog',
+        'youtube' => '/youtube',
+        default   => '/articles?category_id=' . (int) $cat['id'],
+    };
     $sections[] = [
         'title'    => $cat['name'],
         'badge'    => $cat['type'] ?? '',
         'uid'      => 'swiper-cat-' . (int) $cat['id'],
         'articles' => $articlesByCategory[(int) $cat['id']] ?? [],
-        'href'     => '/articles?category_id=' . (int) $cat['id'],
+        'href'     => $href,
     ];
 }
 ?>
@@ -60,7 +65,7 @@ foreach ($categories as $cat) {
                             <?php if ($thumb): ?>
                             <img src="<?= $this->h($thumb) ?>" alt="<?= $this->h($a['title']) ?>" loading="lazy">
                             <?php else: ?>
-                            <div class="carousel-no-thumb"></div>
+                            <div class="carousel-no-thumb"><span>NO IMAGE</span></div>
                             <?php endif; ?>
                         </div>
                         <div class="carousel-info">
@@ -87,17 +92,17 @@ document.addEventListener('DOMContentLoaded', function () {
         var outer = el.closest('.cat-swiper-outer');
         new Swiper(el, {
             grabCursor: true,
-            slidesPerView: 10,
-            spaceBetween: 12,
+            slidesPerView: 4,
+            spaceBetween: 16,
             navigation: {
                 prevEl: outer ? outer.querySelector('.cat-swiper-prev') : null,
                 nextEl: outer ? outer.querySelector('.cat-swiper-next') : null,
             },
             breakpoints: {
-                0:   { slidesPerView: 2.3, spaceBetween: 8  },
-                481: { slidesPerView: 4.5, spaceBetween: 10 },
-                769: { slidesPerView: 7,   spaceBetween: 12 },
-                1024:{ slidesPerView: 10,  spaceBetween: 12 },
+                0:   { slidesPerView: 1.4, spaceBetween: 10 },
+                481: { slidesPerView: 2.3, spaceBetween: 12 },
+                769: { slidesPerView: 3,   spaceBetween: 14 },
+                1024:{ slidesPerView: 4,   spaceBetween: 16 },
             },
         });
     });

@@ -7,8 +7,9 @@
                     <li><a href="/articles">記事一覧</a></li>
                     <?php foreach ($categories ?? [] as $cat): ?>
                         <?php if (in_array($cat['type'], ['blog', 'youtube'], true)): ?>
+                        <?php $catUrl = $cat['type'] === 'blog' ? '/blog' : '/youtube'; ?>
                         <li>
-                            <a href="/articles?category_id=<?= (int) $cat['id'] ?>">
+                            <a href="<?= $this->h($catUrl) ?>">
                                 <?= $this->h($cat['name']) ?>
                             </a>
                         </li>
@@ -32,8 +33,9 @@
         <li><a href="/articles">記事一覧</a></li>
         <?php foreach ($categories ?? [] as $cat): ?>
             <?php if (in_array($cat['type'], ['blog', 'youtube'], true)): ?>
+                <?php $catUrl = $cat['type'] === 'blog' ? '/blog' : '/youtube'; ?>
             <li>
-                <a href="/articles?category_id=<?= (int) $cat['id'] ?>">
+                <a href="<?= $this->h($catUrl) ?>">
                     <?= $this->h($cat['name']) ?>
                 </a>
             </li>

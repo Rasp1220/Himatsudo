@@ -6,6 +6,7 @@ import BlockEditor from '@/components/blocks/BlockEditor.vue'
 import { useArticlesStore } from '@/stores/articles'
 import { useCategoriesStore } from '@/stores/categories'
 import { useAuthStore } from '@/stores/auth'
+import { uploadApi } from '@/api/client'
 import type { ArticleStatus } from '@/types'
 
 const route = useRoute()
@@ -17,12 +18,14 @@ const auth = useAuthStore()
 const isEdit = computed(() => !!route.params.id)
 const saving = ref(false)
 const errorMsg = ref('')
+const thumbnailUploading = ref(false)
+const thumbnailError = ref('')
+const thumbnailInput = ref<HTMLInputElement | null>(null)
 
 const form = reactive({
   title: '',
   slug: '',
   blocks: '',
-  excerpt: '',
   eye_catch_image: '',
   category_id: null as number | null,
   status: 'draft' as ArticleStatus,
@@ -53,6 +56,27 @@ function inputToDbDate(inputDate: string): string | null {
   return inputDate.replace('T', ' ') + ':00'
 }
 
+async function handleThumbnailChange(e: Event) {
+  const input = e.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+  thumbnailUploading.value = true
+  thumbnailError.value = ''
+  try {
+    const result = await uploadApi.upload(file)
+    form.eye_catch_image = result.url
+  } catch {
+    thumbnailError.value = '画像のアップロードに失敗しました'
+  } finally {
+    thumbnailUploading.value = false
+    input.value = ''
+  }
+}
+
+function removeThumbnail() {
+  form.eye_catch_image = ''
+}
+
 async function handleSubmit(overrideStatus?: ArticleStatus) {
   saving.value = true
   errorMsg.value = ''
@@ -63,7 +87,6 @@ async function handleSubmit(overrideStatus?: ArticleStatus) {
       slug: form.slug,
       content: '',
       blocks: form.blocks,
-      excerpt: form.excerpt,
       eye_catch_image: form.eye_catch_image,
       category_id: form.category_id ?? 0,
       status: overrideStatus ?? form.status,
@@ -100,7 +123,6 @@ onMounted(async () => {
     if (a) {
       form.title = a.title
       form.slug = a.slug
-      form.excerpt = a.excerpt ?? ''
       form.eye_catch_image = a.eye_catch_image ?? ''
       form.category_id = a.category_id
       form.status = a.status
@@ -216,29 +238,38 @@ onMounted(async () => {
             </div>
           </div>
 
-          <!-- アイキャッチ画像 -->
+          <!-- サムネイル -->
           <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">アイキャッチ画像 URL</label>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">サムネイル</label>
             <input
-              v-model="form.eye_catch_image"
-              type="url"
-              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="https://..."
+              ref="thumbnailInput"
+              type="file"
+              accept="image/jpeg,image/png,image/gif,image/webp"
+              class="hidden"
+              @change="handleThumbnailChange"
             />
-            <div v-if="form.eye_catch_image" class="mt-2">
-              <img :src="form.eye_catch_image" alt="プレビュー" class="rounded border border-gray-200 object-cover max-h-40" />
+            <div v-if="form.eye_catch_image" class="mt-1 relative inline-block">
+              <img :src="form.eye_catch_image" alt="サムネイル" class="rounded border border-gray-200 object-cover h-40 w-auto max-w-xs" />
+              <button
+                type="button"
+                @click="removeThumbnail"
+                class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs leading-none hover:bg-red-600"
+              >✕</button>
             </div>
-          </div>
-
-          <!-- 抜粋 -->
-          <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">抜粋</label>
-            <textarea
-              v-model="form.excerpt"
-              rows="3"
-              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
-              placeholder="記事の概要（一覧ページに表示）"
-            />
+            <div v-else class="mt-1 w-48 h-28 bg-gray-100 border border-dashed border-gray-300 rounded flex items-center justify-center text-xs text-gray-400">
+              NO IMAGE
+            </div>
+            <div class="mt-2 flex items-center gap-2">
+              <button
+                type="button"
+                :disabled="thumbnailUploading"
+                @click="thumbnailInput?.click()"
+                class="px-3 py-1.5 text-xs bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 disabled:opacity-50"
+              >
+                {{ thumbnailUploading ? 'アップロード中…' : '画像を選択' }}
+              </button>
+              <span v-if="thumbnailError" class="text-xs text-red-500">{{ thumbnailError }}</span>
+            </div>
           </div>
         </section>
 

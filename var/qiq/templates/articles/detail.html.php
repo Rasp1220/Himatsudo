@@ -19,6 +19,30 @@ if ($richHtml === null && !empty($article['content'])) {
     $richHtml = (string) $article['content'];
 }
 ?>
+<nav class="breadcrumb" aria-label="パンくずリスト">
+    <ol class="breadcrumb-list">
+        <li class="breadcrumb-item"><a href="/">ホーム</a></li>
+        <li class="breadcrumb-item"><a href="/articles">記事一覧</a></li>
+        <?php if (!empty($article['category_name'])): ?>
+        <?php
+            $catBreadcrumbUrl = match($article['category_type'] ?? '') {
+                'blog'    => '/blog',
+                'youtube' => '/youtube',
+                default   => '/articles?category_id=' . (int) $article['category_id'],
+            };
+        ?>
+        <li class="breadcrumb-item">
+            <a href="<?= $this->h($catBreadcrumbUrl) ?>">
+                <?= $this->h($article['category_name']) ?>
+            </a>
+        </li>
+        <?php endif; ?>
+        <li class="breadcrumb-item breadcrumb-current" aria-current="page">
+            <?= $this->h(mb_strimwidth((string) $article['title'], 0, 40, '…')) ?>
+        </li>
+    </ol>
+</nav>
+
 <article class="article-detail">
     <?php if (!empty($article['category_name'])): ?>
     <div class="article-category">
