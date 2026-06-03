@@ -3,32 +3,28 @@
  * @var array<int, array<string, mixed>> $articles
  * @var array<int, array<string, mixed>> $categories
  * @var array<string, mixed>|null        $current_category
- * @var int    $page
- * @var int    $last_page
- * @var int    $total
+ * @var int      $page
+ * @var int      $last_page
+ * @var int      $total
  * @var int|null $category_id
- * @var string $page_title
+ * @var string   $page_title
  * @var string|null $list_base_url   set by Blog / Youtube pages
  * @var string|null $category_slug   set by Category pages
  */
 $this->setLayout('layout');
 $this->page_title = $page_title ?? '記事一覧';
 
-// Determine base URL for pagination and filters
 if (!empty($list_base_url)) {
-    $baseUrl     = (string) $list_base_url;
-    $showFilters = false;
+    $baseUrl = (string) $list_base_url;
 } elseif (!empty($category_slug)) {
-    $baseUrl     = '/' . rawurlencode((string) $category_slug);
-    $showFilters = false;
+    $baseUrl = '/' . rawurlencode((string) $category_slug);
 } else {
-    $baseUrl     = '/articles';
-    $showFilters = true;
+    $baseUrl = '/articles';
 }
 
-$pageUrl = static function (int $p, string $base, ?int $catId) use ($showFilters): string {
+$pageUrl = static function (int $p, string $base, ?int $catId): string {
     $params = [];
-    if ($showFilters && $catId !== null) {
+    if ($catId !== null && $base === '/articles') {
         $params[] = 'category_id=' . $catId;
     }
     if ($p > 1) {
@@ -37,16 +33,16 @@ $pageUrl = static function (int $p, string $base, ?int $catId) use ($showFilters
     return $base . ($params ? '?' . implode('&', $params) : '');
 };
 
-$categoryFilterUrl = static function (array $cat, string $base): string {
+$categoryUrl = static function (array $cat): string {
     return match ($cat['type'] ?? 'custom') {
         'blog'    => '/blog',
         'youtube' => '/youtube',
-        default   => $base . '?category_id=' . (int) $cat['id'],
+        default   => '/' . rawurlencode((string) $cat['slug']),
     };
 };
 
 $articleUrl = static function (array $article): string {
-    return '/' . rawurlencode((string) $article['slug']);
+    return '/articles/' . rawurlencode((string) $article['slug']);
 };
 ?>
 
@@ -66,97 +62,93 @@ $articleUrl = static function (array $article): string {
 
 <h1 class="page-title"><?= $this->h($this->page_title) ?></h1>
 
-<?php if ($showFilters && !empty($categories)): ?>
-<div class="article-list-filters">
-    <a href="<?= $this->h($baseUrl) ?>"
-       class="category-link<?= $category_id === null ? ' category-link--active' : '' ?>">
-        すべて
-    </a>
-    <?php foreach ($categories as $cat): ?>
-    <a href="<?= $this->h($categoryFilterUrl($cat, $baseUrl)) ?>"
-       class="category-link<?= (int) ($cat['id'] ?? 0) === $category_id ? ' category-link--active' : '' ?>">
-        <?= $this->h((string) $cat['name']) ?>
-    </a>
-    <?php endforeach; ?>
-</div>
-<?php endif; ?>
+<div class="content-layout">
+    <div class="content-main">
+        <?php if (!empty($articles)): ?>
+        <div class="articles-grid">
+            <?php foreach ($articles as $article): ?>
+            <?php
+                $thumb   = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null;
+                $catType = $article['category_type'] ?? 'custom';
+            ?>
+            <article class="card">
+                <a href="<?= $this->h($articleUrl($article)) ?>">
+                    <?php if ($thumb): ?>
+                    <img src="<?= $this->h($thumb) ?>"
+                         alt="<?= $this->h($article['title']) ?>"
+                         class="card-img"
+                         loading="lazy">
+                    <?php else: ?>
+                    <div class="card-no-img">NO IMAGE</div>
+                    <?php endif; ?>
+                    <div class="card-body">
+                        <?php if (!empty($article['category_name'])): ?>
+                        <span class="badge <?= $this->h($catType) ?>"
+                              style="display:inline-block;margin-bottom:.4rem">
+                            <?= $this->h($article['category_name']) ?>
+                        </span>
+                        <?php endif; ?>
+                        <h2 class="card-title"><?= $this->h($article['title']) ?></h2>
+                        <?php if (!empty($article['excerpt'])): ?>
+                        <p style="font-size:.875rem;color:#475569;margin-top:.4rem">
+                            <?= $this->h(mb_strimwidth((string) $article['excerpt'], 0, 60, '…')) ?>
+                        </p>
+                        <?php endif; ?>
+                        <?php if (!empty($article['published_at'])): ?>
+                        <p class="card-meta" style="margin-top:.4rem">
+                            <?= $this->h(date('Y年m月d日', strtotime((string) $article['published_at']))) ?>
+                        </p>
+                        <?php endif; ?>
+                    </div>
+                </a>
+            </article>
+            <?php endforeach; ?>
+        </div>
 
-<?php if (!empty($articles)): ?>
-<div class="article-card-grid">
-    <?php foreach ($articles as $article): ?>
-    <?php
-        $thumb   = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null;
-        $catType = $article['category_type'] ?? 'custom';
-    ?>
-    <article class="article-card">
-        <a href="<?= $this->h($articleUrl($article)) ?>" class="article-card__link">
-            <?php if ($thumb): ?>
-            <div class="article-card__thumb">
-                <img src="<?= $this->h($thumb) ?>"
-                     alt="<?= $this->h($article['title']) ?>"
-                     class="article-card__img"
-                     loading="lazy">
-                <?php if ($catType === 'youtube'): ?>
-                <span class="article-card__play-icon">▶</span>
-                <?php endif; ?>
-            </div>
+        <?php if (($last_page ?? 1) > 1): ?>
+        <nav class="pagination" aria-label="ページネーション">
+            <?php if ($page > 1): ?>
+            <a href="<?= $this->h($pageUrl($page - 1, $baseUrl, $category_id ?? null)) ?>">&laquo;</a>
             <?php endif; ?>
-            <div class="article-card__body">
-                <?php if (!empty($article['category_name'])): ?>
-                <span class="badge <?= $this->h($catType) ?>">
-                    <?= $this->h($article['category_name']) ?>
-                </span>
-                <?php endif; ?>
-                <h2 class="article-card__title"><?= $this->h($article['title']) ?></h2>
-                <?php if (!empty($article['excerpt'])): ?>
-                <p class="article-card__excerpt">
-                    <?= $this->h(mb_strimwidth((string) $article['excerpt'], 0, 80, '…')) ?>
-                </p>
-                <?php endif; ?>
-                <?php if (!empty($article['published_at'])): ?>
-                <time class="article-card__date" datetime="<?= $this->h($article['published_at']) ?>">
-                    <?= $this->h(date('Y年m月d日', strtotime((string) $article['published_at']))) ?>
-                </time>
-                <?php endif; ?>
-            </div>
-        </a>
-    </article>
-    <?php endforeach; ?>
+            <?php for ($p = max(1, $page - 2); $p <= min($last_page, $page + 2); $p++): ?>
+            <?php if ($p === $page): ?>
+            <span class="current"><?= $p ?></span>
+            <?php else: ?>
+            <a href="<?= $this->h($pageUrl($p, $baseUrl, $category_id ?? null)) ?>"><?= $p ?></a>
+            <?php endif; ?>
+            <?php endfor; ?>
+            <?php if ($page < $last_page): ?>
+            <a href="<?= $this->h($pageUrl($page + 1, $baseUrl, $category_id ?? null)) ?>">&raquo;</a>
+            <?php endif; ?>
+        </nav>
+        <?php endif; ?>
+
+        <?php else: ?>
+        <div class="no-articles-msg">まだ記事がありません。</div>
+        <?php endif; ?>
+    </div>
+
+    <?php if (!empty($categories)): ?>
+    <aside class="content-aside sidebar">
+        <h3>カテゴリ</h3>
+        <ul>
+            <li>
+                <a href="/articles"<?= (empty($category_id) && empty($list_base_url) && empty($category_slug)) ? ' class="active"' : '' ?>>すべて</a>
+            </li>
+            <?php foreach ($categories as $cat): ?>
+            <?php
+                $catUrl   = $categoryUrl($cat);
+                $isActive = (!empty($category_id) && (int) ($cat['id'] ?? 0) === (int) $category_id)
+                         || (!empty($list_base_url) && $catUrl === (string) $list_base_url)
+                         || (!empty($category_slug) && ($cat['slug'] ?? '') === (string) $category_slug);
+            ?>
+            <li>
+                <a href="<?= $this->h($catUrl) ?>"<?= $isActive ? ' class="active"' : '' ?>>
+                    <?= $this->h((string) $cat['name']) ?>
+                </a>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+    </aside>
+    <?php endif; ?>
 </div>
-
-<?php if ($last_page > 1): ?>
-<nav class="pagination" aria-label="ページネーション">
-    <?php if ($page > 1): ?>
-    <a href="<?= $this->h($pageUrl($page - 1, $baseUrl, $category_id ?? null)) ?>">&laquo;</a>
-    <?php endif; ?>
-
-    <?php
-    $rangeStart = max(1, $page - 2);
-    $rangeEnd   = min($last_page, $page + 2);
-    if ($rangeStart > 1): ?>
-    <a href="<?= $this->h($pageUrl(1, $baseUrl, $category_id ?? null)) ?>">1</a>
-    <?php if ($rangeStart > 2): ?><span>…</span><?php endif; ?>
-    <?php endif; ?>
-
-    <?php for ($p = $rangeStart; $p <= $rangeEnd; $p++): ?>
-    <?php if ($p === $page): ?>
-    <span class="current"><?= $p ?></span>
-    <?php else: ?>
-    <a href="<?= $this->h($pageUrl($p, $baseUrl, $category_id ?? null)) ?>"><?= $p ?></a>
-    <?php endif; ?>
-    <?php endfor; ?>
-
-    <?php if ($rangeEnd < $last_page): ?>
-    <?php if ($rangeEnd < $last_page - 1): ?><span>…</span><?php endif; ?>
-    <a href="<?= $this->h($pageUrl($last_page, $baseUrl, $category_id ?? null)) ?>"><?= $last_page ?></a>
-    <?php endif; ?>
-
-    <?php if ($page < $last_page): ?>
-    <a href="<?= $this->h($pageUrl($page + 1, $baseUrl, $category_id ?? null)) ?>">&raquo;</a>
-    <?php endif; ?>
-</nav>
-<?php endif; ?>
-
-<?php else: ?>
-<div class="no-articles-msg">まだ記事がありません。</div>
-<?php endif; ?>

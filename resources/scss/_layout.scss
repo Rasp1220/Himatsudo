@@ -221,84 +221,61 @@
   max-width: 240px;
 }
 
-// ─── Header logo ─────────────────────────────────────────────
-.site-header__logo {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: $c-white;
-  letter-spacing: .05em;
-
-  &:hover { text-decoration: none; color: $c-primary; }
-}
-
-// ─── Top hero ────────────────────────────────────────────────
-.top-hero {
-  text-align: center;
-  padding: 3rem 0 2.5rem;
-  margin-bottom: 2rem;
-
-  &__title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: $c-text;
-    margin-bottom: .75rem;
-  }
-
-  &__lead {
-    font-size: 1.05rem;
-    color: $c-text-muted;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-}
-
-// ─── Top sections ─────────────────────────────────────────────
-.top-section {
-  margin-bottom: 3rem;
-
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    padding-bottom: .5rem;
-    border-bottom: 2px solid $c-border-light;
-  }
-
-  &__title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: $c-text;
-    margin: 0;
-  }
-
-  &__more {
-    font-size: .875rem;
-    color: $c-primary;
-    font-weight: 600;
-
-    &:hover { text-decoration: underline; }
-  }
-
-  &__cat-link {
-    color: $c-text;
-
-    &:hover { color: $c-primary; text-decoration: none; }
-  }
-}
-
-.top-empty {
-  padding: 3rem 0;
-  text-align: center;
-  color: $c-text-muted;
-}
-
-// ─── Article list page ────────────────────────────────────────
-.article-list-filters {
+// ─── Article list layout (grid + sidebar) ────────────────────
+.content-layout {
   display: flex;
-  flex-wrap: wrap;
-  gap: .5rem;
-  margin-bottom: 1.75rem;
+  gap: 2rem;
+  align-items: flex-start;
+
+  @media (max-width: $bp-tablet) {
+    flex-direction: column;
+  }
+}
+
+.content-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.content-aside {
+  width: 200px;
+  flex-shrink: 0;
+
+  @media (max-width: $bp-tablet) {
+    width: 100%;
+  }
+}
+
+// ─── Sidebar ──────────────────────────────────────────────────
+.sidebar {
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: $c-text;
+  }
+
+  ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+  }
+
+  a {
+    font-size: .9rem;
+    color: $c-text-muted;
+
+    &:hover {
+      color: $c-primary;
+      text-decoration: none;
+    }
+
+    &.active {
+      color: $c-primary-dark;
+      font-weight: 700;
+    }
+  }
 }
 
 // ─── Main ─────────────────────────────────────────────────────
