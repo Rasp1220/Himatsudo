@@ -31,7 +31,7 @@
         "serve": "@php bin/serve.php",
         "serve:app": "@php -S localhost:8080 -t public",
         "serve:cms": "@php -r \"chdir(getcwd().'/cms'); passthru('npm run dev');\"",
-        "cache:clear": "@php -r \"array_map('unlink', glob('var/qiq/cache/*.php') ?: []); echo 'Qiq cache cleared.' . PHP_EOL;\"",
+        "qiq-clear": "@php bin/qiq-clear.php",
         "migrate": "php bin/migrate.php",
         "migrate:fresh": "php bin/migrate.php --fresh",
         "post-autoload-dump": [
