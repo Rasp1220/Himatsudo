@@ -13,25 +13,35 @@
     transform: translateY(-4px);
     box-shadow: 0 6px 20px $c-shadow;
   }
+
+  > a { display: block; }
 }
 
+// Portrait thumbnail area — 3:4 ratio, image contained (letterboxed)
 .card-thumb {
   width: 100%;
   aspect-ratio: 3 / 4;
-  background: $c-primary-xlight;
+  position: relative;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: $c-primary-xlight;
+}
+
+.card-img,
+.card-no-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .card-img {
-  width: 100%;
-  height: 100%;
   object-fit: contain;
 }
 
 .card-no-img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: $c-text-muted;
   font-size: .8rem;
   font-weight: 600;
