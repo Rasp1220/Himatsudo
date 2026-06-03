@@ -134,13 +134,21 @@ export const articlesApi = {
       .then((r) => r.data),
 }
 
-// File upload
+// File upload — base64 JSON instead of multipart to work with BEAR.Sunday's JSON API context
 export const uploadApi = {
   upload: (file: File): Promise<{ url: string }> => {
-    const formData = new FormData()
-    formData.append('file', file)
-    return http
-      .post<{ url: string }>('/upload', formData)
-      .then((r) => r.data)
+    return new Promise<{ url: string }>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        const dataUrl = reader.result as string
+        const base64 = dataUrl.split(',')[1]
+        http
+          .post<{ url: string }>('/upload', { data: base64, name: file.name, mime: file.type })
+          .then((r) => resolve(r.data))
+          .catch(reject)
+      }
+      reader.onerror = () => reject(new Error('ファイルの読み込みに失敗しました'))
+      reader.readAsDataURL(file)
+    })
   },
 }
