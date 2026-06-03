@@ -221,6 +221,63 @@
   max-width: 240px;
 }
 
+// ─── Article list layout (grid + sidebar) ────────────────────
+.content-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+
+  @media (max-width: $bp-tablet) {
+    flex-direction: column;
+  }
+}
+
+.content-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.content-aside {
+  width: 200px;
+  flex-shrink: 0;
+
+  @media (max-width: $bp-tablet) {
+    width: 100%;
+  }
+}
+
+// ─── Sidebar ──────────────────────────────────────────────────
+.sidebar {
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: $c-text;
+  }
+
+  ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+  }
+
+  a {
+    font-size: .9rem;
+    color: $c-text-muted;
+
+    &:hover {
+      color: $c-primary;
+      text-decoration: none;
+    }
+
+    &.active {
+      color: $c-primary-dark;
+      font-weight: 700;
+    }
+  }
+}
+
 // ─── Main ─────────────────────────────────────────────────────
 .main-content {
   padding: 2.5rem 0;

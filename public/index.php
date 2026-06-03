@@ -35,6 +35,10 @@ if (!$isApi) {
         // /articles/{article-slug} → article detail
         $_SERVER['REQUEST_URI'] = '/article?slug=' . urlencode($m[1]);
         $_GET['slug'] = $m[1];
+    } elseif (preg_match('#^/blog/([a-z0-9][a-z0-9\-]*)$#', (string) $path, $m)) {
+        // /blog/{article-slug} → blog article detail
+        $_SERVER['REQUEST_URI'] = '/article?slug=' . urlencode($m[1]);
+        $_GET['slug'] = $m[1];
     } elseif (preg_match('#^/([a-z][a-z0-9\-]*)$#', (string) $path, $m)
               && !in_array($path, ['/articles', '/article'], true)) {
         // /{category-slug} → category article list

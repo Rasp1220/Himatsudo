@@ -19,7 +19,7 @@ class Category extends ResourceObject
         $category = $this->categoryService->getBySlug($slug);
         if ($category === null) {
             $this->code = 404;
-            $this->body = ['error' => 'Category not found'];
+            $this->body = ['error' => 'カテゴリが見つかりません', '_template' => 'error/404'];
             return $this;
         }
 
