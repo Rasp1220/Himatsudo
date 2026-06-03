@@ -140,9 +140,7 @@ export const uploadApi = {
     const formData = new FormData()
     formData.append('file', file)
     return http
-      .post<{ url: string }>('/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
+      .post<{ url: string }>('/upload', formData)
       .then((r) => r.data)
   },
 }

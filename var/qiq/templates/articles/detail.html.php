@@ -24,8 +24,15 @@ if ($richHtml === null && !empty($article['content'])) {
         <li class="breadcrumb-item"><a href="/">ホーム</a></li>
         <li class="breadcrumb-item"><a href="/articles">記事一覧</a></li>
         <?php if (!empty($article['category_name'])): ?>
+        <?php
+            $catBreadcrumbUrl = match($article['category_type'] ?? '') {
+                'blog'    => '/blog',
+                'youtube' => '/youtube',
+                default   => '/articles?category_id=' . (int) $article['category_id'],
+            };
+        ?>
         <li class="breadcrumb-item">
-            <a href="/articles?category_id=<?= (int) $article['category_id'] ?>">
+            <a href="<?= $this->h($catBreadcrumbUrl) ?>">
                 <?= $this->h($article['category_name']) ?>
             </a>
         </li>

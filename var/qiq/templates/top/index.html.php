@@ -23,12 +23,17 @@ $sections[] = [
     'href'     => '/articles',
 ];
 foreach ($categories as $cat) {
+    $href = match($cat['type'] ?? '') {
+        'blog'    => '/blog',
+        'youtube' => '/youtube',
+        default   => '/articles?category_id=' . (int) $cat['id'],
+    };
     $sections[] = [
         'title'    => $cat['name'],
         'badge'    => $cat['type'] ?? '',
         'uid'      => 'swiper-cat-' . (int) $cat['id'],
         'articles' => $articlesByCategory[(int) $cat['id']] ?? [],
-        'href'     => '/articles?category_id=' . (int) $cat['id'],
+        'href'     => $href,
     ];
 }
 ?>

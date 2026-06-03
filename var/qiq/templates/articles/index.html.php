@@ -6,8 +6,26 @@
 /** @var int $last_page */
 /** @var int|null $category_id */
 /** @var array<string, mixed>|null $current_category */
+/** @var string|null $list_base_url */
 $this->setLayout('layout');
 $this->page_title = $page_title ?? '記事一覧';
+
+// Helper: build URL for a category
+function categoryUrl(array $cat): string {
+    return match($cat['type'] ?? '') {
+        'blog'    => '/blog',
+        'youtube' => '/youtube',
+        default   => '/articles?category_id=' . (int) $cat['id'],
+    };
+}
+
+// Helper: build pagination link
+function pageUrl(?string $listBase, ?int $catId, int $p): string {
+    if ($listBase !== null) {
+        return $listBase . '?page=' . $p;
+    }
+    return '?page=' . $p . ($catId !== null ? '&category_id=' . $catId : '');
+}
 ?>
 <h1 class="page-title"><?= $this->h($this->page_title) ?></h1>
 
@@ -36,11 +54,6 @@ $this->page_title = $page_title ?? '記事一覧';
                             <?= $this->h($article['title']) ?>
                         </a>
                     </h2>
-                    <?php if (!empty($article['excerpt'])): ?>
-                    <p style="font-size:.875rem;color:#475569;margin-top:.4rem">
-                        <?= $this->h(mb_strimwidth((string) $article['excerpt'], 0, 80, '…')) ?>
-                    </p>
-                    <?php endif; ?>
                     <p class="card-meta" style="margin-top:.4rem">
                         <?= $this->h((string) ($article['published_at'] ? date('Y年m月d日', strtotime((string) $article['published_at'])) : '')) ?>
                     </p>
@@ -52,17 +65,17 @@ $this->page_title = $page_title ?? '記事一覧';
         <?php if ($last_page > 1): ?>
         <nav class="pagination">
             <?php if ($page > 1): ?>
-            <a href="?page=<?= $page - 1 ?><?= $category_id ? '&category_id=' . $category_id : '' ?>">&laquo;</a>
+            <a href="<?= $this->h(pageUrl($list_base_url ?? null, $category_id ?? null, $page - 1)) ?>">&laquo;</a>
             <?php endif; ?>
             <?php for ($i = max(1, $page - 2); $i <= min($last_page, $page + 2); $i++): ?>
             <?php if ($i === $page): ?>
             <span class="current"><?= $i ?></span>
             <?php else: ?>
-            <a href="?page=<?= $i ?><?= $category_id ? '&category_id=' . $category_id : '' ?>"><?= $i ?></a>
+            <a href="<?= $this->h(pageUrl($list_base_url ?? null, $category_id ?? null, $i)) ?>"><?= $i ?></a>
             <?php endif; ?>
             <?php endfor; ?>
             <?php if ($page < $last_page): ?>
-            <a href="?page=<?= $page + 1 ?><?= $category_id ? '&category_id=' . $category_id : '' ?>">&raquo;</a>
+            <a href="<?= $this->h(pageUrl($list_base_url ?? null, $category_id ?? null, $page + 1)) ?>">&raquo;</a>
             <?php endif; ?>
         </nav>
         <?php endif; ?>
@@ -72,11 +85,12 @@ $this->page_title = $page_title ?? '記事一覧';
     <aside style="width:200px;flex-shrink:0">
         <h3 style="font-weight:700;margin-bottom:1rem">カテゴリ</h3>
         <ul style="list-style:none;display:flex;flex-direction:column;gap:.5rem">
-            <li><a href="/articles" style="color:<?= $category_id === null ? '#2563eb' : '#334155' ?>;font-weight:<?= $category_id === null ? '700' : '400' ?>">すべて</a></li>
+            <li><a href="/articles" style="color:<?= $category_id === null && ($list_base_url ?? null) === null ? '#2563eb' : '#334155' ?>;font-weight:<?= $category_id === null && ($list_base_url ?? null) === null ? '700' : '400' ?>">すべて</a></li>
             <?php foreach ($categories as $cat): ?>
+            <?php $catHref = categoryUrl($cat); $isActive = (int) ($category_id ?? 0) === (int) $cat['id']; ?>
             <li>
-                <a href="/articles?category_id=<?= (int) $cat['id'] ?>"
-                   style="color:<?= (int) ($category_id ?? 0) === (int) $cat['id'] ? '#2563eb' : '#334155' ?>;font-weight:<?= (int) ($category_id ?? 0) === (int) $cat['id'] ? '700' : '400' ?>">
+                <a href="<?= $this->h($catHref) ?>"
+                   style="color:<?= $isActive ? '#2563eb' : '#334155' ?>;font-weight:<?= $isActive ? '700' : '400' ?>">
                     <?= $this->h($cat['name']) ?>
                 </a>
             </li>
