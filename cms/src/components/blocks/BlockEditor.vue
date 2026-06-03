@@ -204,7 +204,7 @@ function badgeClass(type: string): string {
     <!-- ブロックリスト -->
     <template v-for="(block, idx) in blocks" :key="block.id">
       <div
-        :ref="(el) => { if (el instanceof HTMLElement) blockRefs.set(block.id, el) }"
+        :ref="(el) => { if (el) blockRefs.set(block.id, el as HTMLElement) }"
         class="block-item bg-white border rounded-lg overflow-hidden transition-all duration-150"
         :class="[
           dragOverIndex === idx && dragIndex !== idx

@@ -138,9 +138,10 @@ export const articlesApi = {
       blocks: orig.blocks ?? '',
       excerpt: orig.excerpt ?? '',
       eye_catch_image: orig.eye_catch_image ?? '',
-      category_id: orig.category_id ?? null,
+      // category_id=0 は「カテゴリなし」を意味する（既存のhandleSubmitと同じ規約）
+      category_id: orig.category_id ?? 0,
       status: 'draft',
-      author_id: orig.author_id,
+      author_id: Number(orig.author_id),
       youtube_url: orig.youtube_url ?? '',
       youtube_video_id: orig.youtube_video_id ?? '',
       youtube_thumbnail: orig.youtube_thumbnail ?? '',
