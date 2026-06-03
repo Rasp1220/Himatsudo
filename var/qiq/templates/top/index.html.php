@@ -16,7 +16,8 @@ $categoryUrl = static function (array $category): string {
 };
 
 $articleUrl = static function (array $article): string {
-    return '/articles/' . rawurlencode((string) $article['slug']);
+    $prefix = ($article['category_type'] ?? 'custom') === 'blog' ? '/blog' : '/articles';
+    return $prefix . '/' . rawurlencode((string) $article['slug']);
 };
 
 $sections = [];

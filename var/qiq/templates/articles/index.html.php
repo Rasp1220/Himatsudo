@@ -42,14 +42,19 @@ $categoryUrl = static function (array $cat): string {
 };
 
 $articleUrl = static function (array $article): string {
-    return '/articles/' . rawurlencode((string) $article['slug']);
+    $prefix = ($article['category_type'] ?? 'custom') === 'blog' ? '/blog' : '/articles';
+    return $prefix . '/' . rawurlencode((string) $article['slug']);
 };
 ?>
 
 <nav class="breadcrumb" aria-label="パンくずリスト">
     <ol class="breadcrumb-list">
         <li class="breadcrumb-item"><a href="/">ホーム</a></li>
-        <?php if (!empty($current_category)): ?>
+        <?php if (!empty($list_base_url) && $list_base_url === '/blog'): ?>
+        <li class="breadcrumb-item breadcrumb-current" aria-current="page">ブログ一覧</li>
+        <?php elseif (!empty($list_base_url) && $list_base_url === '/youtube'): ?>
+        <li class="breadcrumb-item breadcrumb-current" aria-current="page">YouTube</li>
+        <?php elseif (!empty($current_category)): ?>
         <li class="breadcrumb-item"><a href="/articles">記事一覧</a></li>
         <li class="breadcrumb-item breadcrumb-current" aria-current="page">
             <?= $this->h((string) ($current_category['name'] ?? $page_title)) ?>
