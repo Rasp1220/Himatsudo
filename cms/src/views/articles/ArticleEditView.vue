@@ -16,6 +16,18 @@ const categoriesStore = useCategoriesStore()
 const auth = useAuthStore()
 
 const isEdit = computed(() => !!route.params.id)
+
+// アップロードされた画像はルート相対パス (/uploads/...) で返るため、
+// CMS が別ポートで動いている場合も正しく表示できるよう backend origin を付与する
+function resolveUploadUrl(url: string): string {
+  if (!url || url.startsWith('http')) return url
+  const apiBase = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/admin/api'
+  try {
+    return new URL(apiBase).origin + url
+  } catch {
+    return url
+  }
+}
 const saving = ref(false)
 const errorMsg = ref('')
 const thumbnailUploading = ref(false)
@@ -249,7 +261,7 @@ onMounted(async () => {
               @change="handleThumbnailChange"
             />
             <div v-if="form.eye_catch_image" class="mt-1 relative inline-block">
-              <img :src="form.eye_catch_image" alt="サムネイル" class="rounded border border-gray-200 object-cover h-40 w-auto max-w-xs" />
+              <img :src="resolveUploadUrl(form.eye_catch_image)" alt="サムネイル" class="rounded border border-gray-200 object-cover h-40 w-auto max-w-xs" />
               <button
                 type="button"
                 @click="removeThumbnail"
