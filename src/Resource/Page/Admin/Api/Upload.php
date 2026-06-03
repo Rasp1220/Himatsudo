@@ -5,7 +5,6 @@ namespace Himatsudo\Resource\Page\Admin\Api;
 
 use BEAR\Resource\ResourceObject;
 use Himatsudo\Annotation\RequireAuth;
-use finfo;
 
 class Upload extends ResourceObject
 {
@@ -27,9 +26,8 @@ class Upload extends ResourceObject
             return $this;
         }
 
-        // Verify actual content, not just the browser-supplied MIME type
-        $finfo      = new finfo(FILEINFO_MIME_TYPE);
-        $actualMime = $finfo->buffer($imageData);
+        // Detect MIME from magic bytes — no PHP extension required
+        $actualMime = $this->detectMime($imageData);
         if (!in_array($actualMime, self::ALLOWED_MIME, true)) {
             $this->code = 400;
             $this->body = ['error' => '画像ファイル（JPEG/PNG/GIF/WebP）のみアップロードできます'];
@@ -60,5 +58,30 @@ class Upload extends ResourceObject
 
         $this->body = ['url' => '/uploads/' . $filename];
         return $this;
+    }
+
+    private function detectMime(string $data): ?string
+    {
+        if (strlen($data) < 12) {
+            return null;
+        }
+
+        $h = substr($data, 0, 12);
+
+        if (str_starts_with($h, "\xFF\xD8\xFF")) {
+            return 'image/jpeg';
+        }
+        if (str_starts_with($h, "\x89PNG\r\n\x1a\n")) {
+            return 'image/png';
+        }
+        if (str_starts_with($h, 'GIF87a') || str_starts_with($h, 'GIF89a')) {
+            return 'image/gif';
+        }
+        // WebP: bytes 0-3 = "RIFF", bytes 8-11 = "WEBP"
+        if (str_starts_with($h, 'RIFF') && substr($h, 8, 4) === 'WEBP') {
+            return 'image/webp';
+        }
+
+        return null;
     }
 }
