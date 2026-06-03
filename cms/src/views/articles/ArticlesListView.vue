@@ -99,7 +99,7 @@ onMounted(async () => {
     </div>
 
     <!-- Filters -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4 flex flex-wrap gap-3">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-300 p-4 mb-4 flex flex-wrap gap-3">
       <input
         v-model="filters.keyword"
         @input="debouncedFetch"
@@ -126,10 +126,13 @@ onMounted(async () => {
       </select>
     </div>
 
-    <div class="bg-white rounded-lg shadow-sm border border-gray-100">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-300">
       <DataTable :columns="columns" :rows="articles.items" :loading="articles.loading">
         <template #title="{ row }">
-          <span class="font-medium text-gray-900 line-clamp-1">{{ (row as Article).title }}</span>
+          <RouterLink
+            :to="editPath(row as Article)"
+            class="font-medium text-blue-700 hover:underline line-clamp-1"
+          >{{ (row as Article).title }}</RouterLink>
         </template>
         <template #category_name="{ row }">
           <span
@@ -174,7 +177,7 @@ onMounted(async () => {
         </template>
       </DataTable>
 
-      <div class="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
+      <div class="px-4 py-3 border-t border-gray-300 flex items-center justify-between">
         <p class="text-xs text-gray-500">全 {{ articles.pagination.total }} 件</p>
         <Pagination
           :current-page="articles.pagination.page"
