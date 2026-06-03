@@ -129,10 +129,26 @@ onMounted(async () => {
     <div class="bg-white rounded-lg shadow-sm border border-gray-300">
       <DataTable :columns="columns" :rows="articles.items" :loading="articles.loading">
         <template #title="{ row }">
-          <RouterLink
-            :to="editPath(row as Article)"
-            class="font-medium text-blue-700 hover:underline line-clamp-1"
-          >{{ (row as Article).title }}</RouterLink>
+          <div class="flex items-center gap-3 min-w-0">
+            <div
+              class="flex-shrink-0 w-10 rounded overflow-hidden bg-gray-100"
+              style="aspect-ratio:3/4"
+            >
+              <img
+                v-if="(row as Article).eye_catch_image || (row as Article).youtube_thumbnail"
+                :src="((row as Article).eye_catch_image || (row as Article).youtube_thumbnail)!"
+                :alt="(row as Article).title"
+                class="w-full h-full object-contain"
+              />
+              <div v-else class="w-full h-full flex items-center justify-center text-gray-300 text-xs font-medium">
+                NO
+              </div>
+            </div>
+            <RouterLink
+              :to="editPath(row as Article)"
+              class="font-medium text-blue-700 hover:underline line-clamp-2 min-w-0"
+            >{{ (row as Article).title }}</RouterLink>
+          </div>
         </template>
         <template #category_name="{ row }">
           <span
