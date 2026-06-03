@@ -31,6 +31,12 @@ final class CategoryService implements CategoryInterface
         return $row ?: null;
     }
 
+    public function getBySlug(string $slug): ?array
+    {
+        $row = $this->pdo->fetchOne($this->sql('categories/get_by_slug.sql'), ['slug' => $slug]);
+        return $row ?: null;
+    }
+
     public function create(string $name, string $slug, string $type = 'custom', int $sortOrder = 0): array
     {
         $this->pdo->perform(

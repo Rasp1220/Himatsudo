@@ -52,17 +52,17 @@ $this->page_title = $page_title ?? '記事一覧';
         <?php if ($last_page > 1): ?>
         <nav class="pagination">
             <?php if ($page > 1): ?>
-            <a href="?page=<?= $page - 1 ?><?= $category_id ? '&category_id=' . $category_id : '' ?>">&laquo;</a>
+            <a href="?page=<?= $page - 1 ?>">&laquo;</a>
             <?php endif; ?>
             <?php for ($i = max(1, $page - 2); $i <= min($last_page, $page + 2); $i++): ?>
             <?php if ($i === $page): ?>
             <span class="current"><?= $i ?></span>
             <?php else: ?>
-            <a href="?page=<?= $i ?><?= $category_id ? '&category_id=' . $category_id : '' ?>"><?= $i ?></a>
+            <a href="?page=<?= $i ?>"><?= $i ?></a>
             <?php endif; ?>
             <?php endfor; ?>
             <?php if ($page < $last_page): ?>
-            <a href="?page=<?= $page + 1 ?><?= $category_id ? '&category_id=' . $category_id : '' ?>">&raquo;</a>
+            <a href="?page=<?= $page + 1 ?>">&raquo;</a>
             <?php endif; ?>
         </nav>
         <?php endif; ?>
@@ -75,7 +75,7 @@ $this->page_title = $page_title ?? '記事一覧';
             <li><a href="/articles" style="color:<?= $category_id === null ? '#2563eb' : '#334155' ?>;font-weight:<?= $category_id === null ? '700' : '400' ?>">すべて</a></li>
             <?php foreach ($categories as $cat): ?>
             <li>
-                <a href="/articles?category_id=<?= (int) $cat['id'] ?>"
+                <a href="/<?= $this->h($cat['slug']) ?>"
                    style="color:<?= (int) ($category_id ?? 0) === (int) $cat['id'] ? '#2563eb' : '#334155' ?>;font-weight:<?= (int) ($category_id ?? 0) === (int) $cat['id'] ? '700' : '400' ?>">
                     <?= $this->h($cat['name']) ?>
                 </a>

@@ -20,7 +20,7 @@ $sections[] = [
     'badge'    => '',
     'uid'      => 'swiper-latest',
     'articles' => $latest_articles,
-    'href'     => '/articles',
+    'href'     => '/articles',  // all-articles page
 ];
 foreach ($categories as $cat) {
     $sections[] = [
@@ -28,7 +28,7 @@ foreach ($categories as $cat) {
         'badge'    => $cat['type'] ?? '',
         'uid'      => 'swiper-cat-' . (int) $cat['id'],
         'articles' => $articlesByCategory[(int) $cat['id']] ?? [],
-        'href'     => '/articles?category_id=' . (int) $cat['id'],
+        'href'     => '/' . ($cat['slug'] ?? ''),
     ];
 }
 ?>

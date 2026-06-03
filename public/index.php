@@ -28,11 +28,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $uri   = $_SERVER['REQUEST_URI'] ?? '/';
 $isApi = str_starts_with(strtok($uri, '?'), '/admin/api/');
 
-// Route /articles/{slug} → Article::onGet(slug: ...)
 if (!$isApi) {
     $path = strtok($uri, '?');
+    $qs   = (string) strstr($uri, '?');
     if (preg_match('#^/articles/([a-z0-9][a-z0-9\-]*)$#', (string) $path, $m)) {
+        // /articles/{article-slug} → article detail
         $_SERVER['REQUEST_URI'] = '/article?slug=' . urlencode($m[1]);
+        $_GET['slug'] = $m[1];
+    } elseif (preg_match('#^/([a-z][a-z0-9\-]*)$#', (string) $path, $m)
+              && !in_array($path, ['/articles', '/article'], true)) {
+        // /{category-slug} → category article list
+        $_SERVER['REQUEST_URI'] = '/category?slug=' . urlencode($m[1]) . ($qs ? '&' . ltrim($qs, '?') : '');
         $_GET['slug'] = $m[1];
     }
 }

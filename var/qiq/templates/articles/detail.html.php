@@ -22,7 +22,7 @@ if ($richHtml === null && !empty($article['content'])) {
 <article class="article-detail">
     <?php if (!empty($article['category_name'])): ?>
     <div class="article-category">
-        <a href="/articles?category_id=<?= (int) $article['category_id'] ?>" class="badge <?= $this->h($article['category_type'] ?? '') ?>">
+        <a href="/<?= $this->h($article['category_slug'] ?? '') ?>" class="badge <?= $this->h($article['category_type'] ?? '') ?>">
             <?= $this->h($article['category_name']) ?>
         </a>
     </div>
