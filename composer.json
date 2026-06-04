@@ -34,6 +34,7 @@
         "qiq-clear": "@php bin/qiq-clear.php",
         "migrate": "php bin/migrate.php",
         "migrate:fresh": "php bin/migrate.php --fresh",
+        "youtube-import": "@php src/Resource/App/cli/YoutubeImport.php",
         "post-autoload-dump": [
             "BEAR\\Package\\Compiler::compile"
         ]

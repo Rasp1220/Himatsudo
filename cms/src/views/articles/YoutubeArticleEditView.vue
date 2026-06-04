@@ -63,6 +63,11 @@ function inputToDbDate(inputDate: string): string | null {
   return inputDate.replace('T', ' ') + ':00'
 }
 
+function isoToInputDate(iso: string): string {
+  if (!iso) return ''
+  return iso.substring(0, 16)
+}
+
 async function importYoutube() {
   if (!youtubeInput.value.trim()) return
   importLoading.value = true
@@ -76,13 +81,8 @@ async function importYoutube() {
       form.title = data.title
       autoSlug()
     }
-    if (!form.excerpt && data.description) {
-      form.excerpt = data.description.slice(0, 200)
-      excerptFromYoutube.value = true
-    }
     if (!form.published_at && data.published_at) {
       form.published_at = isoToInputDate(data.published_at)
-      publishedAtFromYoutube.value = true
     }
   } catch {
     importError.value = '動画情報の取得に失敗しました。URLまたはIDを確認してください。'
