@@ -23,6 +23,14 @@ function parseBlocks(json: string): ArticleBlock[] {
 
 const blocks = ref<ArticleBlock[]>(parseBlocks(props.modelValue))
 
+// アコーディオン: 現在開いているブロックID（1つのみ）
+const expandedBlockId = ref<string | null>(null)
+
+// ドラッグ&ドロップ
+const dragIndex = ref<number | null>(null)
+const dragOverIndex = ref<number | null>(null)
+const blockRefs = new Map<string, HTMLElement>()
+
 watch(() => props.modelValue, (v) => {
   const parsed = parseBlocks(v)
   if (JSON.stringify(parsed) !== JSON.stringify(blocks.value)) {
@@ -46,17 +54,19 @@ function makeBlock(type: ArticleBlock['type']): ArticleBlock {
   return { id, type: 'video', youtube_url: '', video_id: '', caption: '' }
 }
 
-// 末尾に追加
 function addBlock(type: ArticleBlock['type']) {
-  blocks.value = [...blocks.value, makeBlock(type)]
+  const newBlock = makeBlock(type)
+  blocks.value = [...blocks.value, newBlock]
+  expandedBlockId.value = newBlock.id
   emit_blocks()
 }
 
-// afterIdx の直後に挿入 (-1 = 先頭に挿入)
 function insertBlock(type: ArticleBlock['type'], afterIdx: number) {
+  const newBlock = makeBlock(type)
   const next = [...blocks.value]
-  next.splice(afterIdx + 1, 0, makeBlock(type))
+  next.splice(afterIdx + 1, 0, newBlock)
   blocks.value = next
+  expandedBlockId.value = newBlock.id
   emit_blocks()
 }
 
@@ -68,6 +78,8 @@ function updateBlock(idx: number, updated: ArticleBlock) {
 }
 
 function removeBlock(idx: number) {
+  const removed = blocks.value[idx]
+  if (expandedBlockId.value === removed.id) expandedBlockId.value = null
   blocks.value = blocks.value.filter((_, i) => i !== idx)
   emit_blocks()
 }
@@ -86,6 +98,68 @@ function moveDown(idx: number) {
   ;[next[idx], next[idx + 1]] = [next[idx + 1], next[idx]]
   blocks.value = next
   emit_blocks()
+}
+
+// アコーディオン開閉
+function toggleBlock(id: string) {
+  expandedBlockId.value = expandedBlockId.value === id ? null : id
+}
+
+// 折りたたみ時のプレビューテキスト
+function getBlockPreview(block: ArticleBlock): string {
+  if (block.type === 'heading') return block.text || '（未入力）'
+  if (block.type === 'text') {
+    const text = block.html.replace(/<[^>]+>/g, '').trim()
+    return text.slice(0, 60) || '（未入力）'
+  }
+  if (block.type === 'image') return block.url ? (block.url.split('/').pop() ?? '画像') : '（未設定）'
+  if (block.type === 'video') return block.youtube_url || '（未設定）'
+  return ''
+}
+
+// ドラッグ&ドロップ
+function onDragStart(event: DragEvent, idx: number, blockId: string) {
+  dragIndex.value = idx
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move'
+    const blockEl = blockRefs.get(blockId)
+    if (blockEl) event.dataTransfer.setDragImage(blockEl, 20, 20)
+  }
+}
+
+function onDragOver(event: DragEvent, idx: number) {
+  event.preventDefault()
+  if (event.dataTransfer) event.dataTransfer.dropEffect = 'move'
+  dragOverIndex.value = idx
+}
+
+function onDragLeave(event: DragEvent) {
+  const el = event.currentTarget as HTMLElement
+  if (!el.contains(event.relatedTarget as Node)) {
+    dragOverIndex.value = null
+  }
+}
+
+function onDrop(event: DragEvent, idx: number) {
+  event.preventDefault()
+  if (dragIndex.value === null || dragIndex.value === idx) {
+    dragIndex.value = null
+    dragOverIndex.value = null
+    return
+  }
+  const next = [...blocks.value]
+  const [moved] = next.splice(dragIndex.value, 1)
+  const insertAt = dragIndex.value < idx ? idx - 1 : idx
+  next.splice(insertAt, 0, moved)
+  blocks.value = next
+  emit_blocks()
+  dragIndex.value = null
+  dragOverIndex.value = null
+}
+
+function onDragEnd() {
+  dragIndex.value = null
+  dragOverIndex.value = null
 }
 
 function blockLabel(type: string): string {
@@ -129,15 +203,49 @@ function badgeClass(type: string): string {
 
     <!-- ブロックリスト -->
     <template v-for="(block, idx) in blocks" :key="block.id">
-      <div class="block-item bg-white border border-gray-200 rounded-lg overflow-hidden">
-        <!-- ブロックヘッダー -->
-        <div class="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-200">
-          <span class="flex items-center gap-2">
-            <span class="text-xs font-semibold px-2 py-0.5 rounded" :class="badgeClass(block.type)">
+      <div
+        :ref="(el) => { if (el) blockRefs.set(block.id, el as HTMLElement) }"
+        class="block-item bg-white border rounded-lg overflow-hidden transition-all duration-150"
+        :class="[
+          dragOverIndex === idx && dragIndex !== idx
+            ? 'border-blue-400 shadow-md'
+            : 'border-gray-200',
+          dragIndex === idx ? 'opacity-40' : '',
+        ]"
+        @dragover="onDragOver($event, idx)"
+        @dragleave="onDragLeave"
+        @drop="onDrop($event, idx)"
+      >
+        <!-- ブロックヘッダー（クリックで開閉） -->
+        <div
+          class="flex items-center justify-between px-3 py-2 bg-gray-50 cursor-pointer select-none"
+          :class="expandedBlockId === block.id ? 'border-b border-gray-200' : ''"
+          @click="toggleBlock(block.id)"
+        >
+          <span class="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+            <!-- ドラッグハンドル -->
+            <span
+              draggable="true"
+              class="text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing text-base flex-shrink-0 leading-none px-0.5"
+              title="ドラッグして並び替え"
+              @dragstart="onDragStart($event, idx, block.id)"
+              @dragend="onDragEnd"
+              @click.stop
+            >⠿</span>
+            <!-- 展開矢印 -->
+            <span class="text-gray-400 text-xs flex-shrink-0 transition-transform duration-150"
+              :class="expandedBlockId === block.id ? 'rotate-90' : ''"
+            >▶</span>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded flex-shrink-0" :class="badgeClass(block.type)">
               {{ blockLabel(block.type) }}
             </span>
+            <!-- 折りたたみ時プレビュー -->
+            <span
+              v-if="expandedBlockId !== block.id"
+              class="text-xs text-gray-400 truncate"
+            >{{ getBlockPreview(block) }}</span>
           </span>
-          <div class="flex items-center gap-1">
+          <div class="flex items-center gap-1 flex-shrink-0 ml-2" @click.stop>
             <button
               type="button"
               @click="moveUp(idx)"
@@ -160,8 +268,8 @@ function badgeClass(type: string): string {
             >✕</button>
           </div>
         </div>
-        <!-- ブロック本体 -->
-        <div class="p-3">
+        <!-- ブロック本体（アコーディオン） -->
+        <div v-if="expandedBlockId === block.id" class="p-3">
           <HeadingBlock
             v-if="block.type === 'heading'"
             :modelValue="block"

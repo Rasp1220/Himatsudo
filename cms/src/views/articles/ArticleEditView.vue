@@ -16,11 +16,29 @@ const categoriesStore = useCategoriesStore()
 const auth = useAuthStore()
 
 const isEdit = computed(() => !!route.params.id)
+
+// アップロードされた画像はルート相対パス (/uploads/...) で返るため、
+// CMS が別ポートで動いている場合も正しく表示できるよう backend origin を付与する
+function resolveUploadUrl(url: string): string {
+  if (!url || url.startsWith('http')) return url
+  const apiBase = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/admin/api'
+  try {
+    return new URL(apiBase).origin + url
+  } catch {
+    return url
+  }
+}
 const saving = ref(false)
 const errorMsg = ref('')
 const thumbnailUploading = ref(false)
 const thumbnailError = ref('')
 const thumbnailInput = ref<HTMLInputElement | null>(null)
+const showValidation = ref(false)
+
+// バリデーション失敗フィールドの判定（保存試行後のみ赤枠を表示）
+function isInvalid(value: string): boolean {
+  return showValidation.value && !value.trim()
+}
 
 const form = reactive({
   title: '',
@@ -78,6 +96,11 @@ function removeThumbnail() {
 }
 
 async function handleSubmit(overrideStatus?: ArticleStatus) {
+  showValidation.value = true
+  if (!form.title.trim() || !form.slug.trim()) {
+    errorMsg.value = '必須項目を入力してください。'
+    return
+  }
   saving.value = true
   errorMsg.value = ''
   try {
@@ -187,7 +210,12 @@ onMounted(async () => {
               v-model="form.title"
               @input="autoSlug"
               required
-              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              :class="[
+                'w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2',
+                isInvalid(form.title)
+                  ? 'border-red-400 focus:ring-red-300 bg-red-50'
+                  : 'border-gray-300 focus:ring-blue-400',
+              ]"
               placeholder="記事タイトル"
             />
           </div>
@@ -199,7 +227,12 @@ onMounted(async () => {
               v-model="form.slug"
               required
               pattern="[a-z0-9\-]+"
-              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 font-mono"
+              :class="[
+                'w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 font-mono',
+                isInvalid(form.slug)
+                  ? 'border-red-400 focus:ring-red-300 bg-red-50'
+                  : 'border-gray-300 focus:ring-blue-400',
+              ]"
               placeholder="article-slug"
             />
             <p class="text-xs text-gray-400 mt-0.5">半角英数字・ハイフンのみ</p>
@@ -249,7 +282,7 @@ onMounted(async () => {
               @change="handleThumbnailChange"
             />
             <div v-if="form.eye_catch_image" class="mt-1 relative inline-block">
-              <img :src="form.eye_catch_image" alt="サムネイル" class="rounded border border-gray-200 object-cover h-40 w-auto max-w-xs" />
+              <img :src="resolveUploadUrl(form.eye_catch_image)" alt="サムネイル" class="rounded border border-gray-200 object-cover h-40 w-auto max-w-xs" />
               <button
                 type="button"
                 @click="removeThumbnail"

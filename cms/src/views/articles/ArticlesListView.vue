@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useArticlesStore } from '@/stores/articles'
 import { useCategoriesStore } from '@/stores/categories'
+import { articlesApi } from '@/api/client'
 import type { Article } from '@/types'
 import DataTable from '@/components/ui/DataTable.vue'
 import Pagination from '@/components/ui/Pagination.vue'
@@ -28,8 +29,20 @@ const columns = [
   { key: 'category_name', label: 'カテゴリ', width: '140px' },
   { key: 'status', label: 'ステータス', width: '100px' },
   { key: 'published_at', label: '公開日', width: '120px' },
-  { key: 'actions', label: '', width: '100px' },
+  { key: 'actions', label: '', width: '150px' },
 ]
+
+const duplicating = ref<number | null>(null)
+
+async function duplicateArticle(article: Article) {
+  duplicating.value = article.id
+  try {
+    await articlesApi.duplicate(article.id)
+    await fetchPage(articles.pagination.page)
+  } finally {
+    duplicating.value = null
+  }
+}
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 function debouncedFetch() {
@@ -181,6 +194,13 @@ onMounted(async () => {
             >
               編集
             </RouterLink>
+            <button
+              @click="duplicateArticle(row as Article)"
+              :disabled="duplicating === (row as Article).id"
+              class="text-green-600 hover:underline text-xs font-medium disabled:opacity-50"
+            >
+              {{ duplicating === (row as Article).id ? '…' : '複製' }}
+            </button>
             <button
               @click="confirmDelete(row as Article)"
               class="text-red-500 hover:underline text-xs font-medium"
