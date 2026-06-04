@@ -42,15 +42,17 @@ class Articles extends ResourceObject
         ?string $published_at         = null,
         ?string $related_article_ids  = null
     ): static {
+        if ($category_id === null || $category_id === 0) {
+            $this->code = 422;
+            $this->body = ['error' => 'カテゴリは必須です。'];
+            return $this;
+        }
         $data = array_filter(compact(
             'title', 'slug', 'author_id', 'status', 'content', 'blocks', 'excerpt',
             'eye_catch_image', 'youtube_url', 'youtube_video_id', 'youtube_thumbnail',
             'published_at'
         ), fn($v) => $v !== null && $v !== '');
-        // category_id=0 means "no category" (CMS sends 0 when unselected)
-        if ($category_id !== null) {
-            $data['category_id'] = $category_id === 0 ? null : $category_id;
-        }
+        $data['category_id'] = $category_id;
         // related_article_ids: JSON string "[1,2,3]" sets IDs; empty/null skips
         if ($related_article_ids !== null) {
             $decoded = json_decode($related_article_ids, true);

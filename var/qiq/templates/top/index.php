@@ -62,6 +62,7 @@ $swiperCount = count($sections);
             <div class="swiper-wrapper">
                 <?php foreach ($section['articles'] as $article): ?>
                 <?php $thumb = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null; ?>
+                <?php $catType = $article['category_type'] ?? 'custom'; ?>
                 <div class="swiper-slide">
                     <a href="<?= $this->h($articleUrl($article)) ?>" class="carousel-card-link">
                         <?php if ($thumb): ?>
@@ -74,6 +75,12 @@ $swiperCount = count($sections);
                         <div class="carousel-no-thumb"><span>NO IMAGE</span></div>
                         <?php endif; ?>
                         <div class="carousel-info">
+                            <?php if (!empty($article['category_name'])): ?>
+                            <span class="badge <?= $this->h($catType) ?>"
+                                  style="display:inline-block;margin-bottom:.25rem">
+                                <?= $this->h($article['category_name']) ?>
+                            </span>
+                            <?php endif; ?>
                             <p class="carousel-title"><?= $this->h($article['title']) ?></p>
                             <?php if (!empty($article['published_at'])): ?>
                             <time class="carousel-date" datetime="<?= $this->h($article['published_at']) ?>">

@@ -132,7 +132,7 @@ function removeThumbnail() {
 
 async function handleSubmit(overrideStatus?: ArticleStatus) {
   showValidation.value = true
-  if (!form.title.trim() || !form.slug.trim()) {
+  if (!form.title.trim() || !form.slug.trim() || !form.category_id) {
     errorMsg.value = '必須項目を入力してください。'
     return
   }
@@ -285,12 +285,17 @@ onMounted(async () => {
           <!-- カテゴリ・ステータス・公開日時 -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">カテゴリ</label>
+              <label class="block text-xs font-semibold text-gray-600 mb-1">カテゴリ <span class="text-red-500">*</span></label>
               <select
                 v-model="form.category_id"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none"
+                :class="[
+                  'w-full px-3 py-2 text-sm border rounded-md focus:outline-none',
+                  showValidation && !form.category_id
+                    ? 'border-red-400 bg-red-50'
+                    : 'border-gray-300',
+                ]"
               >
-                <option :value="null">カテゴリなし</option>
+                <option :value="null" disabled>カテゴリを選択してください</option>
                 <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
               </select>
             </div>

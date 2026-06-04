@@ -129,6 +129,8 @@ export interface YoutubeImportResult {
   thumbnail: string
   youtube_url: string
   embed_url: string
+  description: string
+  published_at: string
 }
 
 export interface ApiError {
