@@ -124,6 +124,80 @@ if ($richHtml === null && !empty($article['content'])) {
     </div>
     <?php endif; ?>
 
+    <?php if (!empty($related_articles)): ?>
+    <section class="related-articles">
+        <h2>関連記事</h2>
+        <div class="related-articles-grid">
+            <?php foreach ($related_articles as $rel):
+                $relThumb   = $rel['eye_catch_image'] ?? $rel['youtube_thumbnail'] ?? null;
+                $relUrl     = '/articles/' . rawurlencode((string) ($rel['slug'] ?? ''));
+            ?>
+            <article class="card">
+                <a href="<?= $this->h($relUrl) ?>">
+                    <div class="card-thumb">
+                        <?php if ($relThumb): ?>
+                        <img src="<?= $this->h($relThumb) ?>"
+                             alt="<?= $this->h($rel['title'] ?? '') ?>"
+                             class="card-img"
+                             loading="lazy">
+                        <?php else: ?>
+                        <span class="card-no-img">NO IMAGE</span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title"><?= $this->h($rel['title'] ?? '') ?></h3>
+                        <?php if (!empty($rel['published_at'])): ?>
+                        <p class="card-meta">
+                            <?= $this->h(date('Y年m月d日', strtotime((string) $rel['published_at']))) ?>
+                        </p>
+                        <?php endif; ?>
+                    </div>
+                </a>
+            </article>
+            <?php endforeach; ?>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <?php if (!empty($prev_article) || !empty($next_article)): ?>
+    <nav class="article-nav" aria-label="前後の記事">
+        <div class="article-nav-prev">
+            <?php if (!empty($prev_article)):
+                $prevThumb = $prev_article['eye_catch_image'] ?? $prev_article['youtube_thumbnail'] ?? null;
+            ?>
+            <a href="/articles/<?= $this->h(rawurlencode((string) ($prev_article['slug'] ?? ''))) ?>">
+                <?php if ($prevThumb): ?>
+                <div class="article-nav-thumb">
+                    <img src="<?= $this->h($prevThumb) ?>" alt="">
+                </div>
+                <?php endif; ?>
+                <div class="article-nav-info">
+                    <span class="article-nav-label">&laquo; 前の記事</span>
+                    <span class="article-nav-title"><?= $this->h($prev_article['title'] ?? '') ?></span>
+                </div>
+            </a>
+            <?php endif; ?>
+        </div>
+        <div class="article-nav-next">
+            <?php if (!empty($next_article)):
+                $nextThumb = $next_article['eye_catch_image'] ?? $next_article['youtube_thumbnail'] ?? null;
+            ?>
+            <a href="/articles/<?= $this->h(rawurlencode((string) ($next_article['slug'] ?? ''))) ?>">
+                <?php if ($nextThumb): ?>
+                <div class="article-nav-thumb">
+                    <img src="<?= $this->h($nextThumb) ?>" alt="">
+                </div>
+                <?php endif; ?>
+                <div class="article-nav-info">
+                    <span class="article-nav-label">次の記事 &raquo;</span>
+                    <span class="article-nav-title"><?= $this->h($next_article['title'] ?? '') ?></span>
+                </div>
+            </a>
+            <?php endif; ?>
+        </div>
+    </nav>
+    <?php endif; ?>
+
     <div class="article-footer">
         <a href="<?= $this->h($listUrl) ?>">&larr; <?= $this->h($listLabel) ?>に戻る</a>
     </div>

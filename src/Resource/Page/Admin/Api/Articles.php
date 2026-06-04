@@ -30,16 +30,17 @@ class Articles extends ResourceObject
         string  $title,
         string  $slug,
         int     $author_id,
-        string  $status            = 'draft',
-        ?string $content           = null,
-        ?string $blocks            = null,
-        ?string $excerpt           = null,
-        ?string $eye_catch_image   = null,
-        ?int    $category_id       = null,
-        ?string $youtube_url       = null,
-        ?string $youtube_video_id  = null,
-        ?string $youtube_thumbnail = null,
-        ?string $published_at      = null
+        string  $status               = 'draft',
+        ?string $content              = null,
+        ?string $blocks               = null,
+        ?string $excerpt              = null,
+        ?string $eye_catch_image      = null,
+        ?int    $category_id          = null,
+        ?string $youtube_url          = null,
+        ?string $youtube_video_id     = null,
+        ?string $youtube_thumbnail    = null,
+        ?string $published_at         = null,
+        ?string $related_article_ids  = null
     ): static {
         $data = array_filter(compact(
             'title', 'slug', 'author_id', 'status', 'content', 'blocks', 'excerpt',
@@ -49,6 +50,13 @@ class Articles extends ResourceObject
         // category_id=0 means "no category" (CMS sends 0 when unselected)
         if ($category_id !== null) {
             $data['category_id'] = $category_id === 0 ? null : $category_id;
+        }
+        // related_article_ids: JSON string "[1,2,3]" sets IDs; empty/null skips
+        if ($related_article_ids !== null) {
+            $decoded = json_decode($related_article_ids, true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                $data['related_article_ids'] = $related_article_ids;
+            }
         }
         $this->code = 201;
         $this->body = $this->articleService->create($data);

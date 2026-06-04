@@ -53,4 +53,21 @@ interface ArticleInterface
 
     #[SqlQuery('articles/delete.sql', ['id'])]
     public function delete(int $id): bool;
+
+    /**
+     * @return array{items: array<int, array<string, mixed>>, total: int, page: int, per_page: int, last_page: int, keyword: string}
+     */
+    #[SqlQuery('articles/search_base.sql', ['keyword', 'limit', 'offset'])]
+    public function search(string $keyword, int $page = 1, int $perPage = 15): array;
+
+    /** @return array<string, mixed>|null */
+    #[SqlQuery('articles/get_prev.sql', ['published_at', 'current_id'])]
+    public function getPrev(string $publishedAt, int $currentId): ?array;
+
+    /** @return array<string, mixed>|null */
+    #[SqlQuery('articles/get_next.sql', ['published_at', 'current_id'])]
+    public function getNext(string $publishedAt, int $currentId): ?array;
+
+    /** @return array<int, array<string, mixed>> */
+    public function getByIds(array $ids): array;
 }

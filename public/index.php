@@ -40,7 +40,7 @@ if (!$isApi) {
         $_SERVER['REQUEST_URI'] = '/article?slug=' . urlencode($m[1]);
         $_GET['slug'] = $m[1];
     } elseif (preg_match('#^/([a-z][a-z0-9\-]*)$#', (string) $path, $m)
-              && !in_array($path, ['/articles', '/article'], true)) {
+              && !in_array($path, ['/articles', '/article', '/search'], true)) {
         // /{category-slug} → category article list
         $_SERVER['REQUEST_URI'] = '/category?slug=' . urlencode($m[1]) . ($qs ? '&' . ltrim($qs, '?') : '');
         $_GET['slug'] = $m[1];

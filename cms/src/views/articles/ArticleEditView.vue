@@ -6,8 +6,8 @@ import BlockEditor from '@/components/blocks/BlockEditor.vue'
 import { useArticlesStore } from '@/stores/articles'
 import { useCategoriesStore } from '@/stores/categories'
 import { useAuthStore } from '@/stores/auth'
-import { uploadApi } from '@/api/client'
-import type { ArticleStatus } from '@/types'
+import { uploadApi, articlesApi } from '@/api/client'
+import type { Article, ArticleStatus } from '@/types'
 
 const route = useRoute()
 const router = useRouter()
@@ -48,7 +48,42 @@ const form = reactive({
   category_id: null as number | null,
   status: 'draft' as ArticleStatus,
   published_at: '',
+  related_article_ids: [] as number[],
 })
+
+const relatedSearch = ref('')
+const relatedSuggestions = ref<Article[]>([])
+const relatedArticleItems = ref<Article[]>([])
+let relatedSearchTimer: ReturnType<typeof setTimeout> | null = null
+
+function onRelatedSearchInput() {
+  if (relatedSearchTimer) clearTimeout(relatedSearchTimer)
+  relatedSearchTimer = setTimeout(async () => {
+    const q = relatedSearch.value.trim()
+    if (!q) { relatedSuggestions.value = []; return }
+    try {
+      const result = await articlesApi.list({ keyword: q, per_page: 8 })
+      relatedSuggestions.value = result.items.filter(
+        (a: Article) => !form.related_article_ids.includes(a.id)
+      )
+    } catch {
+      relatedSuggestions.value = []
+    }
+  }, 300)
+}
+
+function addRelated(article: Article) {
+  if (form.related_article_ids.includes(article.id)) return
+  form.related_article_ids.push(article.id)
+  relatedArticleItems.value.push(article)
+  relatedSearch.value = ''
+  relatedSuggestions.value = []
+}
+
+function removeRelated(id: number) {
+  form.related_article_ids = form.related_article_ids.filter((i) => i !== id)
+  relatedArticleItems.value = relatedArticleItems.value.filter((a) => a.id !== id)
+}
 
 const { items: categories } = storeToRefs(categoriesStore)
 
@@ -117,6 +152,7 @@ async function handleSubmit(overrideStatus?: ArticleStatus) {
       youtube_video_id: '',
       youtube_thumbnail: '',
       author_id: auth.user?.id ?? 0,
+      related_article_ids: JSON.stringify(form.related_article_ids),
     }
     if (publishedAt !== null) {
       payload.published_at = publishedAt
@@ -151,7 +187,15 @@ onMounted(async () => {
       form.status = a.status
       form.published_at = dbToInputDate(a.published_at)
       form.blocks = a.blocks ?? ''
+      form.related_article_ids = Array.isArray(a.related_article_ids) ? a.related_article_ids : []
       slugManuallyEdited = true
+
+      if (form.related_article_ids.length > 0) {
+        const items = await Promise.all(
+          form.related_article_ids.map((id) => articlesApi.get(id).catch(() => null))
+        )
+        relatedArticleItems.value = items.filter(Boolean) as Article[]
+      }
     }
   }
 })
@@ -310,6 +354,54 @@ onMounted(async () => {
         <section class="bg-white rounded-lg border border-gray-200 p-5">
           <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4">記事本文</h3>
           <BlockEditor v-model="form.blocks" />
+        </section>
+
+        <!-- 関連記事 -->
+        <section class="bg-white rounded-lg border border-gray-200 p-5 space-y-4">
+          <div>
+            <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide">関連記事</h3>
+            <p class="text-xs text-gray-400 mt-0.5">設定しなくても保存できます</p>
+          </div>
+
+          <div class="relative">
+            <input
+              v-model="relatedSearch"
+              @input="onRelatedSearchInput"
+              @blur="() => setTimeout(() => { relatedSuggestions = [] }, 200)"
+              type="text"
+              placeholder="記事タイトルで検索して追加…"
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            <ul
+              v-if="relatedSuggestions.length > 0"
+              class="absolute z-10 w-full bg-white border border-gray-200 rounded-md shadow-lg mt-1 max-h-48 overflow-y-auto"
+            >
+              <li
+                v-for="s in relatedSuggestions"
+                :key="s.id"
+                @mousedown.prevent="addRelated(s)"
+                class="px-3 py-2 text-sm cursor-pointer hover:bg-blue-50 truncate"
+              >
+                {{ s.title }}
+              </li>
+            </ul>
+          </div>
+
+          <ul v-if="relatedArticleItems.length > 0" class="space-y-1.5">
+            <li
+              v-for="a in relatedArticleItems"
+              :key="a.id"
+              class="flex items-center justify-between px-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm"
+            >
+              <span class="text-gray-700 truncate">{{ a.title }}</span>
+              <button
+                type="button"
+                @click="removeRelated(a.id)"
+                class="ml-2 flex-shrink-0 text-red-400 hover:text-red-600 text-xs leading-none"
+              >✕</button>
+            </li>
+          </ul>
+          <p v-else class="text-xs text-gray-400">関連記事が選択されていません</p>
         </section>
 
       </div>

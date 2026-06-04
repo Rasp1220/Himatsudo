@@ -9,6 +9,12 @@
                     <li><a href="/youtube">YouTube</a></li>
                 </ul>
             </nav>
+            <div class="header-search">
+                <form action="/search" method="get" role="search">
+                    <input type="search" name="q" placeholder="検索…" aria-label="サイト内検索">
+                    <button type="submit" aria-label="検索">&#128269;</button>
+                </form>
+            </div>
             <button class="hamburger-btn" id="hamburgerBtn" aria-label="メニューを開く" aria-expanded="false">
                 <span></span>
                 <span></span>
@@ -21,7 +27,12 @@
 <div class="hamburger-overlay" id="hamburgerOverlay"></div>
 <nav class="hamburger-menu" id="hamburgerMenu" aria-label="サイトメニュー">
     <button class="hamburger-close" id="hamburgerClose" aria-label="メニューを閉じる">&#x2715;</button>
-    <ul>
+    <form action="/search" method="get" role="search" style="margin-top:3.5rem;margin-bottom:1rem;display:flex;gap:.5rem">
+        <input type="search" name="q" placeholder="検索…" aria-label="サイト内検索"
+               style="flex:1;padding:.4rem .75rem;border-radius:.375rem;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:.9rem">
+        <button type="submit" style="padding:.4rem .75rem;background:#29aae1;border:none;border-radius:.375rem;color:#fff;font-size:.85rem;cursor:pointer">検索</button>
+    </form>
+    <ul style="margin-top:0">
         <li><a href="/articles">記事一覧</a></li>
         <li><a href="/blog">ブログ</a></li>
         <li><a href="/youtube">YouTube</a></li>

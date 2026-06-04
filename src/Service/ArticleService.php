@@ -90,13 +90,13 @@ final class ArticleService implements ArticleInterface
             $sql = str_replace('WHERE a.slug = :slug', "WHERE a.slug = :slug AND a.status = 'published'", $sql);
         }
         $row = $this->pdo->fetchOne($sql, ['slug' => $slug]);
-        return $row ?: null;
+        return $row ? $this->normalizeArticle($row) : null;
     }
 
     public function getById(int $id): ?array
     {
         $row = $this->pdo->fetchOne($this->sql('articles/get_by_id.sql'), ['id' => $id]);
-        return $row ?: null;
+        return $row ? $this->normalizeArticle($row) : null;
     }
 
     public function getLatest(int $limit = 10): array
@@ -150,5 +150,76 @@ final class ArticleService implements ArticleInterface
     public function delete(int $id): bool
     {
         return (bool) $this->pdo->perform($this->sql('articles/delete.sql'), ['id' => $id])->rowCount();
+    }
+
+    public function search(string $keyword, int $page = 1, int $perPage = 15): array
+    {
+        $offset = ($page - 1) * $perPage;
+        $like   = '%' . $keyword . '%';
+        $where  = "WHERE a.status = 'published' AND (a.title LIKE :keyword OR a.excerpt LIKE :keyword)";
+        $base   = $this->sql('articles/search_base.sql');
+
+        $items = $this->pdo->fetchAll(
+            $base . " {$where} ORDER BY a.published_at DESC, a.created_at DESC LIMIT :limit OFFSET :offset",
+            ['keyword' => $like, 'limit' => $perPage, 'offset' => $offset]
+        );
+        $total = (int) $this->pdo->fetchValue(
+            "SELECT COUNT(*) FROM articles a {$where}",
+            ['keyword' => $like]
+        );
+
+        return [
+            'items'     => $items,
+            'total'     => $total,
+            'page'      => $page,
+            'per_page'  => $perPage,
+            'last_page' => (int) ceil($total / max(1, $perPage)),
+            'keyword'   => $keyword,
+        ];
+    }
+
+    public function getPrev(string $publishedAt, int $currentId): ?array
+    {
+        $row = $this->pdo->fetchOne(
+            $this->sql('articles/get_prev.sql'),
+            ['published_at' => $publishedAt, 'current_id' => $currentId]
+        );
+        return $row ?: null;
+    }
+
+    public function getNext(string $publishedAt, int $currentId): ?array
+    {
+        $row = $this->pdo->fetchOne(
+            $this->sql('articles/get_next.sql'),
+            ['published_at' => $publishedAt, 'current_id' => $currentId]
+        );
+        return $row ?: null;
+    }
+
+    public function getByIds(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+        $rows = $this->pdo->fetchAll(
+            'SELECT a.id, a.title, a.slug, a.excerpt, a.eye_catch_image, a.youtube_thumbnail, a.published_at,
+                    c.name AS category_name, c.slug AS category_slug
+             FROM articles a
+             LEFT JOIN categories c ON a.category_id = c.id
+             WHERE a.id IN (:ids) AND a.status = \'published\'',
+            ['ids' => $ids]
+        );
+        $indexed = array_column($rows, null, 'id');
+        return array_values(array_filter(array_map(fn($id) => $indexed[$id] ?? null, $ids)));
+    }
+
+    private function normalizeArticle(array $row): array
+    {
+        if (array_key_exists('related_article_ids', $row)) {
+            $row['related_article_ids'] = !empty($row['related_article_ids'])
+                ? (json_decode((string) $row['related_article_ids'], true) ?? [])
+                : [];
+        }
+        return $row;
     }
 }
