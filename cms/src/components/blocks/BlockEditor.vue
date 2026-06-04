@@ -269,7 +269,7 @@ function badgeClass(type: string): string {
           </div>
         </div>
         <!-- ブロック本体（アコーディオン） -->
-        <div v-show="expandedBlockId === block.id" class="p-3">
+        <div v-if="expandedBlockId === block.id" class="p-3">
           <HeadingBlock
             v-if="block.type === 'heading'"
             :modelValue="block"
