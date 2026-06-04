@@ -103,7 +103,17 @@
 .carousel-no-thumb {
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: linear-gradient(135deg, $c-primary-light, $c-border-light);
+  background: $c-primary-light;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  span {
+    font-size: .7rem;
+    font-weight: 600;
+    color: $c-text-muted;
+    letter-spacing: .05em;
+  }
 }
 
 .carousel-info {
@@ -125,4 +135,16 @@
 .carousel-date {
   font-size: .7rem;
   color: $c-text-muted;
+}
+
+// ─── 記事なし状態 ─────────────────────────────────────────────
+.swiper-slide--empty {
+  width: 100% !important;
+}
+
+.no-articles-msg {
+  padding: 2rem 0;
+  color: $c-text-muted;
+  font-size: .875rem;
+  text-align: center;
 }

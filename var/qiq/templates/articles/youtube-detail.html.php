@@ -8,7 +8,7 @@ $embedUrl = $videoId ? "https://www.youtube.com/embed/{$videoId}" : null;
 <article style="max-width:780px;margin:0 auto">
     <?php if (!empty($article['category_name'])): ?>
     <div style="margin-bottom:.75rem">
-        <a href="/articles?category_id=<?= (int) $article['category_id'] ?>" class="badge youtube">
+        <a href="/<?= $this->h($article['category_slug'] ?? '') ?>" class="badge youtube">
             <?= $this->h($article['category_name']) ?>
         </a>
     </div>

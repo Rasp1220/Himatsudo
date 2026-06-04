@@ -1,65 +1,91 @@
 <?php
 /**
- * @var array<int,array<string,mixed>>                                                  $latest_articles
- * @var array<int,array<string,mixed>>                                                  $regular_articles
- * @var array<int,array{category:array<string,mixed>,articles:array<int,array<string,mixed>>}> $categories_with_articles
+ * @var array<int, array<string, mixed>> $latest_articles
+ * @var array<int, array{category: array<string, mixed>, articles: array<int, array<string, mixed>>}> $categories_with_articles
+ * @var string $page_title
  */
 $this->setLayout('layout');
-$this->page_title = 'ホーム';
+$this->page_title = $page_title ?? 'ホーム';
 
-// ─── セクション一覧を組み立て ─────────────────────────────────
+$categoryUrl = static function (array $category): string {
+    return match ($category['type'] ?? 'custom') {
+        'blog'    => '/blog',
+        'youtube' => '/youtube',
+        default   => '/' . rawurlencode((string) $category['slug']),
+    };
+};
+
+$articleUrl = static function (array $article): string {
+    $prefix = ($article['category_type'] ?? 'custom') === 'blog' ? '/blog' : '/articles';
+    return $prefix . '/' . rawurlencode((string) $article['slug']);
+};
+
 $sections = [];
-
 if (!empty($latest_articles)) {
-    $sections[] = ['title' => '新着記事', 'badge' => '',     'uid' => 'swiper-latest',  'articles' => $latest_articles,  'href' => '/articles'];
-}
-if (!empty($regular_articles)) {
-    $sections[] = ['title' => '通常記事', 'badge' => 'blog', 'uid' => 'swiper-regular', 'articles' => $regular_articles, 'href' => '/articles'];
+    $sections[] = [
+        'title'       => '新着記事',
+        'badge_class' => '',
+        'url'         => '/articles',
+        'articles'    => $latest_articles,
+    ];
 }
 foreach ($categories_with_articles as $group) {
     $cat      = $group['category'];
-    $sections[] = [
-        'title'    => $cat['name'],
-        'badge'    => $cat['type'] ?? '',
-        'uid'      => 'swiper-cat-' . (int) $cat['id'],
-        'articles' => $group['articles'],
-        'href'     => '/articles?category_id=' . (int) $cat['id'],
-    ];
+    $articles = $group['articles'];
+    if (!empty($articles)) {
+        $sections[] = [
+            'title'       => (string) $cat['name'],
+            'badge_class' => (string) ($cat['type'] ?? ''),
+            'url'         => $categoryUrl($cat),
+            'articles'    => $articles,
+        ];
+    }
 }
+$swiperCount = count($sections);
+?>
 
-if (empty($sections)): ?>
-<p style="color:#64748b;padding:3rem 0;text-align:center">まだ記事がありません。</p>
-<?php return; endif; ?>
-
-<?php foreach ($sections as $s): ?>
+<?php foreach ($sections as $idx => $section): ?>
 <section class="cat-section">
     <div class="cat-header">
         <h2 class="cat-title">
-            <span class="badge <?= $this->h($s['badge']) ?>"><?= $this->h($s['title']) ?></span>
+            <?php if ($section['badge_class']): ?>
+            <span class="badge <?= $this->h($section['badge_class']) ?>"><?= $this->h($section['title']) ?></span>
+            <?php else: ?>
+            <?= $this->h($section['title']) ?>
+            <?php endif; ?>
         </h2>
-        <a href="<?= $this->h($s['href']) ?>" class="cat-more">もっと見る →</a>
+        <a href="<?= $this->h($section['url']) ?>" class="cat-more">もっと見る &rarr;</a>
     </div>
     <div class="cat-swiper-outer">
-        <button class="cat-swiper-btn cat-swiper-prev" data-target="<?= $this->h($s['uid']) ?>" aria-label="前へ">&#8249;</button>
-        <div class="swiper cat-swiper" id="<?= $this->h($s['uid']) ?>">
+        <button class="cat-swiper-btn" id="prev-<?= $idx ?>">&#8249;</button>
+        <div class="swiper cat-swiper" id="swiper-<?= $idx ?>">
             <div class="swiper-wrapper">
-                <?php foreach ($s['articles'] as $a):
-                    $thumb = $a['eye_catch_image'] ?? $a['youtube_thumbnail'] ?? null;
-                    $date  = $a['published_at'] ?? $a['created_at'] ?? null;
-                ?>
+                <?php foreach ($section['articles'] as $article): ?>
+                <?php $thumb = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null; ?>
+                <?php $catType = $article['category_type'] ?? 'custom'; ?>
                 <div class="swiper-slide">
-                    <a href="/articles/<?= $this->h($a['slug']) ?>" class="carousel-card-link">
+                    <a href="<?= $this->h($articleUrl($article)) ?>" class="carousel-card-link">
+                        <?php if ($thumb): ?>
                         <div class="carousel-thumb">
-                            <?php if ($thumb): ?>
-                            <img src="<?= $this->h($thumb) ?>" alt="<?= $this->h($a['title']) ?>" loading="lazy">
-                            <?php else: ?>
-                            <div class="carousel-no-thumb"></div>
-                            <?php endif; ?>
+                            <img src="<?= $this->h($thumb) ?>"
+                                 alt="<?= $this->h($article['title']) ?>"
+                                 loading="lazy">
                         </div>
+                        <?php else: ?>
+                        <div class="carousel-no-thumb"><span>NO IMAGE</span></div>
+                        <?php endif; ?>
                         <div class="carousel-info">
-                            <p class="carousel-title"><?= $this->h($a['title']) ?></p>
-                            <?php if ($date): ?>
-                            <time class="carousel-date"><?= date('Y年m月d日', strtotime((string) $date)) ?></time>
+                            <?php if (!empty($article['category_name'])): ?>
+                            <span class="badge <?= $this->h($catType) ?>"
+                                  style="display:inline-block;margin-bottom:.25rem">
+                                <?= $this->h($article['category_name']) ?>
+                            </span>
+                            <?php endif; ?>
+                            <p class="carousel-title"><?= $this->h($article['title']) ?></p>
+                            <?php if (!empty($article['published_at'])): ?>
+                            <time class="carousel-date" datetime="<?= $this->h($article['published_at']) ?>">
+                                <?= $this->h(date('Y年m月d日', strtotime((string) $article['published_at']))) ?>
+                            </time>
                             <?php endif; ?>
                         </div>
                     </a>
@@ -67,30 +93,32 @@ if (empty($sections)): ?>
                 <?php endforeach; ?>
             </div>
         </div>
-        <button class="cat-swiper-btn cat-swiper-next" data-target="<?= $this->h($s['uid']) ?>" aria-label="次へ">&#8250;</button>
+        <button class="cat-swiper-btn" id="next-<?= $idx ?>">&#8250;</button>
     </div>
 </section>
 <?php endforeach; ?>
 
+<?php if (empty($sections)): ?>
+<div class="no-articles-msg">まだ記事がありません。</div>
+<?php endif; ?>
+
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.cat-swiper').forEach(function (el) {
-        var outer = el.closest('.cat-swiper-outer');
-        new Swiper(el, {
-            grabCursor: true,
-            slidesPerView: 10,
+(function () {
+    var configs = [];
+    <?php for ($i = 0; $i < $swiperCount; $i++): ?>
+    configs.push({ el: '#swiper-<?= $i ?>', prev: '#prev-<?= $i ?>', next: '#next-<?= $i ?>' });
+    <?php endfor; ?>
+    configs.forEach(function (c) {
+        new Swiper(c.el, {
+            slidesPerView: 1.4,
             spaceBetween: 12,
-            navigation: {
-                prevEl: outer ? outer.querySelector('.cat-swiper-prev') : null,
-                nextEl: outer ? outer.querySelector('.cat-swiper-next') : null,
-            },
+            navigation: { prevEl: c.prev, nextEl: c.next },
             breakpoints: {
-                0:   { slidesPerView: 2.3, spaceBetween: 8  },
-                481: { slidesPerView: 4.5, spaceBetween: 10 },
-                769: { slidesPerView: 7,   spaceBetween: 12 },
-                1024:{ slidesPerView: 10,  spaceBetween: 12 },
-            },
+                480:  { slidesPerView: 2.3 },
+                768:  { slidesPerView: 3   },
+                1024: { slidesPerView: 4   }
+            }
         });
     });
-});
+}());
 </script>

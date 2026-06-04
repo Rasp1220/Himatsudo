@@ -177,6 +177,107 @@
   }
 }
 
+// ─── Breadcrumb ───────────────────────────────────────────────
+.breadcrumb {
+  margin-bottom: 1.25rem;
+}
+
+.breadcrumb-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  list-style: none;
+  gap: 0;
+  font-size: .8rem;
+  color: $c-text-muted;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+
+  &::after {
+    content: '›';
+    margin: 0 .4em;
+    color: $c-border;
+  }
+
+  &:last-child::after {
+    display: none;
+  }
+
+  a {
+    color: $c-primary-dark;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+.breadcrumb-current {
+  color: $c-text-muted;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 240px;
+}
+
+// ─── Article list layout (grid + sidebar) ────────────────────
+.content-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+
+  @media (max-width: $bp-tablet) {
+    flex-direction: column;
+  }
+}
+
+.content-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.content-aside {
+  width: 200px;
+  flex-shrink: 0;
+
+  @media (max-width: $bp-tablet) {
+    width: 100%;
+  }
+}
+
+// ─── Sidebar ──────────────────────────────────────────────────
+.sidebar {
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: $c-text;
+  }
+
+  ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+  }
+
+  a {
+    font-size: .9rem;
+    color: $c-text-muted;
+
+    &:hover {
+      color: $c-primary;
+      text-decoration: none;
+    }
+
+    &.active {
+      color: $c-primary-dark;
+      font-weight: 700;
+    }
+  }
+}
+
 // ─── Main ─────────────────────────────────────────────────────
 .main-content {
   padding: 2.5rem 0;

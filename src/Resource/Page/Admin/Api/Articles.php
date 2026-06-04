@@ -41,11 +41,17 @@ class Articles extends ResourceObject
         ?string $youtube_thumbnail = null,
         ?string $published_at      = null
     ): static {
+        if ($category_id === null || $category_id === 0) {
+            $this->code = 422;
+            $this->body = ['error' => 'カテゴリは必須です。'];
+            return $this;
+        }
         $data = array_filter(compact(
             'title', 'slug', 'author_id', 'status', 'content', 'blocks', 'excerpt',
-            'eye_catch_image', 'category_id', 'youtube_url', 'youtube_video_id', 'youtube_thumbnail',
+            'eye_catch_image', 'youtube_url', 'youtube_video_id', 'youtube_thumbnail',
             'published_at'
         ), fn($v) => $v !== null && $v !== '');
+        $data['category_id'] = $category_id;
         $this->code = 201;
         $this->body = $this->articleService->create($data);
         return $this;

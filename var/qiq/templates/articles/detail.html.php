@@ -19,10 +19,28 @@ if ($richHtml === null && !empty($article['content'])) {
     $richHtml = (string) $article['content'];
 }
 ?>
+<?php
+    $catType = $article['category_type'] ?? 'custom';
+    [$listUrl, $listLabel] = match ($catType) {
+        'blog'    => ['/blog',     'ブログ一覧'],
+        'youtube' => ['/youtube',  'YouTube'],
+        default   => ['/articles', '記事一覧'],
+    };
+?>
+<nav class="breadcrumb" aria-label="パンくずリスト">
+    <ol class="breadcrumb-list">
+        <li class="breadcrumb-item"><a href="/">ホーム</a></li>
+        <li class="breadcrumb-item"><a href="<?= $this->h($listUrl) ?>"><?= $this->h($listLabel) ?></a></li>
+        <li class="breadcrumb-item breadcrumb-current" aria-current="page">
+            <?= $this->h(mb_strimwidth((string) $article['title'], 0, 40, '…')) ?>
+        </li>
+    </ol>
+</nav>
+
 <article class="article-detail">
     <?php if (!empty($article['category_name'])): ?>
     <div class="article-category">
-        <a href="/articles?category_id=<?= (int) $article['category_id'] ?>" class="badge <?= $this->h($article['category_type'] ?? '') ?>">
+        <a href="/<?= $this->h($article['category_slug'] ?? '') ?>" class="badge <?= $this->h($article['category_type'] ?? '') ?>">
             <?= $this->h($article['category_name']) ?>
         </a>
     </div>
@@ -107,6 +125,6 @@ if ($richHtml === null && !empty($article['content'])) {
     <?php endif; ?>
 
     <div class="article-footer">
-        <a href="/articles">&larr; 記事一覧に戻る</a>
+        <a href="<?= $this->h($listUrl) ?>">&larr; <?= $this->h($listLabel) ?>に戻る</a>
     </div>
 </article>

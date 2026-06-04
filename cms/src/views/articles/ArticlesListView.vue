@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useArticlesStore } from '@/stores/articles'
 import { useCategoriesStore } from '@/stores/categories'
+import { articlesApi } from '@/api/client'
 import type { Article } from '@/types'
 import DataTable from '@/components/ui/DataTable.vue'
 import Pagination from '@/components/ui/Pagination.vue'
@@ -24,11 +25,24 @@ const deleteTarget = ref<Article | null>(null)
 
 const columns = [
   { key: 'title', label: 'タイトル' },
+  { key: 'thumbnail', label: 'サムネイル', width: '72px' },
   { key: 'category_name', label: 'カテゴリ', width: '140px' },
   { key: 'status', label: 'ステータス', width: '100px' },
   { key: 'published_at', label: '公開日', width: '120px' },
-  { key: 'actions', label: '', width: '100px' },
+  { key: 'actions', label: '', width: '150px' },
 ]
+
+const duplicating = ref<number | null>(null)
+
+async function duplicateArticle(article: Article) {
+  duplicating.value = article.id
+  try {
+    await articlesApi.duplicate(article.id)
+    await fetchPage(articles.pagination.page)
+  } finally {
+    duplicating.value = null
+  }
+}
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 function debouncedFetch() {
@@ -99,7 +113,7 @@ onMounted(async () => {
     </div>
 
     <!-- Filters -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4 flex flex-wrap gap-3">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-300 p-4 mb-4 flex flex-wrap gap-3">
       <input
         v-model="filters.keyword"
         @input="debouncedFetch"
@@ -126,10 +140,26 @@ onMounted(async () => {
       </select>
     </div>
 
-    <div class="bg-white rounded-lg shadow-sm border border-gray-100">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-300">
       <DataTable :columns="columns" :rows="articles.items" :loading="articles.loading">
         <template #title="{ row }">
-          <span class="font-medium text-gray-900 line-clamp-1">{{ (row as Article).title }}</span>
+          <RouterLink
+            :to="editPath(row as Article)"
+            class="font-medium text-blue-700 hover:underline line-clamp-2"
+          >{{ (row as Article).title }}</RouterLink>
+        </template>
+        <template #thumbnail="{ row }">
+          <div class="relative overflow-hidden rounded bg-gray-100" style="width:40px;aspect-ratio:3/4">
+            <img
+              v-if="(row as Article).eye_catch_image || (row as Article).youtube_thumbnail"
+              :src="((row as Article).eye_catch_image || (row as Article).youtube_thumbnail)!"
+              :alt="(row as Article).title"
+              class="absolute inset-0 w-full h-full object-contain"
+            />
+            <div v-else class="absolute inset-0 flex items-center justify-center text-gray-400 text-xs font-medium">
+              NO
+            </div>
+          </div>
         </template>
         <template #category_name="{ row }">
           <span
@@ -165,6 +195,13 @@ onMounted(async () => {
               編集
             </RouterLink>
             <button
+              @click="duplicateArticle(row as Article)"
+              :disabled="duplicating === (row as Article).id"
+              class="text-green-600 hover:underline text-xs font-medium disabled:opacity-50"
+            >
+              {{ duplicating === (row as Article).id ? '…' : '複製' }}
+            </button>
+            <button
               @click="confirmDelete(row as Article)"
               class="text-red-500 hover:underline text-xs font-medium"
             >
@@ -174,7 +211,7 @@ onMounted(async () => {
         </template>
       </DataTable>
 
-      <div class="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
+      <div class="px-4 py-3 border-t border-gray-300 flex items-center justify-between">
         <p class="text-xs text-gray-500">全 {{ articles.pagination.total }} 件</p>
         <Pagination
           :current-page="articles.pagination.page"

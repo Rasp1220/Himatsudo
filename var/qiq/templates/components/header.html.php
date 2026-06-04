@@ -1,19 +1,12 @@
 <header class="site-header">
     <div class="container">
-        <a href="/" class="site-title">ひまつど</a>
+        <a href="/" class="site-title"><span></span>ひまつど</a>
         <div class="header-right">
             <nav class="site-nav-desktop">
                 <ul class="site-nav">
                     <li><a href="/articles">記事一覧</a></li>
-                    <?php foreach ($this->categories ?? [] as $cat): ?>
-                        <?php if (in_array($cat['type'], ['blog', 'youtube'], true)): ?>
-                        <li>
-                            <a href="/articles?category_id=<?= (int) $cat['id'] ?>">
-                                <?= $this->h($cat['name']) ?>
-                            </a>
-                        </li>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
+                    <li><a href="/blog">ブログ</a></li>
+                    <li><a href="/youtube">YouTube</a></li>
                 </ul>
             </nav>
             <button class="hamburger-btn" id="hamburgerBtn" aria-label="メニューを開く" aria-expanded="false">
@@ -30,15 +23,8 @@
     <button class="hamburger-close" id="hamburgerClose" aria-label="メニューを閉じる">&#x2715;</button>
     <ul>
         <li><a href="/articles">記事一覧</a></li>
-        <?php foreach ($this->categories ?? [] as $cat): ?>
-            <?php if (in_array($cat['type'], ['blog', 'youtube'], true)): ?>
-            <li>
-                <a href="/articles?category_id=<?= (int) $cat['id'] ?>">
-                    <?= $this->h($cat['name']) ?>
-                </a>
-            </li>
-            <?php endif; ?>
-        <?php endforeach; ?>
+        <li><a href="/blog">ブログ</a></li>
+        <li><a href="/youtube">YouTube</a></li>
     </ul>
 </nav>
 
@@ -48,7 +34,6 @@
     var menu    = document.getElementById('hamburgerMenu');
     var overlay = document.getElementById('hamburgerOverlay');
     var close   = document.getElementById('hamburgerClose');
-
     function openMenu() {
         menu.classList.add('is-open');
         overlay.classList.add('is-open');
@@ -61,12 +46,9 @@
         btn.setAttribute('aria-expanded', 'false');
         document.body.style.overflow = '';
     }
-
     btn.addEventListener('click', openMenu);
     overlay.addEventListener('click', closeMenu);
     close.addEventListener('click', closeMenu);
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') closeMenu();
-    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(); });
 }());
 </script>

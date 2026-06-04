@@ -1,86 +1,161 @@
 <?php
-/** @var array<int, array<string, mixed>> $articles */
-/** @var array<int, array<string, mixed>> $categories */
-/** @var int $total */
-/** @var int $page */
-/** @var int $last_page */
-/** @var int|null $category_id */
-/** @var array<string, mixed>|null $current_category */
+/**
+ * @var array<int, array<string, mixed>> $articles
+ * @var array<int, array<string, mixed>> $categories
+ * @var array<string, mixed>|null        $current_category
+ * @var int      $page
+ * @var int      $last_page
+ * @var int      $total
+ * @var int|null $category_id
+ * @var string   $page_title
+ * @var string|null $list_base_url   set by Blog / Youtube pages
+ * @var string|null $category_slug   set by Category pages
+ */
 $this->setLayout('layout');
 $this->page_title = $page_title ?? '記事一覧';
+
+if (!empty($list_base_url)) {
+    $baseUrl = (string) $list_base_url;
+} elseif (!empty($category_slug)) {
+    $baseUrl = '/' . rawurlencode((string) $category_slug);
+} else {
+    $baseUrl = '/articles';
+}
+
+$pageUrl = static function (int $p, string $base, ?int $catId): string {
+    $params = [];
+    if ($catId !== null && $base === '/articles') {
+        $params[] = 'category_id=' . $catId;
+    }
+    if ($p > 1) {
+        $params[] = 'page=' . $p;
+    }
+    return $base . ($params ? '?' . implode('&', $params) : '');
+};
+
+$categoryUrl = static function (array $cat): string {
+    return match ($cat['type'] ?? 'custom') {
+        'blog'    => '/blog',
+        'youtube' => '/youtube',
+        default   => '/' . rawurlencode((string) $cat['slug']),
+    };
+};
+
+$articleUrl = static function (array $article): string {
+    $prefix = ($article['category_type'] ?? 'custom') === 'blog' ? '/blog' : '/articles';
+    return $prefix . '/' . rawurlencode((string) $article['slug']);
+};
 ?>
+
+<nav class="breadcrumb" aria-label="パンくずリスト">
+    <ol class="breadcrumb-list">
+        <li class="breadcrumb-item"><a href="/">ホーム</a></li>
+        <?php if (!empty($list_base_url) && $list_base_url === '/blog'): ?>
+        <li class="breadcrumb-item breadcrumb-current" aria-current="page">ブログ一覧</li>
+        <?php elseif (!empty($list_base_url) && $list_base_url === '/youtube'): ?>
+        <li class="breadcrumb-item breadcrumb-current" aria-current="page">YouTube</li>
+        <?php elseif (!empty($current_category)): ?>
+        <li class="breadcrumb-item"><a href="/articles">記事一覧</a></li>
+        <li class="breadcrumb-item breadcrumb-current" aria-current="page">
+            <?= $this->h((string) ($current_category['name'] ?? $page_title)) ?>
+        </li>
+        <?php else: ?>
+        <li class="breadcrumb-item breadcrumb-current" aria-current="page">記事一覧</li>
+        <?php endif; ?>
+    </ol>
+</nav>
+
 <h1 class="page-title"><?= $this->h($this->page_title) ?></h1>
 
-<div style="display:flex;gap:2rem;align-items:flex-start">
-    <div style="flex:1;min-width:0">
-        <?php if (empty($articles)): ?>
-        <p style="color:#64748b">記事がありません。</p>
-        <?php else: ?>
+<div class="content-layout">
+    <div class="content-main">
+        <?php if (!empty($articles)): ?>
         <div class="articles-grid">
             <?php foreach ($articles as $article): ?>
+            <?php
+                $thumb   = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null;
+                $catType = $article['category_type'] ?? 'custom';
+            ?>
             <article class="card">
-                <?php $thumb = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null; ?>
-                <?php if ($thumb): ?>
-                <img src="<?= $this->h($thumb) ?>" alt="<?= $this->h($article['title']) ?>" class="card-img">
-                <?php elseif (($article['category_type'] ?? '') === 'youtube'): ?>
-                <div style="height:180px;background:#fee2e2;display:flex;align-items:center;justify-content:center;font-size:2rem">▶</div>
-                <?php endif; ?>
-                <div class="card-body">
-                    <?php if (!empty($article['category_name'])): ?>
-                    <span class="badge <?= $this->h($article['category_type'] ?? '') ?>">
-                        <?= $this->h($article['category_name']) ?>
-                    </span>
-                    <?php endif; ?>
-                    <h2 class="card-title" style="margin-top:.4rem">
-                        <a href="/articles/<?= $this->h($article['slug']) ?>">
-                            <?= $this->h($article['title']) ?>
-                        </a>
-                    </h2>
-                    <?php if (!empty($article['excerpt'])): ?>
-                    <p style="font-size:.875rem;color:#475569;margin-top:.4rem">
-                        <?= $this->h(mb_strimwidth((string) $article['excerpt'], 0, 80, '…')) ?>
-                    </p>
-                    <?php endif; ?>
-                    <p class="card-meta" style="margin-top:.4rem">
-                        <?= $this->h((string) ($article['published_at'] ? date('Y年m月d日', strtotime((string) $article['published_at'])) : '')) ?>
-                    </p>
-                </div>
+                <a href="<?= $this->h($articleUrl($article)) ?>">
+                    <div class="card-thumb">
+                        <?php if ($thumb): ?>
+                        <img src="<?= $this->h($thumb) ?>"
+                             alt="<?= $this->h($article['title']) ?>"
+                             class="card-img"
+                             loading="lazy">
+                        <?php else: ?>
+                        <span class="card-no-img">NO IMAGE</span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="card-body">
+                        <?php if (!empty($article['category_name'])): ?>
+                        <span class="badge <?= $this->h($catType) ?>"
+                              style="display:inline-block;margin-bottom:.4rem">
+                            <?= $this->h($article['category_name']) ?>
+                        </span>
+                        <?php endif; ?>
+                        <h2 class="card-title"><?= $this->h($article['title']) ?></h2>
+                        <?php if (!empty($article['excerpt'])): ?>
+                        <p style="font-size:.875rem;color:#475569;margin-top:.4rem">
+                            <?= $this->h(mb_strimwidth((string) $article['excerpt'], 0, 60, '…')) ?>
+                        </p>
+                        <?php endif; ?>
+                        <?php if (!empty($article['published_at'])): ?>
+                        <p class="card-meta" style="margin-top:.4rem">
+                            <?= $this->h(date('Y年m月d日', strtotime((string) $article['published_at']))) ?>
+                        </p>
+                        <?php endif; ?>
+                    </div>
+                </a>
             </article>
             <?php endforeach; ?>
         </div>
 
-        <?php if ($last_page > 1): ?>
-        <nav class="pagination">
+        <?php if (($last_page ?? 1) > 1): ?>
+        <nav class="pagination" aria-label="ページネーション">
             <?php if ($page > 1): ?>
-            <a href="?page=<?= $page - 1 ?><?= $category_id ? '&category_id=' . $category_id : '' ?>">&laquo;</a>
+            <a href="<?= $this->h($pageUrl($page - 1, $baseUrl, $category_id ?? null)) ?>">&laquo;</a>
             <?php endif; ?>
-            <?php for ($i = max(1, $page - 2); $i <= min($last_page, $page + 2); $i++): ?>
-            <?php if ($i === $page): ?>
-            <span class="current"><?= $i ?></span>
+            <?php for ($p = max(1, $page - 2); $p <= min($last_page, $page + 2); $p++): ?>
+            <?php if ($p === $page): ?>
+            <span class="current"><?= $p ?></span>
             <?php else: ?>
-            <a href="?page=<?= $i ?><?= $category_id ? '&category_id=' . $category_id : '' ?>"><?= $i ?></a>
+            <a href="<?= $this->h($pageUrl($p, $baseUrl, $category_id ?? null)) ?>"><?= $p ?></a>
             <?php endif; ?>
             <?php endfor; ?>
             <?php if ($page < $last_page): ?>
-            <a href="?page=<?= $page + 1 ?><?= $category_id ? '&category_id=' . $category_id : '' ?>">&raquo;</a>
+            <a href="<?= $this->h($pageUrl($page + 1, $baseUrl, $category_id ?? null)) ?>">&raquo;</a>
             <?php endif; ?>
         </nav>
         <?php endif; ?>
+
+        <?php else: ?>
+        <div class="no-articles-msg">まだ記事がありません。</div>
         <?php endif; ?>
     </div>
 
-    <aside style="width:200px;flex-shrink:0">
-        <h3 style="font-weight:700;margin-bottom:1rem">カテゴリ</h3>
-        <ul style="list-style:none;display:flex;flex-direction:column;gap:.5rem">
-            <li><a href="/articles" style="color:<?= $category_id === null ? '#2563eb' : '#334155' ?>;font-weight:<?= $category_id === null ? '700' : '400' ?>">すべて</a></li>
-            <?php foreach ($categories as $cat): ?>
+    <?php if (!empty($categories)): ?>
+    <aside class="content-aside sidebar">
+        <h3>カテゴリ</h3>
+        <ul>
             <li>
-                <a href="/articles?category_id=<?= (int) $cat['id'] ?>"
-                   style="color:<?= (int) ($category_id ?? 0) === (int) $cat['id'] ? '#2563eb' : '#334155' ?>;font-weight:<?= (int) ($category_id ?? 0) === (int) $cat['id'] ? '700' : '400' ?>">
-                    <?= $this->h($cat['name']) ?>
+                <a href="/articles"<?= (empty($category_id) && empty($list_base_url) && empty($category_slug)) ? ' class="active"' : '' ?>>すべて</a>
+            </li>
+            <?php foreach ($categories as $cat): ?>
+            <?php
+                $catUrl   = $categoryUrl($cat);
+                $isActive = (!empty($category_id) && (int) ($cat['id'] ?? 0) === (int) $category_id)
+                         || (!empty($list_base_url) && $catUrl === (string) $list_base_url)
+                         || (!empty($category_slug) && ($cat['slug'] ?? '') === (string) $category_slug);
+            ?>
+            <li>
+                <a href="<?= $this->h($catUrl) ?>"<?= $isActive ? ' class="active"' : '' ?>>
+                    <?= $this->h((string) $cat['name']) ?>
                 </a>
             </li>
             <?php endforeach; ?>
         </ul>
     </aside>
+    <?php endif; ?>
 </div>

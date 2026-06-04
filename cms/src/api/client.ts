@@ -128,8 +128,47 @@ export const articlesApi = {
 
   delete: (id: number) => http.delete(`/article?id=${id}`),
 
+  duplicate: async (id: number): Promise<Article> => {
+    const orig = await http.get<Article>(`/article?id=${id}`).then((r) => r.data)
+    const slug = `${orig.slug}-copy-${Date.now()}`
+    return http.post<Article>('/articles', {
+      title: `${orig.title} のコピー`,
+      slug,
+      content: orig.content ?? '',
+      blocks: orig.blocks ?? '',
+      excerpt: orig.excerpt ?? '',
+      eye_catch_image: orig.eye_catch_image ?? '',
+      // category_id=0 は「カテゴリなし」を意味する（既存のhandleSubmitと同じ規約）
+      category_id: orig.category_id ?? 0,
+      status: 'draft',
+      author_id: Number(orig.author_id),
+      youtube_url: orig.youtube_url ?? '',
+      youtube_video_id: orig.youtube_video_id ?? '',
+      youtube_thumbnail: orig.youtube_thumbnail ?? '',
+    }).then((r) => r.data)
+  },
+
   importYoutube: (url: string) =>
     http
       .post<YoutubeImportResult>('/articles/youtube-import', { url })
       .then((r) => r.data),
+}
+
+// File upload — base64 JSON instead of multipart to work with BEAR.Sunday's JSON API context
+export const uploadApi = {
+  upload: (file: File): Promise<{ url: string }> => {
+    return new Promise<{ url: string }>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        const dataUrl = reader.result as string
+        const base64 = dataUrl.split(',')[1]
+        http
+          .post<{ url: string }>('/upload', { data: base64, name: file.name, mime: file.type })
+          .then((r) => resolve(r.data))
+          .catch(reject)
+      }
+      reader.onerror = () => reject(new Error('ファイルの読み込みに失敗しました'))
+      reader.readAsDataURL(file)
+    })
+  },
 }
