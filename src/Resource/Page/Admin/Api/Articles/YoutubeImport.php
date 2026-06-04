@@ -31,6 +31,8 @@ class YoutubeImport extends ResourceObject
             'thumbnail'      => $info['thumbnail'],
             'youtube_url'    => "https://www.youtube.com/watch?v={$info['video_id']}",
             'embed_url'      => "https://www.youtube.com/embed/{$info['video_id']}",
+            'description'    => $info['description'],
+            'published_at'   => $info['published_at'],
         ];
 
         return $this;
