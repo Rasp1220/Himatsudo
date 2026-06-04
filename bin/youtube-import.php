@@ -59,7 +59,7 @@ function makeSlug(string $title, string $videoId): string
     $slug = (string) preg_replace('/[^a-z0-9\-]/', '', $slug);
     $slug = trim($slug, '-');
     $slug = substr($slug, 0, 60);
-    return $slug !== '' ? $slug : 'yt-' . $videoId;
+    return $slug !== '' ? $slug : 'yt-' . strtolower($videoId);
 }
 
 function uniqueSlug(PDO $pdo, string $base, string $videoId): string
