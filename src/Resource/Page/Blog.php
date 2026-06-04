@@ -17,13 +17,7 @@ class Blog extends ResourceObject
     public function onGet(int $page = 1, int $per_page = 12): static
     {
         $categories   = $this->categoryService->getAll();
-        $blogCategory = null;
-        foreach ($categories as $cat) {
-            if (($cat['type'] ?? '') === 'blog') {
-                $blogCategory = $cat;
-                break;
-            }
-        }
+        $blogCategory = $this->categoryService->getByType('blog');
 
         $result = $blogCategory !== null
             ? $this->articleService->getList($page, $per_page, (int) $blogCategory['id'], 'published')

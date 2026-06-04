@@ -16,9 +16,7 @@ class Users extends ResourceObject
     #[RequireAuth]
     public function onGet(int $page = 1, int $per_page = 20): static
     {
-        if (($_REQUEST['_auth_role'] ?? '') !== 'admin') {
-            $this->code = 403;
-            $this->body = ['error' => 'Forbidden'];
+        if (!$this->isAdmin()) {
             return $this;
         }
         $this->body = $this->userService->getList($page, $per_page);
@@ -28,9 +26,7 @@ class Users extends ResourceObject
     #[RequireAuth]
     public function onPost(string $name, string $email, string $password, string $role = 'editor'): static
     {
-        if (($_REQUEST['_auth_role'] ?? '') !== 'admin') {
-            $this->code = 403;
-            $this->body = ['error' => 'Forbidden'];
+        if (!$this->isAdmin()) {
             return $this;
         }
         if (!in_array($role, ['admin', 'editor'], true)) {
@@ -41,5 +37,15 @@ class Users extends ResourceObject
         $this->code = 201;
         $this->body = $this->userService->create($name, $email, $password, $role);
         return $this;
+    }
+
+    private function isAdmin(): bool
+    {
+        if (($_REQUEST['_auth_role'] ?? '') !== 'admin') {
+            $this->code = 403;
+            $this->body = ['error' => 'Forbidden'];
+            return false;
+        }
+        return true;
     }
 }
