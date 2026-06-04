@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 declare(strict_types=1);
 
@@ -17,7 +16,7 @@ declare(strict_types=1);
  *   YOUTUBE_IMPORT_AUTHOR_ID=1
  */
 
-$root = dirname(__DIR__, 4);
+$root = dirname(__DIR__);
 
 // Load .env
 $envFile = $root . '/.env';
