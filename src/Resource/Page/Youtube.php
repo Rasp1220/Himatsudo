@@ -17,13 +17,7 @@ class Youtube extends ResourceObject
     public function onGet(int $page = 1, int $per_page = 12): static
     {
         $categories      = $this->categoryService->getAll();
-        $youtubeCategory = null;
-        foreach ($categories as $cat) {
-            if (($cat['type'] ?? '') === 'youtube') {
-                $youtubeCategory = $cat;
-                break;
-            }
-        }
+        $youtubeCategory = $this->categoryService->getByType('youtube');
 
         $result = $youtubeCategory !== null
             ? $this->articleService->getList($page, $per_page, (int) $youtubeCategory['id'], 'published')

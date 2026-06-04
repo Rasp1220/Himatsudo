@@ -16,6 +16,9 @@ interface CategoryInterface
     public function getById(int $id): ?array;
 
     /** @return array<string, mixed>|null */
+    public function getByType(string $type): ?array;
+
+    /** @return array<string, mixed>|null */
     #[SqlQuery('categories/get_by_slug.sql', ['slug'])]
     public function getBySlug(string $slug): ?array;
 

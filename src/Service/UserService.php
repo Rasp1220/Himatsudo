@@ -8,17 +8,9 @@ use Himatsudo\Interfaces\UserInterface;
 
 final class UserService implements UserInterface
 {
-    private string $sqlDir;
+    use SqlFileTrait;
 
-    public function __construct(private readonly ExtendedPdoInterface $pdo)
-    {
-        $this->sqlDir = dirname(__DIR__) . '/sql/';
-    }
-
-    private function sql(string $file): string
-    {
-        return (string) file_get_contents($this->sqlDir . $file);
-    }
+    public function __construct(private readonly ExtendedPdoInterface $pdo) {}
 
     public function getList(int $page = 1, int $perPage = 20): array
     {

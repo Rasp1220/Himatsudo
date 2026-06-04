@@ -9,17 +9,9 @@ use Himatsudo\Interfaces\ArticleInterface;
 
 final class ArticleService implements ArticleInterface
 {
-    private string $sqlDir;
+    use SqlFileTrait;
 
-    public function __construct(private readonly ExtendedPdoInterface $pdo)
-    {
-        $this->sqlDir = dirname(__DIR__) . '/sql/';
-    }
-
-    private function sql(string $file): string
-    {
-        return (string) file_get_contents($this->sqlDir . $file);
-    }
+    public function __construct(private readonly ExtendedPdoInterface $pdo) {}
 
     public function getList(int $page = 1, int $perPage = 15, ?int $categoryId = null, string $status = 'published'): array
     {
@@ -93,10 +85,11 @@ final class ArticleService implements ArticleInterface
 
     public function getBySlug(string $slug, bool $publishedOnly = true): ?array
     {
-        $extra = $publishedOnly ? " AND a.status = 'published'" : '';
-        $sql   = rtrim($this->sql('articles/get_by_slug.sql'));
-        $sql   = str_replace('WHERE a.slug = :slug', "WHERE a.slug = :slug{$extra}", $sql);
-        $row   = $this->pdo->fetchOne($sql, ['slug' => $slug]);
+        $sql = $this->sql('articles/get_by_slug.sql');
+        if ($publishedOnly) {
+            $sql = str_replace('WHERE a.slug = :slug', "WHERE a.slug = :slug AND a.status = 'published'", $sql);
+        }
+        $row = $this->pdo->fetchOne($sql, ['slug' => $slug]);
         return $row ?: null;
     }
 

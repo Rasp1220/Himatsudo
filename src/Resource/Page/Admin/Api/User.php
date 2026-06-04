@@ -16,9 +16,7 @@ class User extends ResourceObject
     #[RequireAuth]
     public function onGet(int $id): static
     {
-        if (($_REQUEST['_auth_role'] ?? '') !== 'admin') {
-            $this->code = 403;
-            $this->body = ['error' => 'Forbidden'];
+        if (!$this->isAdmin()) {
             return $this;
         }
         $user = $this->userService->getById($id);
@@ -34,9 +32,7 @@ class User extends ResourceObject
     #[RequireAuth]
     public function onPut(int $id, ?string $name = null, ?string $email = null, ?string $password = null, ?string $role = null): static
     {
-        if (($_REQUEST['_auth_role'] ?? '') !== 'admin') {
-            $this->code = 403;
-            $this->body = ['error' => 'Forbidden'];
+        if (!$this->isAdmin()) {
             return $this;
         }
         if ($this->userService->getById($id) === null) {
@@ -57,9 +53,7 @@ class User extends ResourceObject
     #[RequireAuth]
     public function onDelete(int $id): static
     {
-        if (($_REQUEST['_auth_role'] ?? '') !== 'admin') {
-            $this->code = 403;
-            $this->body = ['error' => 'Forbidden'];
+        if (!$this->isAdmin()) {
             return $this;
         }
         if ($this->userService->getById($id) === null) {
@@ -71,5 +65,15 @@ class User extends ResourceObject
         $this->code = 204;
         $this->body = null;
         return $this;
+    }
+
+    private function isAdmin(): bool
+    {
+        if (($_REQUEST['_auth_role'] ?? '') !== 'admin') {
+            $this->code = 403;
+            $this->body = ['error' => 'Forbidden'];
+            return false;
+        }
+        return true;
     }
 }

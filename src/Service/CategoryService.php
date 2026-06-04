@@ -8,17 +8,9 @@ use Himatsudo\Interfaces\CategoryInterface;
 
 final class CategoryService implements CategoryInterface
 {
-    private string $sqlDir;
+    use SqlFileTrait;
 
-    public function __construct(private readonly ExtendedPdoInterface $pdo)
-    {
-        $this->sqlDir = dirname(__DIR__) . '/sql/';
-    }
-
-    private function sql(string $file): string
-    {
-        return (string) file_get_contents($this->sqlDir . $file);
-    }
+    public function __construct(private readonly ExtendedPdoInterface $pdo) {}
 
     public function getAll(): array
     {
@@ -29,6 +21,16 @@ final class CategoryService implements CategoryInterface
     {
         $row = $this->pdo->fetchOne($this->sql('categories/get_by_id.sql'), ['id' => $id]);
         return $row ?: null;
+    }
+
+    public function getByType(string $type): ?array
+    {
+        foreach ($this->getAll() as $cat) {
+            if (($cat['type'] ?? '') === $type) {
+                return $cat;
+            }
+        }
+        return null;
     }
 
     public function getBySlug(string $slug): ?array
