@@ -77,6 +77,9 @@ async function importYoutube() {
     form.youtube_video_id = data.video_id
     form.youtube_url = data.youtube_url
     form.youtube_thumbnail = data.thumbnail
+    if (!form.eye_catch_image) {
+      form.eye_catch_image = data.thumbnail
+    }
     if (!form.title && data.title) {
       form.title = data.title
       autoSlug()

@@ -151,7 +151,7 @@ function importVideo(PDO $pdo, array $v, int $categoryId = null, string $status 
         'slug'              => $slug,
         'content'           => '',
         'excerpt'           => $excerpt,
-        'eye_catch_image'   => '',
+        'eye_catch_image'   => $v['thumbnail'],
         'author_id'         => $authorId,
         'status'            => $status,
         'youtube_url'       => "https://www.youtube.com/watch?v={$videoId}",
