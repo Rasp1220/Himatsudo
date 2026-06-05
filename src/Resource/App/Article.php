@@ -26,6 +26,7 @@ class Article extends ResourceObject
 
         $publishedAt = (string) ($article['published_at'] ?? '');
         $currentId   = (int) $article['id'];
+        $categoryId  = (int) ($article['category_id'] ?? 0);
         $relatedIds  = is_array($article['related_article_ids'] ?? null)
             ? $article['related_article_ids']
             : [];
@@ -34,8 +35,8 @@ class Article extends ResourceObject
             'article'          => $article,
             'categories'       => $this->categoryService->getAll(),
             'page_title'       => (string) $article['title'],
-            'prev_article'     => $publishedAt ? $this->articleService->getPrev($publishedAt, $currentId) : null,
-            'next_article'     => $publishedAt ? $this->articleService->getNext($publishedAt, $currentId) : null,
+            'prev_article'     => ($publishedAt && $categoryId) ? $this->articleService->getPrev($publishedAt, $currentId, $categoryId) : null,
+            'next_article'     => ($publishedAt && $categoryId) ? $this->articleService->getNext($publishedAt, $currentId, $categoryId) : null,
             'related_articles' => $this->articleService->getByIds($relatedIds),
         ];
 

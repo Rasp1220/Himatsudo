@@ -31,11 +31,11 @@ $isApi = str_starts_with(strtok($uri, '?'), '/admin/api/');
 if (!$isApi) {
     $path = strtok($uri, '?');
     $qs   = (string) strstr($uri, '?');
-    if (preg_match('#^/articles/([a-zA-Z0-9][a-zA-Z0-9\-]*)$#', (string) $path, $m)) {
+    if (preg_match('#^/articles/([^/]+)$#', (string) $path, $m)) {
         // /articles/{article-slug} → article detail
         $_SERVER['REQUEST_URI'] = '/article?slug=' . urlencode($m[1]);
         $_GET['slug'] = $m[1];
-    } elseif (preg_match('#^/blog/([a-zA-Z0-9][a-zA-Z0-9\-]*)$#', (string) $path, $m)) {
+    } elseif (preg_match('#^/blog/([^/]+)$#', (string) $path, $m)) {
         // /blog/{article-slug} → blog article detail
         $_SERVER['REQUEST_URI'] = '/article?slug=' . urlencode($m[1]);
         $_GET['slug'] = $m[1];

@@ -61,12 +61,12 @@ interface ArticleInterface
     public function search(string $keyword, int $page = 1, int $perPage = 15): array;
 
     /** @return array<string, mixed>|null */
-    #[SqlQuery('articles/get_prev.sql', ['published_at', 'current_id'])]
-    public function getPrev(string $publishedAt, int $currentId): ?array;
+    #[SqlQuery('articles/get_prev.sql', ['published_at', 'current_id', 'category_id'])]
+    public function getPrev(string $publishedAt, int $currentId, int $categoryId): ?array;
 
     /** @return array<string, mixed>|null */
-    #[SqlQuery('articles/get_next.sql', ['published_at', 'current_id'])]
-    public function getNext(string $publishedAt, int $currentId): ?array;
+    #[SqlQuery('articles/get_next.sql', ['published_at', 'current_id', 'category_id'])]
+    public function getNext(string $publishedAt, int $currentId, int $categoryId): ?array;
 
     /** @return array<int, array<string, mixed>> */
     public function getByIds(array $ids): array;

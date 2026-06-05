@@ -178,20 +178,20 @@ final class ArticleService implements ArticleInterface
         ];
     }
 
-    public function getPrev(string $publishedAt, int $currentId): ?array
+    public function getPrev(string $publishedAt, int $currentId, int $categoryId): ?array
     {
         $row = $this->pdo->fetchOne(
             $this->sql('articles/get_prev.sql'),
-            ['published_at' => $publishedAt, 'current_id' => $currentId]
+            ['published_at' => $publishedAt, 'current_id' => $currentId, 'category_id' => $categoryId]
         );
         return $row ?: null;
     }
 
-    public function getNext(string $publishedAt, int $currentId): ?array
+    public function getNext(string $publishedAt, int $currentId, int $categoryId): ?array
     {
         $row = $this->pdo->fetchOne(
             $this->sql('articles/get_next.sql'),
-            ['published_at' => $publishedAt, 'current_id' => $currentId]
+            ['published_at' => $publishedAt, 'current_id' => $currentId, 'category_id' => $categoryId]
         );
         return $row ?: null;
     }
