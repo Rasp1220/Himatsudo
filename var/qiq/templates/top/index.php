@@ -7,7 +7,7 @@
     $this->setLayout('layout');
     $this->page_title = $page_title ?? 'ホーム';
 
-    $categoryUrl = static function (array $category): string {
+    $categoryUrl = function (array $category): string {
         return match ($category['type'] ?? 'custom') {
             'blog'    => '/blog',
             'youtube' => '/youtube',
@@ -15,7 +15,7 @@
         };
     };
 
-    $articleUrl = static function (array $article): string {
+    $articleUrl = function (array $article): string {
         $prefix = ($article['category_type'] ?? 'custom') === 'blog' ? '/blog' : '/articles';
         return $prefix . '/' . rawurlencode((string) $article['slug']);
     };
@@ -49,12 +49,12 @@
         <div class="cat-header">
             <h2 class="cat-title">
                 {{ if ($section['badge_class']): }}
-                    <span class="badge {{= $section['badge_class'] }}">{{= $section['title'] }}</span>
+                    <span class="badge {{h $section['badge_class'] }}">{{h $section['title'] }}</span>
                 {{ else: }}
-                    {{= $section['title'] }}
+                    {{h $section['title'] }}
                 {{ endif; }}
             </h2>
-            <a href="{{= $section['url'] }}" class="cat-more">もっと見る &rarr;</a>
+            <a href="{{h $section['url'] }}" class="cat-more">もっと見る &rarr;</a>
         </div>
         <div class="cat-swiper-outer">
             <button class="cat-swiper-btn" id="prev-{{= $idx }}">&#8249;</button>
@@ -63,11 +63,11 @@
                     {{ foreach ($section['articles'] as $article): }}
                         {{ $thumb = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null; $catType = $article['category_type'] ?? 'custom'; }}
                         <div class="swiper-slide">
-                            <a href="{{= $articleUrl($article) }}" class="carousel-card-link">
+                            <a href="{{h $articleUrl($article) }}" class="carousel-card-link">
                                 {{ if ($thumb): }}
                                     <div class="carousel-thumb">
-                                        <img src="{{= $thumb }}"
-                                             alt="{{= $article['title'] }}"
+                                        <img src="{{h $thumb }}"
+                                             alt="{{h $article['title'] }}"
                                              loading="lazy">
                                     </div>
                                 {{ else: }}
@@ -75,15 +75,15 @@
                                 {{ endif; }}
                                 <div class="carousel-info">
                                     {{ if (!empty($article['category_name'])): }}
-                                        <span class="badge {{= $catType }}"
+                                        <span class="badge {{h $catType }}"
                                               style="display:inline-block;margin-bottom:.25rem">
-                                            {{= $article['category_name'] }}
+                                            {{h $article['category_name'] }}
                                         </span>
                                     {{ endif; }}
-                                    <p class="carousel-title">{{= $article['title'] }}</p>
+                                    <p class="carousel-title">{{h $article['title'] }}</p>
                                     {{ if (!empty($article['published_at'])): }}
-                                        <time class="carousel-date" datetime="{{= $article['published_at'] }}">
-                                            {{= date('Y年m月d日', strtotime((string) $article['published_at'])) }}
+                                        <time class="carousel-date" datetime="{{h $article['published_at'] }}">
+                                            {{h date('Y年m月d日', strtotime((string) $article['published_at'])) }}
                                         </time>
                                     {{ endif; }}
                                 </div>

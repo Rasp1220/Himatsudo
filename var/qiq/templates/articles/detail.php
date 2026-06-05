@@ -27,9 +27,9 @@
 <nav class="breadcrumb" aria-label="パンくずリスト">
     <ol class="breadcrumb-list">
         <li class="breadcrumb-item"><a href="/">ホーム</a></li>
-        <li class="breadcrumb-item"><a href="{{= $listUrl }}">{{= $listLabel }}</a></li>
+        <li class="breadcrumb-item"><a href="{{h $listUrl }}">{{h $listLabel }}</a></li>
         <li class="breadcrumb-item breadcrumb-current" aria-current="page">
-            {{= mb_strimwidth((string) $article['title'], 0, 40, '…') }}
+            {{h mb_strimwidth((string) $article['title'], 0, 40, '…') }}
         </li>
     </ol>
 </nav>
@@ -37,26 +37,26 @@
 <article class="article-detail">
     {{ if (!empty($article['category_name'])): }}
         <div class="article-category">
-            <a href="/{{= $article['category_slug'] ?? '' }}" class="badge {{= $article['category_type'] ?? '' }}">
-                {{= $article['category_name'] }}
+            <a href="/{{h $article['category_slug'] ?? '' }}" class="badge {{h $article['category_type'] ?? '' }}">
+                {{h $article['category_name'] }}
             </a>
         </div>
     {{ endif; }}
 
-    <h1 class="article-title">{{= $article['title'] }}</h1>
+    <h1 class="article-title">{{h $article['title'] }}</h1>
 
     <div class="article-meta">
         {{ if (!empty($article['author_name'])): }}
-            <span>by {{= $article['author_name'] }}</span>
+            <span>by {{h $article['author_name'] }}</span>
         {{ endif; }}
         {{ if (!empty($article['published_at'])): }}
-            <span>{{= date('Y年m月d日', strtotime((string) $article['published_at'])) }}</span>
+            <span>{{h date('Y年m月d日', strtotime((string) $article['published_at'])) }}</span>
         {{ endif; }}
     </div>
 
     {{ if (!empty($article['eye_catch_image'])): }}
-        <img src="{{= $article['eye_catch_image'] }}"
-             alt="{{= $article['title'] }}"
+        <img src="{{h $article['eye_catch_image'] }}"
+             alt="{{h $article['title'] }}"
              class="article-eyecatch">
     {{ endif; }}
 
@@ -67,21 +67,21 @@
                 {{ if ($type === 'heading'): }}
                     {{ $level = max(2, min(4, (int) ($block['level'] ?? 2))); $tag = 'h' . $level; }}
                     <{{= $tag }} class="block-heading block-heading-{{= $level }}">
-                        {{= $block['text'] ?? '' }}
+                        {{h $block['text'] ?? '' }}
                     </{{= $tag }}>
 
                 {{ elseif ($type === 'text'): }}
                     <div class="article-body block-text">
-                        {{~ $block['html'] ?? '' }}
+                        {{= $block['html'] ?? '' }}
                     </div>
 
                 {{ elseif ($type === 'image' && !empty($block['url'])): }}
                     <figure class="block-image">
-                        <img src="{{= $block['url'] }}"
-                             alt="{{= $block['alt'] ?? '' }}"
+                        <img src="{{h $block['url'] }}"
+                             alt="{{h $block['alt'] ?? '' }}"
                              class="block-image-img">
                         {{ if (!empty($block['caption'])): }}
-                            <figcaption class="block-image-caption">{{= $block['caption'] }}</figcaption>
+                            <figcaption class="block-image-caption">{{h $block['caption'] }}</figcaption>
                         {{ endif; }}
                     </figure>
 
@@ -89,8 +89,8 @@
                     <figure class="block-video">
                         <div class="block-video-wrapper">
                             <iframe
-                                src="https://www.youtube.com/embed/{{= $block['video_id'] }}"
-                                title="{{= $block['caption'] ?? 'YouTube' }}"
+                                src="https://www.youtube.com/embed/{{h $block['video_id'] }}"
+                                title="{{h $block['caption'] ?? 'YouTube' }}"
                                 frameborder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowfullscreen
@@ -98,7 +98,7 @@
                             </iframe>
                         </div>
                         {{ if (!empty($block['caption'])): }}
-                            <figcaption class="block-video-caption">{{= $block['caption'] }}</figcaption>
+                            <figcaption class="block-video-caption">{{h $block['caption'] }}</figcaption>
                         {{ endif; }}
                     </figure>
 
@@ -108,7 +108,7 @@
 
     {{ elseif ($richHtml !== null): }}
         <div class="article-body tinymce-content">
-            {{~ $richHtml }}
+            {{= $richHtml }}
         </div>
 
     {{ else: }}
@@ -117,6 +117,6 @@
     {{ endif; }}
 
     <div class="article-footer">
-        <a href="{{= $listUrl }}">&larr; {{= $listLabel }}に戻る</a>
+        <a href="{{h $listUrl }}">&larr; {{h $listLabel }}に戻る</a>
     </div>
 </article>

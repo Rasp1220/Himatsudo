@@ -20,7 +20,7 @@
         $baseUrl = '/articles';
     }
 
-    $pageUrl = static function (int $p, string $base, ?int $catId): string {
+    $pageUrl = function (int $p, string $base, ?int $catId): string {
         $params = [];
         if ($catId !== null && $base === '/articles') {
             $params[] = 'category_id=' . $catId;
@@ -31,7 +31,7 @@
         return $base . ($params ? '?' . implode('&', $params) : '');
     };
 
-    $categoryUrl = static function (array $cat): string {
+    $categoryUrl = function (array $cat): string {
         return match ($cat['type'] ?? 'custom') {
             'blog'    => '/blog',
             'youtube' => '/youtube',
@@ -39,7 +39,7 @@
         };
     };
 
-    $articleUrl = static function (array $article): string {
+    $articleUrl = function (array $article): string {
         $prefix = ($article['category_type'] ?? 'custom') === 'blog' ? '/blog' : '/articles';
         return $prefix . '/' . rawurlencode((string) $article['slug']);
     };
@@ -55,7 +55,7 @@
         {{ elseif (!empty($current_category)): }}
             <li class="breadcrumb-item"><a href="/articles">記事一覧</a></li>
             <li class="breadcrumb-item breadcrumb-current" aria-current="page">
-                {{= (string) ($current_category['name'] ?? $page_title) }}
+                {{h (string) ($current_category['name'] ?? $page_title) }}
             </li>
         {{ else: }}
             <li class="breadcrumb-item breadcrumb-current" aria-current="page">記事一覧</li>
@@ -63,7 +63,7 @@
     </ol>
 </nav>
 
-<h1 class="page-title">{{= $this->page_title }}</h1>
+<h1 class="page-title">{{h $this->page_title }}</h1>
 
 <div class="content-layout">
     <div class="content-main">
@@ -75,11 +75,11 @@
                         $catType = $article['category_type'] ?? 'custom';
                     }}
                     <article class="card">
-                        <a href="{{= $articleUrl($article) }}">
+                        <a href="{{h $articleUrl($article) }}">
                             <div class="card-thumb">
                                 {{ if ($thumb): }}
-                                    <img src="{{= $thumb }}"
-                                         alt="{{= $article['title'] }}"
+                                    <img src="{{h $thumb }}"
+                                         alt="{{h $article['title'] }}"
                                          class="card-img"
                                          loading="lazy">
                                 {{ else: }}
@@ -88,20 +88,20 @@
                             </div>
                             <div class="card-body">
                                 {{ if (!empty($article['category_name'])): }}
-                                    <span class="badge {{= $catType }}"
+                                    <span class="badge {{h $catType }}"
                                           style="display:inline-block;margin-bottom:.4rem">
-                                        {{= $article['category_name'] }}
+                                        {{h $article['category_name'] }}
                                     </span>
                                 {{ endif; }}
-                                <h2 class="card-title">{{= $article['title'] }}</h2>
+                                <h2 class="card-title">{{h $article['title'] }}</h2>
                                 {{ if (!empty($article['excerpt'])): }}
                                     <p style="font-size:.875rem;color:#475569;margin-top:.4rem">
-                                        {{= mb_strimwidth((string) $article['excerpt'], 0, 60, '…') }}
+                                        {{h mb_strimwidth((string) $article['excerpt'], 0, 60, '…') }}
                                     </p>
                                 {{ endif; }}
                                 {{ if (!empty($article['published_at'])): }}
                                     <p class="card-meta" style="margin-top:.4rem">
-                                        {{= date('Y年m月d日', strtotime((string) $article['published_at'])) }}
+                                        {{h date('Y年m月d日', strtotime((string) $article['published_at'])) }}
                                     </p>
                                 {{ endif; }}
                             </div>
@@ -113,17 +113,17 @@
             {{ if (($last_page ?? 1) > 1): }}
                 <nav class="pagination" aria-label="ページネーション">
                     {{ if ($page > 1): }}
-                        <a href="{{= $pageUrl($page - 1, $baseUrl, $category_id ?? null) }}">&laquo;</a>
+                        <a href="{{h $pageUrl($page - 1, $baseUrl, $category_id ?? null) }}">&laquo;</a>
                     {{ endif; }}
                     {{ for ($p = max(1, $page - 2); $p <= min($last_page, $page + 2); $p++): }}
                         {{ if ($p === $page): }}
                             <span class="current">{{= $p }}</span>
                         {{ else: }}
-                            <a href="{{= $pageUrl($p, $baseUrl, $category_id ?? null) }}">{{= $p }}</a>
+                            <a href="{{h $pageUrl($p, $baseUrl, $category_id ?? null) }}">{{= $p }}</a>
                         {{ endif; }}
                     {{ endfor; }}
                     {{ if ($page < $last_page): }}
-                        <a href="{{= $pageUrl($page + 1, $baseUrl, $category_id ?? null) }}">&raquo;</a>
+                        <a href="{{h $pageUrl($page + 1, $baseUrl, $category_id ?? null) }}">&raquo;</a>
                     {{ endif; }}
                 </nav>
             {{ endif; }}
@@ -138,7 +138,7 @@
             <h3>カテゴリ</h3>
             <ul>
                 <li>
-                    <a href="/articles"{{~ (empty($category_id) && empty($list_base_url) && empty($category_slug)) ? ' class="active"' : '' }}>すべて</a>
+                    <a href="/articles"{{= (empty($category_id) && empty($list_base_url) && empty($category_slug)) ? ' class="active"' : '' }}>すべて</a>
                 </li>
                 {{ foreach ($categories as $cat): }}
                     {{
@@ -148,8 +148,8 @@
                                  || (!empty($category_slug) && ($cat['slug'] ?? '') === (string) $category_slug);
                     }}
                     <li>
-                        <a href="{{= $catUrl }}"{{~ $isActive ? ' class="active"' : '' }}>
-                            {{= (string) $cat['name'] }}
+                        <a href="{{h $catUrl }}"{{= $isActive ? ' class="active"' : '' }}>
+                            {{h (string) $cat['name'] }}
                         </a>
                     </li>
                 {{ endforeach; }}
