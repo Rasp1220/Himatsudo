@@ -16,5 +16,6 @@ var/tmp/
 
 # Test caches
 .phpunit.result.cache
+.php-cs-fixer.cache
 tests/e2e/playwright-report/
 tests/e2e/test-results/
