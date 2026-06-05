@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Resource\App;
@@ -12,7 +13,8 @@ class Articles extends ResourceObject
     public function __construct(
         private readonly ArticleInterface  $articleService,
         private readonly CategoryInterface $categoryService,
-    ) {}
+    ) {
+    }
 
     public function onGet(int $page = 1, ?int $category_id = null, int $per_page = 12): static
     {

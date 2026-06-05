@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Auth;
@@ -22,7 +23,7 @@ final class JwtService
 
     public function __construct()
     {
-        $secret = $_ENV['JWT_SECRET'] ?? 'himatsudo-default-jwt-secret-key-change-in-production-32chars';
+        $secret       = $_ENV['JWT_SECRET'] ?? 'himatsudo-default-jwt-secret-key-change-in-production-32chars';
         $this->config = Configuration::forSymmetricSigner(
             new Sha256(),
             InMemory::plainText($secret)
@@ -59,7 +60,7 @@ final class JwtService
     /** @return array{uid: int, role: string} */
     public function validateAccessToken(string $tokenString): array
     {
-        $token = $this->parseAndValidate($tokenString);
+        $token  = $this->parseAndValidate($tokenString);
         $claims = $token->claims();
         if ($claims->get('type') !== 'access') {
             throw new RuntimeException('Token type is not access');
@@ -72,7 +73,7 @@ final class JwtService
 
     public function validateRefreshToken(string $tokenString): int
     {
-        $token = $this->parseAndValidate($tokenString);
+        $token  = $this->parseAndValidate($tokenString);
         $claims = $token->claims();
         if ($claims->get('type') !== 'refresh') {
             throw new RuntimeException('Token type is not refresh');

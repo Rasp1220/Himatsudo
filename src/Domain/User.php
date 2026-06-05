@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Domain;
@@ -12,16 +13,17 @@ final readonly class User
         public string $role,
         public string $createdAt,
         public string $updatedAt,
-    ) {}
+    ) {
+    }
 
     /** @param array<string, mixed> $row */
     public static function fromArray(array $row): self
     {
         return new self(
-            id:        (int)    ($row['id']         ?? 0),
-            name:      (string) ($row['name']       ?? ''),
-            email:     (string) ($row['email']      ?? ''),
-            role:      (string) ($row['role']       ?? 'editor'),
+            id:        (int)    ($row['id'] ?? 0),
+            name:      (string) ($row['name'] ?? ''),
+            email:     (string) ($row['email'] ?? ''),
+            role:      (string) ($row['role'] ?? 'editor'),
             createdAt: (string) ($row['created_at'] ?? ''),
             updatedAt: (string) ($row['updated_at'] ?? ''),
         );

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Interceptor;
@@ -39,7 +40,7 @@ final class AuthInterceptor implements MethodInterceptor
 
     private function unauthorized(MethodInvocation $invocation, string $message): object
     {
-        $resource = $invocation->getThis();
+        $resource       = $invocation->getThis();
         $resource->code = 401;
         $resource->body = ['error' => 'Unauthorized', 'message' => $message];
         return $resource;

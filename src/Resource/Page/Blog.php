@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Resource\Page;
@@ -12,7 +13,8 @@ class Blog extends ResourceObject
     public function __construct(
         private readonly ArticleInterface  $articleService,
         private readonly CategoryInterface $categoryService,
-    ) {}
+    ) {
+    }
 
     public function onGet(int $page = 1, int $per_page = 12): static
     {

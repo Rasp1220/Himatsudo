@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Resource\Page\Admin\Api\Articles;
@@ -26,13 +27,13 @@ class YoutubeImport extends ResourceObject
         }
 
         $this->body = [
-            'video_id'       => $info['video_id'],
-            'title'          => $info['title'],
-            'thumbnail'      => $info['thumbnail'],
-            'youtube_url'    => "https://www.youtube.com/watch?v={$info['video_id']}",
-            'embed_url'      => "https://www.youtube.com/embed/{$info['video_id']}",
-            'description'    => $info['description'],
-            'published_at'   => $info['published_at'],
+            'video_id'     => $info['video_id'],
+            'title'        => $info['title'],
+            'thumbnail'    => $info['thumbnail'],
+            'youtube_url'  => "https://www.youtube.com/watch?v={$info['video_id']}",
+            'embed_url'    => "https://www.youtube.com/embed/{$info['video_id']}",
+            'description'  => $info['description'],
+            'published_at' => $info['published_at'],
         ];
 
         return $this;

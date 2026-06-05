@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Tests\Service;
@@ -114,7 +115,7 @@ class UserServiceTest extends TestCase
     public function testCreateHashesPassword(): void
     {
         $capturedBind = null;
-        $stmt = $this->createMock(PDOStatement::class);
+        $stmt         = $this->createMock(PDOStatement::class);
 
         $this->pdo->expects($this->once())
             ->method('perform')

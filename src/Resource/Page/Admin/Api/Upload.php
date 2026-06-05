@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Resource\Page\Admin\Api;
@@ -44,7 +45,7 @@ class Upload extends ResourceObject
 
         $uploadDir = dirname(__DIR__, 5) . '/public/uploads/';
         if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
+            mkdir($uploadDir, 0o755, true);
         }
 
         $filename = date('Ymd_His') . '_' . bin2hex(random_bytes(6)) . '.' . $ext;

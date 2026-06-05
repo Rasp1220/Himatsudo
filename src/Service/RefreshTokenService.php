@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Service;
@@ -7,7 +8,9 @@ use Aura\Sql\ExtendedPdoInterface;
 
 final class RefreshTokenService
 {
-    public function __construct(private readonly ExtendedPdoInterface $pdo) {}
+    public function __construct(private readonly ExtendedPdoInterface $pdo)
+    {
+    }
 
     public function save(int $userId, string $token, string $expiresAt): void
     {
@@ -21,8 +24,8 @@ final class RefreshTokenService
     public function findValid(string $token): ?array
     {
         $row = $this->pdo->fetchOne(
-            "SELECT id, user_id, token, expires_at FROM refresh_tokens
-             WHERE token = :token AND expires_at > NOW() LIMIT 1",
+            'SELECT id, user_id, token, expires_at FROM refresh_tokens
+             WHERE token = :token AND expires_at > NOW() LIMIT 1',
             ['token' => $token]
         );
         return $row ?: null;

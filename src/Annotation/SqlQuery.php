@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Annotation;
@@ -13,5 +14,6 @@ final class SqlQuery
     public function __construct(
         public readonly string $file,
         public readonly array  $params = [],
-    ) {}
+    ) {
+    }
 }

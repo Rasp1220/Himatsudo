@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Tests\Auth;
@@ -17,7 +18,7 @@ class JwtServiceTest extends TestCase
     protected function setUp(): void
     {
         $_ENV['JWT_SECRET'] = 'test-jwt-secret-key-for-unit-tests-only-32ch';
-        $this->jwt = new JwtService();
+        $this->jwt          = new JwtService();
     }
 
     public function testIssueAccessTokenReturnsNonEmptyString(): void

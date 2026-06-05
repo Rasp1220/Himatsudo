@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Resource\Page;
@@ -8,7 +9,9 @@ use BEAR\Resource\ResourceObject;
 
 class Article extends ResourceObject
 {
-    public function __construct(private readonly ResourceInterface $resource) {}
+    public function __construct(private readonly ResourceInterface $resource)
+    {
+    }
 
     public function onGet(string $slug): static
     {

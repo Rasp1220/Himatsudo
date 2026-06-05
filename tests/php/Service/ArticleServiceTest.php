@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Tests\Service;
@@ -139,7 +140,7 @@ class ArticleServiceTest extends TestCase
     public function testCreateSetsPublishedAtWhenStatusIsPublished(): void
     {
         $capturedData = null;
-        $stmt = $this->createMock(PDOStatement::class);
+        $stmt         = $this->createMock(PDOStatement::class);
 
         $this->pdo->expects($this->once())
             ->method('perform')
@@ -164,7 +165,7 @@ class ArticleServiceTest extends TestCase
     public function testCreateDoesNotOverwriteExistingPublishedAt(): void
     {
         $capturedData = null;
-        $stmt = $this->createMock(PDOStatement::class);
+        $stmt         = $this->createMock(PDOStatement::class);
 
         $this->pdo->expects($this->once())
             ->method('perform')

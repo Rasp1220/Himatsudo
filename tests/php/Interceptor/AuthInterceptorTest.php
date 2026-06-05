@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Tests\Interceptor;
@@ -23,8 +24,8 @@ class AuthInterceptorTest extends TestCase
     protected function setUp(): void
     {
         $_ENV['JWT_SECRET'] = 'test-jwt-secret-key-for-unit-tests-only-32ch';
-        $this->jwt         = new JwtService();
-        $this->interceptor = new AuthInterceptor($this->jwt);
+        $this->jwt          = new JwtService();
+        $this->interceptor  = new AuthInterceptor($this->jwt);
         unset($_SERVER['HTTP_AUTHORIZATION']);
         $_REQUEST = [];
     }
@@ -44,7 +45,7 @@ class AuthInterceptorTest extends TestCase
 
     public function testProceedsWhenValidBearerToken(): void
     {
-        $token = $this->jwt->issueAccessToken(1, 'admin');
+        $token                         = $this->jwt->issueAccessToken(1, 'admin');
         $_SERVER['HTTP_AUTHORIZATION'] = "Bearer {$token}";
 
         $invocation = $this->makeInvocation();
@@ -96,7 +97,7 @@ class AuthInterceptorTest extends TestCase
     public function testReturns401WhenRefreshTokenUsedAsAccessToken(): void
     {
         // A refresh token must be rejected by the interceptor (it validates access tokens)
-        $refreshToken = $this->jwt->issueRefreshToken(1);
+        $refreshToken                  = $this->jwt->issueRefreshToken(1);
         $_SERVER['HTTP_AUTHORIZATION'] = "Bearer {$refreshToken}";
 
         $invocation = $this->makeInvocation();
@@ -109,7 +110,7 @@ class AuthInterceptorTest extends TestCase
 
     public function testStoresClaimsInRequestGlobals(): void
     {
-        $token = $this->jwt->issueAccessToken(42, 'editor');
+        $token                         = $this->jwt->issueAccessToken(42, 'editor');
         $_SERVER['HTTP_AUTHORIZATION'] = "Bearer {$token}";
 
         $invocation = $this->makeInvocation();

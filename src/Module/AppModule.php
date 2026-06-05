@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Module;
@@ -6,8 +7,8 @@ namespace Himatsudo\Module;
 use BEAR\Package\AbstractAppModule;
 use BEAR\Package\PackageModule;
 use Himatsudo\Annotation\RequireAuth;
-use Himatsudo\Interceptor\AuthInterceptor;
 use Himatsudo\Auth\JwtService;
+use Himatsudo\Interceptor\AuthInterceptor;
 use Himatsudo\Interfaces\ArticleInterface;
 use Himatsudo\Interfaces\CategoryInterface;
 use Himatsudo\Interfaces\UserInterface;
@@ -25,8 +26,8 @@ class AppModule extends AbstractAppModule
         $this->install(new PackageModule());
 
         // Database
-        $dsn      = (string) ($_ENV['DB_DSN']      ?? 'mysql:host=localhost;dbname=himatsudo;charset=utf8mb4');
-        $user     = (string) ($_ENV['DB_USER']     ?? 'root');
+        $dsn      = (string) ($_ENV['DB_DSN'] ?? 'mysql:host=localhost;dbname=himatsudo;charset=utf8mb4');
+        $user     = (string) ($_ENV['DB_USER'] ?? 'root');
         $password = (string) ($_ENV['DB_PASSWORD'] ?? '');
         $this->install(new AuraSqlModule($dsn, $user, $password));
 
