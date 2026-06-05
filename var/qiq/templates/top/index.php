@@ -45,67 +45,67 @@
 }}
 
 {{ foreach ($sections as $idx => $section): }}
-<section class="cat-section">
-    <div class="cat-header">
-        <h2 class="cat-title">
-            {{ if ($section['badge_class']): }}
-            <span class="badge {{= $section['badge_class'] }}">{{= $section['title'] }}</span>
-            {{ else: }}
-            {{= $section['title'] }}
-            {{ endif; }}
-        </h2>
-        <a href="{{= $section['url'] }}" class="cat-more">もっと見る &rarr;</a>
-    </div>
-    <div class="cat-swiper-outer">
-        <button class="cat-swiper-btn" id="prev-{{= $idx }}">&#8249;</button>
-        <div class="swiper cat-swiper" id="swiper-{{= $idx }}">
-            <div class="swiper-wrapper">
-                {{ foreach ($section['articles'] as $article): }}
-                {{ $thumb = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null; $catType = $article['category_type'] ?? 'custom'; }}
-                <div class="swiper-slide">
-                    <a href="{{= $articleUrl($article) }}" class="carousel-card-link">
-                        {{ if ($thumb): }}
-                        <div class="carousel-thumb">
-                            <img src="{{= $thumb }}"
-                                 alt="{{= $article['title'] }}"
-                                 loading="lazy">
-                        </div>
-                        {{ else: }}
-                        <div class="carousel-no-thumb"><span>NO IMAGE</span></div>
-                        {{ endif; }}
-                        <div class="carousel-info">
-                            {{ if (!empty($article['category_name'])): }}
-                            <span class="badge {{= $catType }}"
-                                  style="display:inline-block;margin-bottom:.25rem">
-                                {{= $article['category_name'] }}
-                            </span>
-                            {{ endif; }}
-                            <p class="carousel-title">{{= $article['title'] }}</p>
-                            {{ if (!empty($article['published_at'])): }}
-                            <time class="carousel-date" datetime="{{= $article['published_at'] }}">
-                                {{= date('Y年m月d日', strtotime((string) $article['published_at'])) }}
-                            </time>
-                            {{ endif; }}
-                        </div>
-                    </a>
-                </div>
-                {{ endforeach; }}
-            </div>
+    <section class="cat-section">
+        <div class="cat-header">
+            <h2 class="cat-title">
+                {{ if ($section['badge_class']): }}
+                    <span class="badge {{= $section['badge_class'] }}">{{= $section['title'] }}</span>
+                {{ else: }}
+                    {{= $section['title'] }}
+                {{ endif; }}
+            </h2>
+            <a href="{{= $section['url'] }}" class="cat-more">もっと見る &rarr;</a>
         </div>
-        <button class="cat-swiper-btn" id="next-{{= $idx }}">&#8250;</button>
-    </div>
-</section>
+        <div class="cat-swiper-outer">
+            <button class="cat-swiper-btn" id="prev-{{= $idx }}">&#8249;</button>
+            <div class="swiper cat-swiper" id="swiper-{{= $idx }}">
+                <div class="swiper-wrapper">
+                    {{ foreach ($section['articles'] as $article): }}
+                        {{ $thumb = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null; $catType = $article['category_type'] ?? 'custom'; }}
+                        <div class="swiper-slide">
+                            <a href="{{= $articleUrl($article) }}" class="carousel-card-link">
+                                {{ if ($thumb): }}
+                                    <div class="carousel-thumb">
+                                        <img src="{{= $thumb }}"
+                                             alt="{{= $article['title'] }}"
+                                             loading="lazy">
+                                    </div>
+                                {{ else: }}
+                                    <div class="carousel-no-thumb"><span>NO IMAGE</span></div>
+                                {{ endif; }}
+                                <div class="carousel-info">
+                                    {{ if (!empty($article['category_name'])): }}
+                                        <span class="badge {{= $catType }}"
+                                              style="display:inline-block;margin-bottom:.25rem">
+                                            {{= $article['category_name'] }}
+                                        </span>
+                                    {{ endif; }}
+                                    <p class="carousel-title">{{= $article['title'] }}</p>
+                                    {{ if (!empty($article['published_at'])): }}
+                                        <time class="carousel-date" datetime="{{= $article['published_at'] }}">
+                                            {{= date('Y年m月d日', strtotime((string) $article['published_at'])) }}
+                                        </time>
+                                    {{ endif; }}
+                                </div>
+                            </a>
+                        </div>
+                    {{ endforeach; }}
+                </div>
+            </div>
+            <button class="cat-swiper-btn" id="next-{{= $idx }}">&#8250;</button>
+        </div>
+    </section>
 {{ endforeach; }}
 
 {{ if (empty($sections)): }}
-<div class="no-articles-msg">まだ記事がありません。</div>
+    <div class="no-articles-msg">まだ記事がありません。</div>
 {{ endif; }}
 
 <script>
 (function () {
     var configs = [];
     {{ for ($i = 0; $i < $swiperCount; $i++): }}
-    configs.push({ el: '#swiper-{{= $i }}', prev: '#prev-{{= $i }}', next: '#next-{{= $i }}' });
+        configs.push({ el: '#swiper-{{= $i }}', prev: '#prev-{{= $i }}', next: '#next-{{= $i }}' });
     {{ endfor; }}
     configs.forEach(function (c) {
         new Swiper(c.el, {

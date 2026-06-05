@@ -49,16 +49,16 @@
     <ol class="breadcrumb-list">
         <li class="breadcrumb-item"><a href="/">ホーム</a></li>
         {{ if (!empty($list_base_url) && $list_base_url === '/blog'): }}
-        <li class="breadcrumb-item breadcrumb-current" aria-current="page">ブログ一覧</li>
+            <li class="breadcrumb-item breadcrumb-current" aria-current="page">ブログ一覧</li>
         {{ elseif (!empty($list_base_url) && $list_base_url === '/youtube'): }}
-        <li class="breadcrumb-item breadcrumb-current" aria-current="page">YouTube</li>
+            <li class="breadcrumb-item breadcrumb-current" aria-current="page">YouTube</li>
         {{ elseif (!empty($current_category)): }}
-        <li class="breadcrumb-item"><a href="/articles">記事一覧</a></li>
-        <li class="breadcrumb-item breadcrumb-current" aria-current="page">
-            {{= (string) ($current_category['name'] ?? $page_title) }}
-        </li>
+            <li class="breadcrumb-item"><a href="/articles">記事一覧</a></li>
+            <li class="breadcrumb-item breadcrumb-current" aria-current="page">
+                {{= (string) ($current_category['name'] ?? $page_title) }}
+            </li>
         {{ else: }}
-        <li class="breadcrumb-item breadcrumb-current" aria-current="page">記事一覧</li>
+            <li class="breadcrumb-item breadcrumb-current" aria-current="page">記事一覧</li>
         {{ endif; }}
     </ol>
 </nav>
@@ -68,92 +68,92 @@
 <div class="content-layout">
     <div class="content-main">
         {{ if (!empty($articles)): }}
-        <div class="articles-grid">
-            {{ foreach ($articles as $article): }}
-            {{
-                $thumb   = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null;
-                $catType = $article['category_type'] ?? 'custom';
-            }}
-            <article class="card">
-                <a href="{{= $articleUrl($article) }}">
-                    <div class="card-thumb">
-                        {{ if ($thumb): }}
-                        <img src="{{= $thumb }}"
-                             alt="{{= $article['title'] }}"
-                             class="card-img"
-                             loading="lazy">
-                        {{ else: }}
-                        <span class="card-no-img">NO IMAGE</span>
-                        {{ endif; }}
-                    </div>
-                    <div class="card-body">
-                        {{ if (!empty($article['category_name'])): }}
-                        <span class="badge {{= $catType }}"
-                              style="display:inline-block;margin-bottom:.4rem">
-                            {{= $article['category_name'] }}
-                        </span>
-                        {{ endif; }}
-                        <h2 class="card-title">{{= $article['title'] }}</h2>
-                        {{ if (!empty($article['excerpt'])): }}
-                        <p style="font-size:.875rem;color:#475569;margin-top:.4rem">
-                            {{= mb_strimwidth((string) $article['excerpt'], 0, 60, '…') }}
-                        </p>
-                        {{ endif; }}
-                        {{ if (!empty($article['published_at'])): }}
-                        <p class="card-meta" style="margin-top:.4rem">
-                            {{= date('Y年m月d日', strtotime((string) $article['published_at'])) }}
-                        </p>
-                        {{ endif; }}
-                    </div>
-                </a>
-            </article>
-            {{ endforeach; }}
-        </div>
+            <div class="articles-grid">
+                {{ foreach ($articles as $article): }}
+                    {{
+                        $thumb   = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null;
+                        $catType = $article['category_type'] ?? 'custom';
+                    }}
+                    <article class="card">
+                        <a href="{{= $articleUrl($article) }}">
+                            <div class="card-thumb">
+                                {{ if ($thumb): }}
+                                    <img src="{{= $thumb }}"
+                                         alt="{{= $article['title'] }}"
+                                         class="card-img"
+                                         loading="lazy">
+                                {{ else: }}
+                                    <span class="card-no-img">NO IMAGE</span>
+                                {{ endif; }}
+                            </div>
+                            <div class="card-body">
+                                {{ if (!empty($article['category_name'])): }}
+                                    <span class="badge {{= $catType }}"
+                                          style="display:inline-block;margin-bottom:.4rem">
+                                        {{= $article['category_name'] }}
+                                    </span>
+                                {{ endif; }}
+                                <h2 class="card-title">{{= $article['title'] }}</h2>
+                                {{ if (!empty($article['excerpt'])): }}
+                                    <p style="font-size:.875rem;color:#475569;margin-top:.4rem">
+                                        {{= mb_strimwidth((string) $article['excerpt'], 0, 60, '…') }}
+                                    </p>
+                                {{ endif; }}
+                                {{ if (!empty($article['published_at'])): }}
+                                    <p class="card-meta" style="margin-top:.4rem">
+                                        {{= date('Y年m月d日', strtotime((string) $article['published_at'])) }}
+                                    </p>
+                                {{ endif; }}
+                            </div>
+                        </a>
+                    </article>
+                {{ endforeach; }}
+            </div>
 
-        {{ if (($last_page ?? 1) > 1): }}
-        <nav class="pagination" aria-label="ページネーション">
-            {{ if ($page > 1): }}
-            <a href="{{= $pageUrl($page - 1, $baseUrl, $category_id ?? null) }}">&laquo;</a>
+            {{ if (($last_page ?? 1) > 1): }}
+                <nav class="pagination" aria-label="ページネーション">
+                    {{ if ($page > 1): }}
+                        <a href="{{= $pageUrl($page - 1, $baseUrl, $category_id ?? null) }}">&laquo;</a>
+                    {{ endif; }}
+                    {{ for ($p = max(1, $page - 2); $p <= min($last_page, $page + 2); $p++): }}
+                        {{ if ($p === $page): }}
+                            <span class="current">{{= $p }}</span>
+                        {{ else: }}
+                            <a href="{{= $pageUrl($p, $baseUrl, $category_id ?? null) }}">{{= $p }}</a>
+                        {{ endif; }}
+                    {{ endfor; }}
+                    {{ if ($page < $last_page): }}
+                        <a href="{{= $pageUrl($page + 1, $baseUrl, $category_id ?? null) }}">&raquo;</a>
+                    {{ endif; }}
+                </nav>
             {{ endif; }}
-            {{ for ($p = max(1, $page - 2); $p <= min($last_page, $page + 2); $p++): }}
-            {{ if ($p === $page): }}
-            <span class="current">{{= $p }}</span>
-            {{ else: }}
-            <a href="{{= $pageUrl($p, $baseUrl, $category_id ?? null) }}">{{= $p }}</a>
-            {{ endif; }}
-            {{ endfor; }}
-            {{ if ($page < $last_page): }}
-            <a href="{{= $pageUrl($page + 1, $baseUrl, $category_id ?? null) }}">&raquo;</a>
-            {{ endif; }}
-        </nav>
-        {{ endif; }}
 
         {{ else: }}
-        <div class="no-articles-msg">まだ記事がありません。</div>
+            <div class="no-articles-msg">まだ記事がありません。</div>
         {{ endif; }}
     </div>
 
     {{ if (!empty($categories)): }}
-    <aside class="content-aside sidebar">
-        <h3>カテゴリ</h3>
-        <ul>
-            <li>
-                <a href="/articles"{{~ (empty($category_id) && empty($list_base_url) && empty($category_slug)) ? ' class="active"' : '' }}>すべて</a>
-            </li>
-            {{ foreach ($categories as $cat): }}
-            {{
-                $catUrl   = $categoryUrl($cat);
-                $isActive = (!empty($category_id) && (int) ($cat['id'] ?? 0) === (int) $category_id)
-                         || (!empty($list_base_url) && $catUrl === (string) $list_base_url)
-                         || (!empty($category_slug) && ($cat['slug'] ?? '') === (string) $category_slug);
-            }}
-            <li>
-                <a href="{{= $catUrl }}"{{~ $isActive ? ' class="active"' : '' }}>
-                    {{= (string) $cat['name'] }}
-                </a>
-            </li>
-            {{ endforeach; }}
-        </ul>
-    </aside>
+        <aside class="content-aside sidebar">
+            <h3>カテゴリ</h3>
+            <ul>
+                <li>
+                    <a href="/articles"{{~ (empty($category_id) && empty($list_base_url) && empty($category_slug)) ? ' class="active"' : '' }}>すべて</a>
+                </li>
+                {{ foreach ($categories as $cat): }}
+                    {{
+                        $catUrl   = $categoryUrl($cat);
+                        $isActive = (!empty($category_id) && (int) ($cat['id'] ?? 0) === (int) $category_id)
+                                 || (!empty($list_base_url) && $catUrl === (string) $list_base_url)
+                                 || (!empty($category_slug) && ($cat['slug'] ?? '') === (string) $category_slug);
+                    }}
+                    <li>
+                        <a href="{{= $catUrl }}"{{~ $isActive ? ' class="active"' : '' }}>
+                            {{= (string) $cat['name'] }}
+                        </a>
+                    </li>
+                {{ endforeach; }}
+            </ul>
+        </aside>
     {{ endif; }}
 </div>
