@@ -74,8 +74,8 @@ test.describe('Login / Logout', () => {
     await page.locator('button[type="submit"]').click()
     await page.waitForURL(/dashboard/, { timeout: 10_000 })
 
-    // Logout — look for a logout button / link in the header
-    const logoutBtn = page.locator('[data-testid="logout"], button:has-text("ログアウト"), a:has-text("ログアウト")').first()
+    // Logout — AppHeader renders a button with text "ログアウト"
+    const logoutBtn = page.getByRole('button', { name: 'ログアウト' })
     await logoutBtn.click()
 
     await expect(page).toHaveURL(/login/, { timeout: 5_000 })
