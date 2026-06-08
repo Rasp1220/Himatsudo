@@ -24,8 +24,18 @@ class Article extends ResourceObject
             return $this;
         }
 
+        $prevNext = ['prev' => null, 'next' => null];
+        if (!empty($article['id']) && !empty($article['published_at'])) {
+            $prevNext = $this->articleService->getPrevNext(
+                (int) $article['id'],
+                (string) $article['published_at']
+            );
+        }
+
         $this->body = [
             'article'    => $article,
+            'prev'       => $prevNext['prev'],
+            'next'       => $prevNext['next'],
             'categories' => $this->categoryService->getAll(),
             'page_title' => (string) $article['title'],
         ];

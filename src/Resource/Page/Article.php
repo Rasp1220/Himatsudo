@@ -5,14 +5,10 @@ namespace Himatsudo\Resource\Page;
 
 use BEAR\Resource\ResourceInterface;
 use BEAR\Resource\ResourceObject;
-use Himatsudo\Interfaces\ArticleInterface;
 
 class Article extends ResourceObject
 {
-    public function __construct(
-        private readonly ResourceInterface $resource,
-        private readonly ArticleInterface $articleService,
-    ) {}
+    public function __construct(private readonly ResourceInterface $resource) {}
 
     public function onGet(string $slug): static
     {
@@ -24,19 +20,10 @@ class Article extends ResourceObject
             return $this;
         }
 
-        $article      = $ro->body['article'] ?? [];
-        $categoryType = (string) ($article['category_type'] ?? '');
+        $categoryType = (string) ($ro->body['article']['category_type'] ?? '');
         $template     = $categoryType === 'youtube' ? 'articles/youtube-detail' : 'articles/detail';
 
-        $prevNext = ['prev' => null, 'next' => null];
-        if (!empty($article['id']) && !empty($article['published_at'])) {
-            $prevNext = $this->articleService->getPrevNext(
-                (int) $article['id'],
-                (string) $article['published_at']
-            );
-        }
-
-        $this->body = $ro->body + $prevNext + ['_template' => $template];
+        $this->body = $ro->body + ['_template' => $template];
         return $this;
     }
 }
