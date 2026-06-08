@@ -1,5 +1,3 @@
--- 現在記事より古い記事（前の記事）を1件取得
--- params: published_at, id
 SELECT a.id, a.title, a.slug, a.eye_catch_image, a.youtube_thumbnail, a.published_at,
        c.type AS category_type
 FROM articles a

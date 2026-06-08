@@ -21,7 +21,7 @@ class Search extends ResourceObject
                 'total'     => 0,
                 'page'      => 1,
                 'last_page' => 1,
-                '_template' => 'search/index',
+                '_template' => 'articles/search',
             ];
             return $this;
         }
@@ -34,7 +34,7 @@ class Search extends ResourceObject
             'total'     => $result['total'],
             'page'      => $result['page'],
             'last_page' => $result['last_page'],
-            '_template' => 'search/index',
+            '_template' => 'articles/search',
         ];
         return $this;
     }
