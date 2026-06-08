@@ -9,6 +9,10 @@
                     <li><a href="/youtube">YouTube</a></li>
                 </ul>
             </nav>
+            <form class="header-search" action="/search" method="get" role="search">
+                <input type="search" name="q" placeholder="サイト内検索…" aria-label="サイト内検索">
+                <button type="submit" aria-label="検索">&#128269;</button>
+            </form>
             <button class="hamburger-btn" id="hamburgerBtn" aria-label="メニューを開く" aria-expanded="false">
                 <span></span>
                 <span></span>

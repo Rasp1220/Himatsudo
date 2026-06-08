@@ -1,0 +1,11 @@
+-- 現在記事より新しい記事（次の記事）を1件取得
+-- params: published_at, id
+SELECT a.id, a.title, a.slug, a.eye_catch_image, a.youtube_thumbnail, a.published_at,
+       c.type AS category_type
+FROM articles a
+LEFT JOIN categories c ON c.id = a.category_id
+WHERE a.status = 'published'
+  AND (a.published_at > :published_at
+       OR (a.published_at = :published_at AND a.id > :id))
+ORDER BY a.published_at ASC, a.id ASC
+LIMIT 1

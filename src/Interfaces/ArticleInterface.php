@@ -40,6 +40,16 @@ interface ArticleInterface
     public function getLatestExcludeType(string $excludeType, int $limit = 20): array;
 
     /**
+     * @return array{prev: array<string, mixed>|null, next: array<string, mixed>|null}
+     */
+    public function getPrevNext(int $id, string $publishedAt): array;
+
+    /**
+     * @return array{items: array<int, array<string, mixed>>, total: int, page: int, per_page: int, last_page: int}
+     */
+    public function search(string $keyword, int $page = 1, int $perPage = 12): array;
+
+    /**
      * @param array<string, mixed> $data
      * @return array<string, mixed>
      */
