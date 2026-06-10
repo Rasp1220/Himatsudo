@@ -1,0 +1,8 @@
+rules:
+  - type: patch
+    auto_fix: false
+    max_lines: 1000
+
+reviews:
+  auto: true
+  review_status: comment
