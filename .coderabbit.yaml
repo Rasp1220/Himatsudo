@@ -5,4 +5,4 @@ rules:
 
 reviews:
   auto: true
-  review_status: comment
+  review_status: true
