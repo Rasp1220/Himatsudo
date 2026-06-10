@@ -84,7 +84,7 @@ php bin/serve.php
 
 - `users` — id, email, password_hash, name, role, created_at, updated_at
 - `categories` — id, name, slug, type, description, created_at, updated_at
-- `articles` — title, slug, status, content, blocks (JSON), excerpt, eye_catch_image, category_id (FK), author_id (FK), youtube_*, published_at, created_at, updated_at
+- `articles` — title, slug, status, content, blocks (JSON), excerpt, eye_catch_image, category_id (FK), author_id (FK), youtube_url, youtube_video_id, youtube_thumbnail, published_at, created_at, updated_at
 - `refresh_tokens` — id, user_id (FK), token, expires_at, created_at
 
 ---
@@ -95,5 +95,6 @@ php bin/serve.php
 - **SQL** — Aura SQL (type-safe, no ORM)
 - **State** — Pinia (auth, articles, categories, users)
 - **Upload** — Base64 JSON to API (not multipart)
+- **YouTube** — URL, video ID, thumbnail (youtube_url, youtube_video_id, youtube_thumbnail columns)
 - **CSS** — SCSS compiled, Tailwind in CMS
 - **Templates** — Qiq (frontend), Vue (CMS)
