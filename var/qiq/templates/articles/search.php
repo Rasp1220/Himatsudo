@@ -1,13 +1,14 @@
 <?php
 /**
  * @var string $q
- * @var array<int, array<string, mixed>> $items
+ * @var array<int, array<string, mixed>> $articles
  * @var int $total
  * @var int $page
  * @var int $last_page
+ * @var string $page_title
  */
 $this->setLayout('layout');
-$this->page_title = 'サイト内検索';
+$this->page_title = $page_title ?? 'サイト内検索';
 
 $articleUrl = static function (array $article): string {
     $prefix = ($article['category_type'] ?? 'custom') === 'blog' ? '/blog' : '/articles';
@@ -45,9 +46,9 @@ $pageUrl = static function (int $p, string $q): string {
 </p>
 <?php endif; ?>
 
-<?php if (!empty($items)): ?>
+<?php if (!empty($articles)): ?>
 <div class="search-results-list">
-    <?php foreach ($items as $article): ?>
+    <?php foreach ($articles as $article): ?>
     <?php
         $thumb = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null;
     ?>

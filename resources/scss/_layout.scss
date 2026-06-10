@@ -154,6 +154,44 @@
   }
 }
 
+.hamburger-search {
+  display: flex;
+  gap: .25rem;
+  margin-top: 3.5rem;
+
+  + ul { margin-top: 1rem; }
+
+  input[type="search"] {
+    flex: 1;
+    min-width: 0;
+    background: rgba(255, 255, 255, .15);
+    border: 1px solid rgba(255, 255, 255, .3);
+    border-radius: .375rem;
+    padding: .45rem .65rem;
+    color: $c-white;
+    font-size: .9rem;
+    outline: none;
+
+    &::placeholder { color: rgba(255, 255, 255, .55); }
+
+    &:focus { border-color: $c-primary; }
+  }
+
+  button {
+    background: $c-primary;
+    border: none;
+    border-radius: .375rem;
+    color: $c-white;
+    cursor: pointer;
+    padding: .45rem .6rem;
+    font-size: .9rem;
+    line-height: 1;
+    transition: background .2s;
+
+    &:hover { background: $c-primary-hover; }
+  }
+}
+
 .hamburger-close {
   position: absolute;
   top: 1rem;

@@ -16,12 +16,13 @@ class Search extends ResourceObject
 
         if ($q === '') {
             $this->body = [
-                'q'         => '',
-                'items'     => [],
-                'total'     => 0,
-                'page'      => 1,
-                'last_page' => 1,
-                '_template' => 'articles/search',
+                'q'          => '',
+                'articles'   => [],
+                'total'      => 0,
+                'page'       => 1,
+                'last_page'  => 1,
+                'page_title' => 'サイト内検索',
+                '_template'  => 'articles/search',
             ];
             return $this;
         }
@@ -29,12 +30,13 @@ class Search extends ResourceObject
         $result = $this->articleService->search($q, $page, 12);
 
         $this->body = [
-            'q'         => $q,
-            'items'     => $result['items'],
-            'total'     => $result['total'],
-            'page'      => $result['page'],
-            'last_page' => $result['last_page'],
-            '_template' => 'articles/search',
+            'q'          => $q,
+            'articles'   => $result['items'],
+            'total'      => $result['total'],
+            'page'       => $result['page'],
+            'last_page'  => $result['last_page'],
+            'page_title' => 'サイト内検索',
+            '_template'  => 'articles/search',
         ];
         return $this;
     }
