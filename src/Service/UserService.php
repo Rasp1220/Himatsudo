@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace Himatsudo\Service;
 
 use Aura\Sql\ExtendedPdoInterface;
+use Himatsudo\Domain\User;
 use Himatsudo\Interfaces\UserInterface;
+use RuntimeException;
 
 final class UserService implements UserInterface
 {
@@ -15,10 +17,10 @@ final class UserService implements UserInterface
     public function getList(int $page = 1, int $perPage = 20): array
     {
         $offset = ($page - 1) * $perPage;
-        $items  = $this->pdo->fetchAll($this->sql('users/get_list.sql'), ['limit' => $perPage, 'offset' => $offset]);
+        $rows   = $this->pdo->fetchAll($this->sql('users/get_list.sql'), ['limit' => $perPage, 'offset' => $offset]);
         $total  = (int) $this->pdo->fetchValue('SELECT COUNT(*) FROM users');
         return [
-            'items'     => $items,
+            'items'     => array_map(static fn (array $row) => User::fromArray($row), $rows),
             'total'     => $total,
             'page'      => $page,
             'per_page'  => $perPage,
@@ -26,29 +28,33 @@ final class UserService implements UserInterface
         ];
     }
 
-    public function getById(int $id): ?array
+    public function getById(int $id): ?User
     {
         $row = $this->pdo->fetchOne($this->sql('users/get_by_id.sql'), ['id' => $id]);
-        return $row ?: null;
+        return $row ? User::fromArray($row) : null;
     }
 
-    public function getByEmail(string $email): ?array
+    public function verifyCredentials(string $email, string $password): ?User
     {
         $row = $this->pdo->fetchOne($this->sql('users/get_by_email.sql'), ['email' => $email]);
-        return $row ?: null;
+        if (!$row || !password_verify($password, (string) $row['password'])) {
+            return null;
+        }
+        return User::fromArray($row);
     }
 
-    public function create(string $name, string $email, string $password, string $role = 'editor'): array
+    public function create(string $name, string $email, string $password, string $role = 'editor'): User
     {
         $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
         $this->pdo->perform(
             'INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)',
             ['name' => $name, 'email' => $email, 'password' => $hash, 'role' => $role]
         );
-        return $this->getById((int) $this->pdo->lastInsertId()) ?? [];
+        return $this->getById((int) $this->pdo->lastInsertId())
+            ?? throw new RuntimeException('Failed to load created user');
     }
 
-    public function update(int $id, array $data): ?array
+    public function update(int $id, array $data): ?User
     {
         $sets = [];
         $bind = ['id' => $id];
@@ -71,10 +77,5 @@ final class UserService implements UserInterface
     public function delete(int $id): bool
     {
         return (bool) $this->pdo->perform($this->sql('users/delete.sql'), ['id' => $id])->rowCount();
-    }
-
-    public function verifyPassword(string $plain, string $hash): bool
-    {
-        return password_verify($plain, $hash);
     }
 }

@@ -25,7 +25,7 @@ class Me extends ResourceObject
             $this->body = ['error' => 'User not found'];
             return $this;
         }
-        $this->body = $user;
+        $this->body = $user->toArray();
         return $this;
     }
 }

@@ -5,7 +5,9 @@ namespace Himatsudo\Service;
 
 use Aura\Sql\ExtendedPdoInterface;
 use DateTimeImmutable;
+use Himatsudo\Domain\Article;
 use Himatsudo\Interfaces\ArticleInterface;
+use RuntimeException;
 
 final class ArticleService implements ArticleInterface
 {
@@ -68,36 +70,36 @@ final class ArticleService implements ArticleInterface
         );
     }
 
-    public function getBySlug(string $slug, bool $publishedOnly = true): ?array
+    public function getBySlug(string $slug, bool $publishedOnly = true): ?Article
     {
         $sql = $this->sql('articles/get_by_slug.sql');
         if ($publishedOnly) {
             $sql = str_replace('WHERE a.slug = :slug', "WHERE a.slug = :slug AND a.status = 'published'", $sql);
         }
         $row = $this->pdo->fetchOne($sql, ['slug' => $slug]);
-        return $row ?: null;
+        return $row ? Article::fromArray($row) : null;
     }
 
-    public function getById(int $id): ?array
+    public function getById(int $id): ?Article
     {
         $row = $this->pdo->fetchOne($this->sql('articles/get_by_id.sql'), ['id' => $id]);
-        return $row ?: null;
+        return $row ? Article::fromArray($row) : null;
     }
 
     public function getLatest(int $limit = 10): array
     {
-        return $this->pdo->fetchAll($this->sql('articles/get_latest.sql'), ['limit' => $limit]);
+        return $this->toArticles($this->pdo->fetchAll($this->sql('articles/get_latest.sql'), ['limit' => $limit]));
     }
 
     public function getLatestByCategory(int $categoryId, int $limit = 8): array
     {
-        return $this->pdo->fetchAll(
+        return $this->toArticles($this->pdo->fetchAll(
             $this->sql('articles/get_latest_by_category.sql'),
             ['category_id' => $categoryId, 'limit' => $limit]
-        );
+        ));
     }
 
-    public function create(array $data): array
+    public function create(array $data): Article
     {
         $data = $this->filterWritable($data);
         if (($data['status'] ?? '') === 'published' && empty($data['published_at'])) {
@@ -108,15 +110,16 @@ final class ArticleService implements ArticleInterface
             'INSERT INTO articles (' . implode(', ', $fields) . ') VALUES (:' . implode(', :', $fields) . ')',
             $data
         );
-        return $this->getById((int) $this->pdo->lastInsertId()) ?? [];
+        return $this->getById((int) $this->pdo->lastInsertId())
+            ?? throw new RuntimeException('Failed to load created article');
     }
 
-    public function update(int $id, array $data): ?array
+    public function update(int $id, array $data): ?Article
     {
         $data = $this->filterWritable($data);
         if (($data['status'] ?? '') === 'published' && !array_key_exists('published_at', $data)) {
             $current = $this->getById($id);
-            if ($current && empty($current['published_at'])) {
+            if ($current !== null && ($current->publishedAt === null || $current->publishedAt === '')) {
                 $data['published_at'] = (new DateTimeImmutable())->format('Y-m-d H:i:s');
             }
         }
@@ -143,21 +146,30 @@ final class ArticleService implements ArticleInterface
     }
 
     /**
+     * @param array<int, array<string, mixed>> $rows
+     * @return list<Article>
+     */
+    private function toArticles(array $rows): array
+    {
+        return array_map(static fn (array $row) => Article::fromArray($row), $rows);
+    }
+
+    /**
      * ベースSQLに WHERE/ORDER BY/LIMIT を付加して1ページ分と総件数を取得する。
      *
      * @param array<string, mixed> $bind
-     * @return array{items: array<int, array<string, mixed>>, total: int, page: int, per_page: int, last_page: int}
+     * @return array{items: list<Article>, total: int, page: int, per_page: int, last_page: int}
      */
     private function fetchPage(string $baseSqlFile, string $where, string $orderBy, array $bind, int $page, int $perPage): array
     {
-        $items = $this->pdo->fetchAll(
+        $rows = $this->pdo->fetchAll(
             $this->sql($baseSqlFile) . " {$where} {$orderBy} LIMIT :limit OFFSET :offset",
             $bind + ['limit' => $perPage, 'offset' => ($page - 1) * $perPage]
         );
         $total = (int) $this->pdo->fetchValue("SELECT COUNT(*) FROM articles a {$where}", $bind);
 
         return [
-            'items'     => $items,
+            'items'     => $this->toArticles($rows),
             'total'     => $total,
             'page'      => $page,
             'per_page'  => $perPage,

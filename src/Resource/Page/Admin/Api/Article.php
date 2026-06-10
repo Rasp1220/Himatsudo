@@ -21,7 +21,7 @@ class Article extends ResourceObject
             $this->body = ['error' => 'Article not found'];
             return $this;
         }
-        $this->body = $article;
+        $this->body = $article->toArray();
         return $this;
     }
 
@@ -58,7 +58,7 @@ class Article extends ResourceObject
             }
             $data['category_id'] = $category_id;
         }
-        $this->body = $this->articleService->update($id, $data);
+        $this->body = $this->articleService->update($id, $data)?->toArray();
         return $this;
     }
 

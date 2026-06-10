@@ -5,6 +5,7 @@ namespace Himatsudo\Resource\Page\Admin\Api;
 
 use BEAR\Resource\ResourceObject;
 use Himatsudo\Annotation\RequireAuth;
+use Himatsudo\Domain\Article as ArticleEntity;
 use Himatsudo\Interfaces\ArticleInterface as ArticleServiceInterface;
 
 class Articles extends ResourceObject
@@ -21,7 +22,9 @@ class Articles extends ResourceObject
         ?string $status      = null,
         ?string $keyword     = null
     ): static {
-        $this->body = $this->articleService->getAdminList($page, $per_page, $category_id, $status, $keyword);
+        $result          = $this->articleService->getAdminList($page, $per_page, $category_id, $status, $keyword);
+        $result['items'] = array_map(static fn (ArticleEntity $a) => $a->toArray(), $result['items']);
+        $this->body      = $result;
         return $this;
     }
 
@@ -53,7 +56,7 @@ class Articles extends ResourceObject
         ), fn($v) => $v !== null && $v !== '');
         $data['category_id'] = $category_id;
         $this->code = 201;
-        $this->body = $this->articleService->create($data);
+        $this->body = $this->articleService->create($data)->toArray();
         return $this;
     }
 }

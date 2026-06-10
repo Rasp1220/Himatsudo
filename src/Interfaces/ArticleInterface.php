@@ -3,41 +3,35 @@ declare(strict_types=1);
 
 namespace Himatsudo\Interfaces;
 
+use Himatsudo\Domain\Article;
+
 interface ArticleInterface
 {
     /**
-     * @return array{items: array<int, array<string, mixed>>, total: int, page: int, per_page: int, last_page: int}
+     * @return array{items: list<Article>, total: int, page: int, per_page: int, last_page: int}
      */
     public function getList(int $page = 1, int $perPage = 15, ?int $categoryId = null, string $status = 'published'): array;
 
     /**
-     * @return array{items: array<int, array<string, mixed>>, total: int, page: int, per_page: int, last_page: int}
+     * @return array{items: list<Article>, total: int, page: int, per_page: int, last_page: int}
      */
     public function getAdminList(int $page = 1, int $perPage = 20, ?int $categoryId = null, ?string $status = null, ?string $keyword = null): array;
 
-    /** @return array<string, mixed>|null */
-    public function getBySlug(string $slug, bool $publishedOnly = true): ?array;
+    public function getBySlug(string $slug, bool $publishedOnly = true): ?Article;
 
-    /** @return array<string, mixed>|null */
-    public function getById(int $id): ?array;
+    public function getById(int $id): ?Article;
 
-    /** @return array<int, array<string, mixed>> */
+    /** @return list<Article> */
     public function getLatest(int $limit = 10): array;
 
-    /** @return array<int, array<string, mixed>> */
+    /** @return list<Article> */
     public function getLatestByCategory(int $categoryId, int $limit = 8): array;
 
-    /**
-     * @param array<string, mixed> $data
-     * @return array<string, mixed>
-     */
-    public function create(array $data): array;
+    /** @param array<string, mixed> $data */
+    public function create(array $data): Article;
 
-    /**
-     * @param array<string, mixed> $data
-     * @return array<string, mixed>|null
-     */
-    public function update(int $id, array $data): ?array;
+    /** @param array<string, mixed> $data */
+    public function update(int $id, array $data): ?Article;
 
     public function delete(int $id): bool;
 }

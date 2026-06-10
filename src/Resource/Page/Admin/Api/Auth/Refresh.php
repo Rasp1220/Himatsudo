@@ -49,7 +49,7 @@ class Refresh extends ResourceObject
         $this->refreshTokenService->save($userId, $newRefreshToken, $expiresAt);
 
         $this->body = [
-            'access_token'  => $this->jwtService->issueAccessToken($userId, (string) $user['role']),
+            'access_token'  => $this->jwtService->issueAccessToken($userId, $user->role),
             'refresh_token' => $newRefreshToken,
             'token_type'    => 'Bearer',
             'expires_in'    => 3600,

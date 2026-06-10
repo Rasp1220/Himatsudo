@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Himatsudo\Resource\Page;
 
 use BEAR\Resource\ResourceObject;
+use Himatsudo\Domain\Article;
+use Himatsudo\Domain\Category;
 use Himatsudo\Interfaces\ArticleInterface;
 use Himatsudo\Interfaces\CategoryInterface;
 
@@ -30,19 +32,19 @@ abstract class CategoryTypeListPage extends ResourceObject
         $category   = $this->categoryService->getByType(static::CATEGORY_TYPE);
 
         $result = $category !== null
-            ? $this->articleService->getList($page, $per_page, (int) $category['id'], 'published')
+            ? $this->articleService->getList($page, $per_page, $category->id, 'published')
             : ['items' => [], 'total' => 0, 'page' => 1, 'per_page' => $per_page, 'last_page' => 1];
 
         $this->body = [
-            'articles'         => $result['items'],
+            'articles'         => array_map(static fn (Article $a) => $a->toArray(), $result['items']),
             'total'            => $result['total'],
             'page'             => $result['page'],
             'per_page'         => $result['per_page'],
             'last_page'        => $result['last_page'],
-            'category_id'      => $category ? (int) $category['id'] : null,
-            'current_category' => $category,
-            'categories'       => $categories,
-            'page_title'       => $category ? (string) $category['name'] : static::FALLBACK_TITLE,
+            'category_id'      => $category?->id,
+            'current_category' => $category?->toArray(),
+            'categories'       => array_map(static fn (Category $c) => $c->toArray(), $categories),
+            'page_title'       => $category ? $category->name : static::FALLBACK_TITLE,
             'list_base_url'    => static::LIST_BASE_URL,
             '_template'        => 'articles/index',
         ];

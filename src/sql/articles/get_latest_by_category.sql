@@ -1,5 +1,5 @@
 SELECT a.id, a.title, a.slug, a.eye_catch_image, a.youtube_thumbnail,
-       a.published_at, a.created_at
+       a.status, a.published_at, a.created_at
 FROM articles a
 WHERE a.status = 'published'
   AND a.category_id = :category_id

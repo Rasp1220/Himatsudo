@@ -5,6 +5,7 @@ namespace Himatsudo\Resource\Page\Admin\Api;
 
 use BEAR\Resource\ResourceObject;
 use Himatsudo\Annotation\RequireAuth;
+use Himatsudo\Domain\Category as CategoryEntity;
 use Himatsudo\Interfaces\CategoryInterface as CategoryServiceInterface;
 
 class Categories extends ResourceObject
@@ -15,7 +16,7 @@ class Categories extends ResourceObject
 
     public function onGet(): static
     {
-        $this->body = $this->categoryService->getAll();
+        $this->body = array_map(static fn (CategoryEntity $c) => $c->toArray(), $this->categoryService->getAll());
         return $this;
     }
 
@@ -29,7 +30,7 @@ class Categories extends ResourceObject
             return $this;
         }
         $this->code = 201;
-        $this->body = $this->categoryService->create($name, $slug, $type, $sort_order);
+        $this->body = $this->categoryService->create($name, $slug, $type, $sort_order)->toArray();
         return $this;
     }
 }

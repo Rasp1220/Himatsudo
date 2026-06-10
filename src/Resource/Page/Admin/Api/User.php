@@ -28,7 +28,7 @@ class User extends ResourceObject
             $this->body = ['error' => 'User not found'];
             return $this;
         }
-        $this->body = $user;
+        $this->body = $user->toArray();
         return $this;
     }
 
@@ -49,7 +49,7 @@ class User extends ResourceObject
             $this->body = ['error' => 'Invalid role'];
             return $this;
         }
-        $this->body = $this->userService->update($id, $data);
+        $this->body = $this->userService->update($id, $data)?->toArray();
         return $this;
     }
 

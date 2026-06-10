@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace Himatsudo\Service;
 
 use Aura\Sql\ExtendedPdoInterface;
+use Himatsudo\Domain\Category;
 use Himatsudo\Interfaces\CategoryInterface;
+use RuntimeException;
 
 final class CategoryService implements CategoryInterface
 {
@@ -14,41 +16,45 @@ final class CategoryService implements CategoryInterface
 
     public function getAll(): array
     {
-        return $this->pdo->fetchAll($this->sql('categories/get_all.sql'));
+        return array_map(
+            static fn (array $row) => Category::fromArray($row),
+            $this->pdo->fetchAll($this->sql('categories/get_all.sql'))
+        );
     }
 
-    public function getById(int $id): ?array
+    public function getById(int $id): ?Category
     {
         $row = $this->pdo->fetchOne($this->sql('categories/get_by_id.sql'), ['id' => $id]);
-        return $row ?: null;
+        return $row ? Category::fromArray($row) : null;
     }
 
-    public function getByType(string $type): ?array
+    public function getByType(string $type): ?Category
     {
-        foreach ($this->getAll() as $cat) {
-            if (($cat['type'] ?? '') === $type) {
-                return $cat;
+        foreach ($this->getAll() as $category) {
+            if ($category->type === $type) {
+                return $category;
             }
         }
         return null;
     }
 
-    public function getBySlug(string $slug): ?array
+    public function getBySlug(string $slug): ?Category
     {
         $row = $this->pdo->fetchOne($this->sql('categories/get_by_slug.sql'), ['slug' => $slug]);
-        return $row ?: null;
+        return $row ? Category::fromArray($row) : null;
     }
 
-    public function create(string $name, string $slug, string $type = 'custom', int $sortOrder = 0): array
+    public function create(string $name, string $slug, string $type = 'custom', int $sortOrder = 0): Category
     {
         $this->pdo->perform(
             'INSERT INTO categories (name, slug, type, sort_order) VALUES (:name, :slug, :type, :sort_order)',
             ['name' => $name, 'slug' => $slug, 'type' => $type, 'sort_order' => $sortOrder]
         );
-        return $this->getById((int) $this->pdo->lastInsertId()) ?? [];
+        return $this->getById((int) $this->pdo->lastInsertId())
+            ?? throw new RuntimeException('Failed to load created category');
     }
 
-    public function update(int $id, array $data): ?array
+    public function update(int $id, array $data): ?Category
     {
         $sets = [];
         $bind = ['id' => $id];

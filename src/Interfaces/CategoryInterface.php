@@ -3,28 +3,23 @@ declare(strict_types=1);
 
 namespace Himatsudo\Interfaces;
 
+use Himatsudo\Domain\Category;
+
 interface CategoryInterface
 {
-    /** @return array<int, array<string, mixed>> */
+    /** @return list<Category> */
     public function getAll(): array;
 
-    /** @return array<string, mixed>|null */
-    public function getById(int $id): ?array;
+    public function getById(int $id): ?Category;
 
-    /** @return array<string, mixed>|null */
-    public function getByType(string $type): ?array;
+    public function getByType(string $type): ?Category;
 
-    /** @return array<string, mixed>|null */
-    public function getBySlug(string $slug): ?array;
+    public function getBySlug(string $slug): ?Category;
 
-    /** @return array<string, mixed> */
-    public function create(string $name, string $slug, string $type = 'custom', int $sortOrder = 0): array;
+    public function create(string $name, string $slug, string $type = 'custom', int $sortOrder = 0): Category;
 
-    /**
-     * @param array<string, mixed> $data
-     * @return array<string, mixed>|null
-     */
-    public function update(int $id, array $data): ?array;
+    /** @param array<string, mixed> $data */
+    public function update(int $id, array $data): ?Category;
 
     public function delete(int $id): bool;
 }

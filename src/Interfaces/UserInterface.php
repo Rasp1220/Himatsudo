@@ -3,29 +3,24 @@ declare(strict_types=1);
 
 namespace Himatsudo\Interfaces;
 
+use Himatsudo\Domain\User;
+
 interface UserInterface
 {
     /**
-     * @return array{items: array<int, array<string, mixed>>, total: int, page: int, per_page: int, last_page: int}
+     * @return array{items: list<User>, total: int, page: int, per_page: int, last_page: int}
      */
     public function getList(int $page = 1, int $perPage = 20): array;
 
-    /** @return array<string, mixed>|null */
-    public function getById(int $id): ?array;
+    public function getById(int $id): ?User;
 
-    /** @return array<string, mixed>|null */
-    public function getByEmail(string $email): ?array;
+    /** メールアドレスとパスワードを検証し、一致すればユーザーを返す（ハッシュは外部に出さない） */
+    public function verifyCredentials(string $email, string $password): ?User;
 
-    /** @return array<string, mixed> */
-    public function create(string $name, string $email, string $password, string $role = 'editor'): array;
+    public function create(string $name, string $email, string $password, string $role = 'editor'): User;
 
-    /**
-     * @param array<string, mixed> $data
-     * @return array<string, mixed>|null
-     */
-    public function update(int $id, array $data): ?array;
+    /** @param array<string, mixed> $data */
+    public function update(int $id, array $data): ?User;
 
     public function delete(int $id): bool;
-
-    public function verifyPassword(string $plain, string $hash): bool;
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Himatsudo\Resource\App;
 
 use BEAR\Resource\ResourceObject;
+use Himatsudo\Domain\Category;
 use Himatsudo\Interfaces\ArticleInterface;
 use Himatsudo\Interfaces\CategoryInterface;
 
@@ -25,9 +26,9 @@ class Article extends ResourceObject
         }
 
         $this->body = [
-            'article'    => $article,
-            'categories' => $this->categoryService->getAll(),
-            'page_title' => (string) $article['title'],
+            'article'    => $article->toArray(),
+            'categories' => array_map(static fn (Category $c) => $c->toArray(), $this->categoryService->getAll()),
+            'page_title' => $article->title,
         ];
 
         return $this;

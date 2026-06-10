@@ -21,7 +21,7 @@ class Category extends ResourceObject
             $this->body = ['error' => 'Category not found'];
             return $this;
         }
-        $this->body = $category;
+        $this->body = $category->toArray();
         return $this;
     }
 
@@ -34,7 +34,7 @@ class Category extends ResourceObject
             return $this;
         }
         $data = array_filter(compact('name', 'slug', 'type', 'sort_order'), fn($v) => $v !== null);
-        $this->body = $this->categoryService->update($id, $data);
+        $this->body = $this->categoryService->update($id, $data)?->toArray();
         return $this;
     }
 

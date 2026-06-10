@@ -20,21 +20,19 @@ class Login extends ResourceObject
 
     public function onPost(string $email, string $password): static
     {
-        $user = $this->userService->getByEmail($email);
+        $user = $this->userService->verifyCredentials($email, $password);
 
-        if ($user === null || !$this->userService->verifyPassword($password, (string) $user['password'])) {
+        if ($user === null) {
             $this->code = 401;
             $this->body = ['error' => 'Invalid credentials'];
             return $this;
         }
 
-        $userId       = (int) $user['id'];
-        $role         = (string) $user['role'];
-        $accessToken  = $this->jwtService->issueAccessToken($userId, $role);
-        $refreshToken = $this->jwtService->issueRefreshToken($userId);
+        $accessToken  = $this->jwtService->issueAccessToken($user->id, $user->role);
+        $refreshToken = $this->jwtService->issueRefreshToken($user->id);
 
         $expiresAt = (new DateTimeImmutable())->modify('+30 days')->format('Y-m-d H:i:s');
-        $this->refreshTokenService->save($userId, $refreshToken, $expiresAt);
+        $this->refreshTokenService->save($user->id, $refreshToken, $expiresAt);
 
         $this->code = 200;
         $this->body = [
@@ -43,10 +41,10 @@ class Login extends ResourceObject
             'token_type'    => 'Bearer',
             'expires_in'    => 3600,
             'user'          => [
-                'id'    => $userId,
-                'name'  => $user['name'],
-                'email' => $user['email'],
-                'role'  => $role,
+                'id'    => $user->id,
+                'name'  => $user->name,
+                'email' => $user->email,
+                'role'  => $user->role,
             ],
         ];
 

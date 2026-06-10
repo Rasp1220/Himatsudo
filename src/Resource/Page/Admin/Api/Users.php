@@ -6,6 +6,7 @@ namespace Himatsudo\Resource\Page\Admin\Api;
 use BEAR\Resource\ResourceObject;
 use Himatsudo\Annotation\RequireAuth;
 use Himatsudo\Auth\AuthContext;
+use Himatsudo\Domain\User as UserEntity;
 use Himatsudo\Interfaces\UserInterface as UserServiceInterface;
 
 class Users extends ResourceObject
@@ -22,7 +23,9 @@ class Users extends ResourceObject
         if (!$this->isAdmin()) {
             return $this;
         }
-        $this->body = $this->userService->getList($page, $per_page);
+        $result          = $this->userService->getList($page, $per_page);
+        $result['items'] = array_map(static fn (UserEntity $u) => $u->toArray(), $result['items']);
+        $this->body      = $result;
         return $this;
     }
 
@@ -38,7 +41,7 @@ class Users extends ResourceObject
             return $this;
         }
         $this->code = 201;
-        $this->body = $this->userService->create($name, $email, $password, $role);
+        $this->body = $this->userService->create($name, $email, $password, $role)->toArray();
         return $this;
     }
 

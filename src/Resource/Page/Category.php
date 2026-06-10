@@ -25,7 +25,7 @@ class Category extends ResourceObject
 
         $ro = $this->resource->get
             ->uri('app://self/articles')
-            ->withQuery(['page' => $page, 'per_page' => $per_page, 'category_id' => $category['id']])
+            ->withQuery(['page' => $page, 'per_page' => $per_page, 'category_id' => $category->id])
             ->eager->request();
 
         $this->body                = $ro->body;
