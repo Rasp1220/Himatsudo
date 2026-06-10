@@ -1,4 +1,4 @@
-<?php
+{{
 /**
  * @var string $q
  * @var array<int, array<string, mixed>> $articles
@@ -18,7 +18,7 @@ $articleUrl = static function (array $article): string {
 $pageUrl = static function (int $p, string $q): string {
     return '/search?q=' . rawurlencode($q) . ($p > 1 ? '&page=' . $p : '');
 };
-?>
+}}
 
 <nav class="breadcrumb" aria-label="パンくずリスト">
     <ol class="breadcrumb-list">
@@ -27,12 +27,12 @@ $pageUrl = static function (int $p, string $q): string {
     </ol>
 </nav>
 
-<h1 class="page-title">サイト内検索</h1>
+<h1 class="page-title">{{h $this->page_title }}</h1>
 
 <div class="search-form-wrap">
     <form class="search-form-block" action="/search" method="get" role="search">
         <input type="search" name="q"
-               value="<?= $this->h($q) ?>"
+               value="{{h $q }}"
                placeholder="キーワードを入力…"
                aria-label="検索キーワード"
                class="search-input-block">
@@ -40,63 +40,61 @@ $pageUrl = static function (int $p, string $q): string {
     </form>
 </div>
 
-<?php if ($q !== ''): ?>
+{{ if ($q !== ''): }}
 <p class="search-summary">
-    「<strong><?= $this->h($q) ?></strong>」の検索結果：<?= $this->h((string) $total) ?>件
+    「<strong>{{h $q }}</strong>」の検索結果：{{= $total }}件
 </p>
-<?php endif; ?>
+{{ endif; }}
 
-<?php if (!empty($articles)): ?>
+{{ if (!empty($articles)): }}
 <div class="search-results-list">
-    <?php foreach ($articles as $article): ?>
-    <?php
-        $thumb = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null;
-    ?>
-    <a href="<?= $this->h($articleUrl($article)) ?>" class="search-card">
+    {{ foreach ($articles as $article): }}
+    {{ $thumb = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null; }}
+    <a href="{{h $articleUrl($article) }}" class="search-card">
         <div class="search-card-thumb">
-            <?php if ($thumb): ?>
-            <img src="<?= $this->h($thumb) ?>"
-                 alt="<?= $this->h($article['title']) ?>"
+            {{ if ($thumb): }}
+            <img src="{{h $thumb }}"
+                 alt="{{h $article['title'] }}"
                  loading="lazy">
-            <?php else: ?>
+            {{ else: }}
             <span class="search-card-no-img">NO IMAGE</span>
-            <?php endif; ?>
+            {{ endif; }}
         </div>
         <div class="search-card-body">
-            <?php if (!empty($article['category_name'])): ?>
-            <span class="badge <?= $this->h($article['category_type'] ?? '') ?>" style="display:inline-block;margin-bottom:.35rem;font-size:.7rem">
-                <?= $this->h($article['category_name']) ?>
+            {{ if (!empty($article['category_name'])): }}
+            <span class="badge {{h $article['category_type'] ?? '' }}" style="display:inline-block;margin-bottom:.35rem;font-size:.7rem">
+                {{h $article['category_name'] }}
             </span>
-            <?php endif; ?>
-            <div class="search-card-title"><?= $this->h($article['title']) ?></div>
-            <?php if (!empty($article['published_at'])): ?>
+            {{ endif; }}
+            <div class="search-card-title">{{h $article['title'] }}</div>
+            {{ if (!empty($article['published_at'])): }}
             <div class="search-card-date">
-                <?= $this->h(date('Y年m月d日', strtotime((string) $article['published_at']))) ?>
+                {{h date('Y年m月d日', strtotime((string) $article['published_at'])) }}
             </div>
-            <?php endif; ?>
+            {{ endif; }}
         </div>
     </a>
-    <?php endforeach; ?>
+    {{ endforeach; }}
 </div>
 
-<?php if ($last_page > 1): ?>
+{{ if ($last_page > 1): }}
 <nav class="pagination" aria-label="ページネーション" style="margin-top:2rem">
-    <?php if ($page > 1): ?>
-    <a href="<?= $this->h($pageUrl($page - 1, $q)) ?>">&laquo;</a>
-    <?php endif; ?>
-    <?php for ($p = max(1, $page - 2); $p <= min($last_page, $page + 2); $p++): ?>
-    <?php if ($p === $page): ?>
-    <span class="current"><?= $p ?></span>
-    <?php else: ?>
-    <a href="<?= $this->h($pageUrl($p, $q)) ?>"><?= $p ?></a>
-    <?php endif; ?>
-    <?php endfor; ?>
-    <?php if ($page < $last_page): ?>
-    <a href="<?= $this->h($pageUrl($page + 1, $q)) ?>">&raquo;</a>
-    <?php endif; ?>
+    {{ if ($page > 1): }}
+    <a href="{{h $pageUrl($page - 1, $q) }}">&laquo;</a>
+    {{ endif; }}
+    {{ for ($p = max(1, $page - 2); $p <= min($last_page, $page + 2); $p++): }}
+    {{ if ($p === $page): }}
+    <span class="current">{{= $p }}</span>
+    {{ else: }}
+    <a href="{{h $pageUrl($p, $q) }}">{{= $p }}</a>
+    {{ endif; }}
+    {{ endfor; }}
+    {{ if ($page < $last_page): }}
+    <a href="{{h $pageUrl($page + 1, $q) }}">&raquo;</a>
+    {{ endif; }}
 </nav>
-<?php endif; ?>
+{{ endif; }}
 
-<?php elseif ($q !== ''): ?>
+{{ elseif ($q !== ''): }}
 <p class="no-articles-msg">該当する記事が見つかりませんでした。</p>
-<?php endif; ?>
+{{ endif; }}

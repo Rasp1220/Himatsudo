@@ -1,4 +1,4 @@
-<?php
+{{
 /**
  * @var array<int, array<string, mixed>> $latest_articles
  * @var array<int, array{category: array<string, mixed>, articles: array<int, array<string, mixed>>}> $categories_with_articles
@@ -42,72 +42,72 @@ foreach ($categories_with_articles as $group) {
     }
 }
 $swiperCount = count($sections);
-?>
+}}
 
-<?php foreach ($sections as $idx => $section): ?>
+{{ foreach ($sections as $idx => $section): }}
 <section class="cat-section">
     <div class="cat-header">
         <h2 class="cat-title">
-            <?php if ($section['badge_class']): ?>
-            <span class="badge <?= $this->h($section['badge_class']) ?>"><?= $this->h($section['title']) ?></span>
-            <?php else: ?>
-            <?= $this->h($section['title']) ?>
-            <?php endif; ?>
+            {{ if ($section['badge_class']): }}
+            <span class="badge {{h $section['badge_class'] }}">{{h $section['title'] }}</span>
+            {{ else: }}
+            {{h $section['title'] }}
+            {{ endif; }}
         </h2>
-        <a href="<?= $this->h($section['url']) ?>" class="cat-more">もっと見る &rarr;</a>
+        <a href="{{h $section['url'] }}" class="cat-more">もっと見る &rarr;</a>
     </div>
     <div class="cat-swiper-outer">
-        <button class="cat-swiper-btn" id="prev-<?= $idx ?>">&#8249;</button>
-        <div class="swiper cat-swiper" id="swiper-<?= $idx ?>">
+        <button class="cat-swiper-btn" id="prev-{{= $idx }}">&#8249;</button>
+        <div class="swiper cat-swiper" id="swiper-{{= $idx }}">
             <div class="swiper-wrapper">
-                <?php foreach ($section['articles'] as $article): ?>
-                <?php $thumb = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null; ?>
-                <?php $catType = $article['category_type'] ?? 'custom'; ?>
+                {{ foreach ($section['articles'] as $article): }}
+                {{ $thumb = $article['eye_catch_image'] ?? $article['youtube_thumbnail'] ?? null; }}
+                {{ $catType = $article['category_type'] ?? 'custom'; }}
                 <div class="swiper-slide">
-                    <a href="<?= $this->h($articleUrl($article)) ?>" class="carousel-card-link">
-                        <?php if ($thumb): ?>
+                    <a href="{{h $articleUrl($article) }}" class="carousel-card-link">
+                        {{ if ($thumb): }}
                         <div class="carousel-thumb">
-                            <img src="<?= $this->h($thumb) ?>"
-                                 alt="<?= $this->h($article['title']) ?>"
+                            <img src="{{h $thumb }}"
+                                 alt="{{h $article['title'] }}"
                                  loading="lazy">
                         </div>
-                        <?php else: ?>
+                        {{ else: }}
                         <div class="carousel-no-thumb"><span>NO IMAGE</span></div>
-                        <?php endif; ?>
+                        {{ endif; }}
                         <div class="carousel-info">
-                            <?php if (!empty($article['category_name'])): ?>
-                            <span class="badge <?= $this->h($catType) ?>"
+                            {{ if (!empty($article['category_name'])): }}
+                            <span class="badge {{h $catType }}"
                                   style="display:inline-block;margin-bottom:.25rem">
-                                <?= $this->h($article['category_name']) ?>
+                                {{h $article['category_name'] }}
                             </span>
-                            <?php endif; ?>
-                            <p class="carousel-title"><?= $this->h($article['title']) ?></p>
-                            <?php if (!empty($article['published_at'])): ?>
-                            <time class="carousel-date" datetime="<?= $this->h($article['published_at']) ?>">
-                                <?= $this->h(date('Y年m月d日', strtotime((string) $article['published_at']))) ?>
+                            {{ endif; }}
+                            <p class="carousel-title">{{h $article['title'] }}</p>
+                            {{ if (!empty($article['published_at'])): }}
+                            <time class="carousel-date" datetime="{{h $article['published_at'] }}">
+                                {{h date('Y年m月d日', strtotime((string) $article['published_at'])) }}
                             </time>
-                            <?php endif; ?>
+                            {{ endif; }}
                         </div>
                     </a>
                 </div>
-                <?php endforeach; ?>
+                {{ endforeach; }}
             </div>
         </div>
-        <button class="cat-swiper-btn" id="next-<?= $idx ?>">&#8250;</button>
+        <button class="cat-swiper-btn" id="next-{{= $idx }}">&#8250;</button>
     </div>
 </section>
-<?php endforeach; ?>
+{{ endforeach; }}
 
-<?php if (empty($sections)): ?>
+{{ if (empty($sections)): }}
 <div class="no-articles-msg">まだ記事がありません。</div>
-<?php endif; ?>
+{{ endif; }}
 
 <script>
 (function () {
     var configs = [];
-    <?php for ($i = 0; $i < $swiperCount; $i++): ?>
-    configs.push({ el: '#swiper-<?= $i ?>', prev: '#prev-<?= $i ?>', next: '#next-<?= $i ?>' });
-    <?php endfor; ?>
+    {{ for ($i = 0; $i < $swiperCount; $i++): }}
+    configs.push({ el: '#swiper-{{= $i }}', prev: '#prev-{{= $i }}', next: '#next-{{= $i }}' });
+    {{ endfor; }}
     configs.forEach(function (c) {
         new Swiper(c.el, {
             slidesPerView: 1.4,

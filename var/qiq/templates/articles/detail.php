@@ -1,4 +1,4 @@
-<?php
+{{
 /**
  * @var array<string, mixed> $article
  * @var array<string, mixed>|null $prev
@@ -12,123 +12,118 @@ $richHtml = null;
 if (!empty($article['blocks'])) {
     $decoded = json_decode((string) $article['blocks'], true);
     if (is_array($decoded) && count($decoded) > 0) {
-        $blocks = $decoded;           // legacy block-editor JSON
+        $blocks = $decoded;
     } else {
-        $richHtml = (string) $article['blocks'];  // TinyMCE HTML stored in blocks field
+        $richHtml = (string) $article['blocks'];
     }
 }
 if ($richHtml === null && !empty($article['content'])) {
     $richHtml = (string) $article['content'];
 }
-?>
-<?php
-    $catType = $article['category_type'] ?? 'custom';
-    [$listUrl, $listLabel] = match ($catType) {
-        'blog'    => ['/blog',     'ブログ一覧'],
-        'youtube' => ['/youtube',  'YouTube'],
-        default   => ['/articles', '記事一覧'],
-    };
-?>
+
+$catType = $article['category_type'] ?? 'custom';
+[$listUrl, $listLabel] = match ($catType) {
+    'blog'    => ['/blog',     'ブログ一覧'],
+    'youtube' => ['/youtube',  'YouTube'],
+    default   => ['/articles', '記事一覧'],
+};
+}}
 <nav class="breadcrumb" aria-label="パンくずリスト">
     <ol class="breadcrumb-list">
         <li class="breadcrumb-item"><a href="/">ホーム</a></li>
-        <li class="breadcrumb-item"><a href="<?= $this->h($listUrl) ?>"><?= $this->h($listLabel) ?></a></li>
+        <li class="breadcrumb-item"><a href="{{h $listUrl }}">{{h $listLabel }}</a></li>
         <li class="breadcrumb-item breadcrumb-current" aria-current="page">
-            <?= $this->h(mb_strimwidth((string) $article['title'], 0, 40, '…')) ?>
+            {{h mb_strimwidth((string) $article['title'], 0, 40, '…') }}
         </li>
     </ol>
 </nav>
 
 <article class="article-detail">
-    <?php if (!empty($article['category_name'])): ?>
+    {{ if (!empty($article['category_name'])): }}
     <div class="article-category">
-        <a href="/<?= $this->h($article['category_slug'] ?? '') ?>" class="badge <?= $this->h($article['category_type'] ?? '') ?>">
-            <?= $this->h($article['category_name']) ?>
+        <a href="/{{h $article['category_slug'] ?? '' }}" class="badge {{h $article['category_type'] ?? '' }}">
+            {{h $article['category_name'] }}
         </a>
     </div>
-    <?php endif; ?>
+    {{ endif; }}
 
-    <h1 class="article-title"><?= $this->h($article['title']) ?></h1>
+    <h1 class="article-title">{{h $article['title'] }}</h1>
 
     <div class="article-meta">
-        <?php if (!empty($article['author_name'])): ?>
-        <span>by <?= $this->h($article['author_name']) ?></span>
-        <?php endif; ?>
-        <?php if (!empty($article['published_at'])): ?>
-        <span><?= $this->h(date('Y年m月d日', strtotime((string) $article['published_at']))) ?></span>
-        <?php endif; ?>
+        {{ if (!empty($article['author_name'])): }}
+        <span>by {{h $article['author_name'] }}</span>
+        {{ endif; }}
+        {{ if (!empty($article['published_at'])): }}
+        <span>{{h date('Y年m月d日', strtotime((string) $article['published_at'])) }}</span>
+        {{ endif; }}
     </div>
 
-    <?php if (!empty($article['eye_catch_image'])): ?>
-    <img src="<?= $this->h($article['eye_catch_image']) ?>"
-         alt="<?= $this->h($article['title']) ?>"
+    {{ if (!empty($article['eye_catch_image'])): }}
+    <img src="{{h $article['eye_catch_image'] }}"
+         alt="{{h $article['title'] }}"
          class="article-eyecatch">
-    <?php endif; ?>
+    {{ endif; }}
 
-    <?php if ($blocks !== null): ?>
+    {{ if ($blocks !== null): }}
     <div class="article-blocks">
-        <?php foreach ($blocks as $block):
-            $type = $block['type'] ?? '';
-        ?>
-        <?php if ($type === 'heading'):
-            $level = (int) ($block['level'] ?? 2);
-            $level = max(2, min(4, $level));
-            $tag   = 'h' . $level;
-        ?>
-        <<?= $tag ?> class="block-heading block-heading-<?= $level ?>">
-            <?= $this->h($block['text'] ?? '') ?>
-        </<?= $tag ?>>
+        {{ foreach ($blocks as $block): }}
+        {{ $type = $block['type'] ?? ''; }}
+        {{ if ($type === 'heading'): }}
+        {{ $level = max(2, min(4, (int) ($block['level'] ?? 2))); }}
+        {{ $tag = 'h' . $level; }}
+        <{{= $tag }} class="block-heading block-heading-{{= $level }}">
+            {{h $block['text'] ?? '' }}
+        </{{= $tag }}>
 
-        <?php elseif ($type === 'text'): ?>
+        {{ elseif ($type === 'text'): }}
         <div class="article-body block-text">
-            <?= $block['html'] ?? '' /* Rich-text HTML from CMS; CMS is responsible for sanitising */ ?>
+            {{= $block['html'] ?? '' }}
         </div>
 
-        <?php elseif ($type === 'image' && !empty($block['url'])): ?>
+        {{ elseif ($type === 'image' && !empty($block['url'])): }}
         <figure class="block-image">
-            <img src="<?= $this->h($block['url']) ?>"
-                 alt="<?= $this->h($block['alt'] ?? '') ?>"
+            <img src="{{h $block['url'] }}"
+                 alt="{{h $block['alt'] ?? '' }}"
                  class="block-image-img">
-            <?php if (!empty($block['caption'])): ?>
-            <figcaption class="block-image-caption"><?= $this->h($block['caption']) ?></figcaption>
-            <?php endif; ?>
+            {{ if (!empty($block['caption'])): }}
+            <figcaption class="block-image-caption">{{h $block['caption'] }}</figcaption>
+            {{ endif; }}
         </figure>
 
-        <?php elseif ($type === 'video' && !empty($block['video_id'])): ?>
+        {{ elseif ($type === 'video' && !empty($block['video_id'])): }}
         <figure class="block-video">
             <div class="block-video-wrapper">
                 <iframe
-                    src="https://www.youtube.com/embed/<?= $this->h($block['video_id']) ?>"
-                    title="<?= $this->h($block['caption'] ?? 'YouTube') ?>"
+                    src="https://www.youtube.com/embed/{{h $block['video_id'] }}"
+                    title="{{h $block['caption'] ?? 'YouTube' }}"
                     frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen
                     class="block-video-iframe">
                 </iframe>
             </div>
-            <?php if (!empty($block['caption'])): ?>
-            <figcaption class="block-video-caption"><?= $this->h($block['caption']) ?></figcaption>
-            <?php endif; ?>
+            {{ if (!empty($block['caption'])): }}
+            <figcaption class="block-video-caption">{{h $block['caption'] }}</figcaption>
+            {{ endif; }}
         </figure>
 
-        <?php endif; ?>
-        <?php endforeach; ?>
+        {{ endif; }}
+        {{ endforeach; }}
     </div>
 
-    <?php elseif ($richHtml !== null): ?>
+    {{ elseif ($richHtml !== null): }}
     <div class="article-body tinymce-content">
-        <?= $richHtml ?>
+        {{= $richHtml }}
     </div>
 
-    <?php else: ?>
+    {{ else: }}
     <div class="article-body">
-        <!-- 本文なし -->
     </div>
-    <?php endif; ?>
+    {{ endif; }}
 
     <div class="article-footer">
-        <a href="<?= $this->h($listUrl) ?>">&larr; <?= $this->h($listLabel) ?>に戻る</a>
+        <a href="{{h $listUrl }}">&larr; {{h $listLabel }}に戻る</a>
     </div>
 
-    <?= $this->render('components/article-nav') ?>
+    {{= $this->render('components/article-nav') }}
 </article>
