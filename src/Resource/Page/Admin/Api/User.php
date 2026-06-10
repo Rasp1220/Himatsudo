@@ -5,12 +5,15 @@ namespace Himatsudo\Resource\Page\Admin\Api;
 
 use BEAR\Resource\ResourceObject;
 use Himatsudo\Annotation\RequireAuth;
+use Himatsudo\Auth\AuthContext;
 use Himatsudo\Interfaces\UserInterface as UserServiceInterface;
 
 class User extends ResourceObject
 {
-    public function __construct(private readonly UserServiceInterface $userService)
-    {
+    public function __construct(
+        private readonly UserServiceInterface $userService,
+        private readonly AuthContext          $authContext,
+    ) {
     }
 
     #[RequireAuth]
@@ -69,7 +72,7 @@ class User extends ResourceObject
 
     private function isAdmin(): bool
     {
-        if (($_REQUEST['_auth_role'] ?? '') !== 'admin') {
+        if (!$this->authContext->isAdmin()) {
             $this->code = 403;
             $this->body = ['error' => 'Forbidden'];
             return false;

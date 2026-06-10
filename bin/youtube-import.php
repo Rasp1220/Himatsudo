@@ -16,19 +16,11 @@ declare(strict_types=1);
  *   YOUTUBE_IMPORT_AUTHOR_ID=1
  */
 
+require __DIR__ . '/load-env.php';
+
 $root = dirname(__DIR__);
 
-// Load .env
-$envFile = $root . '/.env';
-if (file_exists($envFile)) {
-    foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
-        if (str_starts_with(trim($line), '#') || !str_contains($line, '=')) {
-            continue;
-        }
-        [$key, $value] = explode('=', $line, 2);
-        $_ENV[trim($key)] = trim($value);
-    }
-}
+loadDotEnv($root);
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 

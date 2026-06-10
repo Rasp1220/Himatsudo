@@ -2,20 +2,12 @@
 <?php
 declare(strict_types=1);
 
+require __DIR__ . '/load-env.php';
+
 $root  = dirname(__DIR__);
 $fresh = in_array('--fresh', $argv, true);
 
-// Load .env if it exists
-$envFile = $root . '/.env';
-if (file_exists($envFile)) {
-    foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
-        if (str_starts_with(trim($line), '#') || !str_contains($line, '=')) {
-            continue;
-        }
-        [$key, $value] = explode('=', $line, 2);
-        $_ENV[trim($key)] = trim($value);
-    }
-}
+loadDotEnv($root);
 
 $dsn      = $_ENV['DB_DSN']      ?? 'mysql:host=localhost;dbname=himatsudo;charset=utf8mb4';
 $user     = $_ENV['DB_USER']     ?? 'root';

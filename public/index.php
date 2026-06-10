@@ -31,12 +31,8 @@ $isApi = str_starts_with(strtok($uri, '?'), '/admin/api/');
 if (!$isApi) {
     $path = strtok($uri, '?');
     $qs   = (string) strstr($uri, '?');
-    if (preg_match('#^/articles/([a-zA-Z0-9][a-zA-Z0-9\-]*)$#', (string) $path, $m)) {
-        // /articles/{article-slug} → article detail
-        $_SERVER['REQUEST_URI'] = '/article?slug=' . urlencode($m[1]);
-        $_GET['slug'] = $m[1];
-    } elseif (preg_match('#^/blog/([a-zA-Z0-9][a-zA-Z0-9\-]*)$#', (string) $path, $m)) {
-        // /blog/{article-slug} → blog article detail
+    if (preg_match('#^/(?:articles|blog)/([a-zA-Z0-9][a-zA-Z0-9\-]*)$#', (string) $path, $m)) {
+        // /articles/{slug} および /blog/{slug} → article detail
         $_SERVER['REQUEST_URI'] = '/article?slug=' . urlencode($m[1]);
         $_GET['slug'] = $m[1];
     } elseif (preg_match('#^/([a-z][a-z0-9\-]*)$#', (string) $path, $m)
@@ -71,7 +67,10 @@ try {
     $responder($ro, $_SERVER);
     exit(0);
 } catch (Throwable $e) {
+    error_log((string) $e);
     http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    // 本番では内部情報（例外メッセージ）を漏らさない
+    $message = PHP_SAPI === 'cli-server' ? $e->getMessage() : 'Internal Server Error';
+    echo json_encode(['error' => $message]);
     exit(1);
 }

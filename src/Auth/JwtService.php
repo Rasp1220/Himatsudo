@@ -22,7 +22,16 @@ final class JwtService
 
     public function __construct()
     {
-        $secret = $_ENV['JWT_SECRET'] ?? 'himatsudo-default-jwt-secret-key-change-in-production-32chars';
+        $secret = (string) ($_ENV['JWT_SECRET'] ?? '');
+        if ($secret === '') {
+            // Well-known fallback is acceptable only for local development.
+            // In production (php-fpm / apache) tokens signed with a public
+            // default secret could be forged by anyone, so fail fast instead.
+            if (!in_array(PHP_SAPI, ['cli', 'cli-server'], true)) {
+                throw new RuntimeException('JWT_SECRET environment variable must be set');
+            }
+            $secret = 'himatsudo-default-jwt-secret-key-change-in-production-32chars';
+        }
         $this->config = Configuration::forSymmetricSigner(
             new Sha256(),
             InMemory::plainText($secret)

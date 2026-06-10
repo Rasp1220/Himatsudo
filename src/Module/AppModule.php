@@ -6,8 +6,9 @@ namespace Himatsudo\Module;
 use BEAR\Package\AbstractAppModule;
 use BEAR\Package\PackageModule;
 use Himatsudo\Annotation\RequireAuth;
-use Himatsudo\Interceptor\AuthInterceptor;
+use Himatsudo\Auth\AuthContext;
 use Himatsudo\Auth\JwtService;
+use Himatsudo\Interceptor\AuthInterceptor;
 use Himatsudo\Interfaces\ArticleInterface;
 use Himatsudo\Interfaces\CategoryInterface;
 use Himatsudo\Interfaces\UserInterface;
@@ -17,6 +18,7 @@ use Himatsudo\Service\RefreshTokenService;
 use Himatsudo\Service\UserService;
 use Himatsudo\Service\YoutubeService;
 use Ray\AuraSqlModule\AuraSqlModule;
+use Ray\Di\Scope;
 
 class AppModule extends AbstractAppModule
 {
@@ -34,6 +36,9 @@ class AppModule extends AbstractAppModule
         $this->bind(JwtService::class);
         $this->bind(YoutubeService::class);
         $this->bind(RefreshTokenService::class);
+
+        // Request-scoped auth claims (written by AuthInterceptor, read by resources)
+        $this->bind(AuthContext::class)->in(Scope::SINGLETON);
 
         // Interface bindings
         $this->bind(ArticleInterface::class)->to(ArticleService::class);

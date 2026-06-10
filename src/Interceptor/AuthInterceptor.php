@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Himatsudo\Interceptor;
 
+use Himatsudo\Auth\AuthContext;
 use Himatsudo\Auth\JwtService;
 use Ray\Aop\MethodInterceptor;
 use Ray\Aop\MethodInvocation;
@@ -10,8 +11,10 @@ use Throwable;
 
 final class AuthInterceptor implements MethodInterceptor
 {
-    public function __construct(private readonly JwtService $jwtService)
-    {
+    public function __construct(
+        private readonly JwtService  $jwtService,
+        private readonly AuthContext $authContext,
+    ) {
     }
 
     public function invoke(MethodInvocation $invocation): mixed
@@ -30,9 +33,7 @@ final class AuthInterceptor implements MethodInterceptor
             return $this->unauthorized($invocation, 'Invalid or expired token');
         }
 
-        // Store claims in request globals so resources can read them
-        $_REQUEST['_auth_uid']  = $claims['uid'];
-        $_REQUEST['_auth_role'] = $claims['role'];
+        $this->authContext->authenticate($claims['uid'], $claims['role']);
 
         return $invocation->proceed();
     }

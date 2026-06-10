@@ -5,19 +5,21 @@ namespace Himatsudo\Resource\Page\Admin\Api\Auth;
 
 use BEAR\Resource\ResourceObject;
 use Himatsudo\Annotation\RequireAuth;
+use Himatsudo\Auth\AuthContext;
 use Himatsudo\Interfaces\UserInterface;
 
 class Me extends ResourceObject
 {
-    public function __construct(private readonly UserInterface $userService)
-    {
+    public function __construct(
+        private readonly UserInterface $userService,
+        private readonly AuthContext   $authContext,
+    ) {
     }
 
     #[RequireAuth]
     public function onGet(): static
     {
-        $uid  = (int) ($_REQUEST['_auth_uid'] ?? 0);
-        $user = $this->userService->getById($uid);
+        $user = $this->userService->getById($this->authContext->uid());
         if ($user === null) {
             $this->code = 401;
             $this->body = ['error' => 'User not found'];

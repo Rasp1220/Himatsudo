@@ -49,12 +49,6 @@ export interface PaginatedResponse<T> {
   last_page: number
 }
 
-export interface AuthState {
-  user: User | null
-  accessToken: string | null
-  refreshToken: string | null
-}
-
 export interface LoginPayload {
   email: string
   password: string
@@ -130,9 +124,4 @@ export interface YoutubeImportResult {
   embed_url: string
   description: string
   published_at: string
-}
-
-export interface ApiError {
-  error: string
-  message?: string
 }
