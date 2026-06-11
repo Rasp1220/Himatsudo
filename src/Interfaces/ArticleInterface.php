@@ -40,6 +40,19 @@ interface ArticleInterface
     public function getLatestExcludeType(string $excludeType, int $limit = 20): array;
 
     /**
+     * @return array{prev: array<string, mixed>|null, next: array<string, mixed>|null}
+     */
+    #[SqlQuery('articles/get_prev.sql', ['published_at', 'id'])]
+    #[SqlQuery('articles/get_next.sql', ['published_at', 'id'])]
+    public function getPrevNext(int $id, string $publishedAt): array;
+
+    /**
+     * @return array{items: array<int, array<string, mixed>>, total: int, page: int, per_page: int, last_page: int}
+     */
+    #[SqlQuery('articles/get_list_base.sql', ['keyword', 'limit', 'offset'])]
+    public function search(string $keyword, int $page = 1, int $perPage = 12): array;
+
+    /**
      * @param array<string, mixed> $data
      * @return array<string, mixed>
      */

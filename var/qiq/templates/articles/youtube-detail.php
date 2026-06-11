@@ -1,5 +1,9 @@
 {{
-    /** @var array<string, mixed> $article */
+    /**
+     * @var array<string, mixed> $article
+     * @var array<string, mixed>|null $prev
+     * @var array<string, mixed>|null $next
+     */
     $this->setLayout('layout');
     $this->page_title = $article['title'] ?? '';
     $videoId  = $article['youtube_video_id'] ?? null;
@@ -61,4 +65,6 @@
     <div style="margin-top:3rem;padding-top:1.5rem;border-top:1px solid #e2e8f0">
         <a href="/articles" style="color:#64748b;font-size:.875rem">&larr; 記事一覧に戻る</a>
     </div>
+
+    {{= $this->render('components/article-nav') }}
 </article>

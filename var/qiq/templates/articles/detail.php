@@ -1,5 +1,9 @@
 {{
-    /** @var array<string, mixed> $article */
+    /**
+     * @var array<string, mixed> $article
+     * @var array<string, mixed>|null $prev
+     * @var array<string, mixed>|null $next
+     */
     $this->setLayout('layout');
     $this->page_title = $article['title'] ?? '';
 
@@ -119,4 +123,6 @@
     <div class="article-footer">
         <a href="{{h $listUrl }}">&larr; {{h $listLabel }}に戻る</a>
     </div>
+
+    {{= $this->render('components/article-nav') }}
 </article>

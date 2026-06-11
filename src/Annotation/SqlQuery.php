@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Himatsudo\Annotation;
 
-#[\Attribute(\Attribute::TARGET_METHOD)]
+#[\Attribute(\Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
 final class SqlQuery
 {
     /**
