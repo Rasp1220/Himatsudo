@@ -123,6 +123,47 @@ final class ArticleService implements ArticleInterface
         );
     }
 
+    public function getPrevNext(int $id, string $publishedAt): array
+    {
+        $prev = $this->pdo->fetchOne(
+            $this->sql('articles/get_prev.sql'),
+            ['id' => $id, 'published_at' => $publishedAt]
+        ) ?: null;
+
+        $next = $this->pdo->fetchOne(
+            $this->sql('articles/get_next.sql'),
+            ['id' => $id, 'published_at' => $publishedAt]
+        ) ?: null;
+
+        return ['prev' => $prev, 'next' => $next];
+    }
+
+    public function search(string $keyword, int $page = 1, int $perPage = 12): array
+    {
+        $offset = ($page - 1) * $perPage;
+        $where  = "WHERE a.status = 'published' AND (a.title LIKE :keyword OR a.excerpt LIKE :keyword OR a.content LIKE :keyword)";
+        $bind   = ['keyword' => '%' . $keyword . '%', 'limit' => $perPage, 'offset' => $offset];
+
+        $base  = $this->sql('articles/get_list_base.sql');
+        $items = $this->pdo->fetchAll(
+            $base . " {$where} ORDER BY a.published_at DESC, a.created_at DESC LIMIT :limit OFFSET :offset",
+            $bind
+        );
+
+        $total = (int) $this->pdo->fetchValue(
+            "SELECT COUNT(*) FROM articles a {$where}",
+            ['keyword' => '%' . $keyword . '%']
+        );
+
+        return [
+            'items'     => $items,
+            'total'     => $total,
+            'page'      => $page,
+            'per_page'  => $perPage,
+            'last_page' => (int) ceil($total / max(1, $perPage)),
+        ];
+    }
+
     public function create(array $data): array
     {
         if (!empty($data['status']) && $data['status'] === 'published' && empty($data['published_at'])) {
