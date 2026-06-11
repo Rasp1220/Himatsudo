@@ -65,6 +65,9 @@ interface ArticleInterface
      */
     public function update(int $id, array $data): ?array;
 
+    /** @return array<int, array<string, mixed>> */
+    public function getByIds(array $ids): array;
+
     #[SqlQuery('articles/delete.sql', ['id'])]
     public function delete(int $id): bool;
 }

@@ -40,6 +40,7 @@ class Article extends ResourceObject
         ?string $youtube_url = null,
         ?string $youtube_video_id = null,
         ?string $youtube_thumbnail = null,
+        ?string $related_article_ids = null,
         ?string $published_at = null
     ): static {
         if ($this->articleService->getById($id) === null) {
@@ -60,6 +61,9 @@ class Article extends ResourceObject
             'youtube_thumbnail',
             'published_at'
         ), fn ($v) => $v !== null && $v !== '');
+        if ($related_article_ids !== null) {
+            $data['related_article_ids'] = $related_article_ids;
+        }
         if ($category_id !== null) {
             if ($category_id === 0) {
                 $this->code = 422;

@@ -66,5 +66,6 @@
         <a href="/articles" style="color:#64748b;font-size:.875rem">&larr; 記事一覧に戻る</a>
     </div>
 
+    {{= $this->render('components/related-articles') }}
     {{= $this->render('components/article-nav') }}
 </article>

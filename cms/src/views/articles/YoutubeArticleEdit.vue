@@ -7,7 +7,7 @@ import { useArticlesStore } from '@/stores/articles'
 import { useCategoriesStore } from '@/stores/categories'
 import { useAuthStore } from '@/stores/auth'
 import { articlesApi, uploadApi } from '@/api/client'
-import type { ArticleStatus } from '@/types'
+import type { ArticleStatus, Article } from '@/types'
 
 const route = useRoute()
 const router = useRouter()
@@ -40,6 +40,45 @@ const form = reactive({
 
 const { items: categories } = storeToRefs(categoriesStore)
 const youtubeCategory = computed(() => categories.value.find((c) => c.type === 'youtube'))
+
+// Related articles
+const relatedArticles = ref<Article[]>([])
+const relatedSearchQuery = ref('')
+const relatedSearchResults = ref<Article[]>([])
+const relatedSearching = ref(false)
+
+async function searchRelatedArticles() {
+  const q = relatedSearchQuery.value.trim()
+  if (!q) {
+    relatedSearchResults.value = []
+    return
+  }
+  relatedSearching.value = true
+  try {
+    const currentId = isEdit.value ? Number(route.params.id) : null
+    if (/^\d+$/.test(q)) {
+      const article = await articlesApi.get(Number(q)).catch(() => null)
+      relatedSearchResults.value = article && article.id !== currentId ? [article] : []
+    } else {
+      const res = await articlesApi.list({ keyword: q, per_page: 10 })
+      relatedSearchResults.value = res.items.filter(a => a.id !== currentId)
+    }
+  } finally {
+    relatedSearching.value = false
+  }
+}
+
+function addRelatedArticle(article: Article) {
+  if (relatedArticles.value.length >= 3) return
+  if (relatedArticles.value.some(a => a.id === article.id)) return
+  relatedArticles.value.push(article)
+  relatedSearchResults.value = []
+  relatedSearchQuery.value = ''
+}
+
+function removeRelatedArticle(id: number) {
+  relatedArticles.value = relatedArticles.value.filter(a => a.id !== id)
+}
 
 let slugManuallyEdited = false
 
@@ -120,6 +159,7 @@ async function handleSubmit() {
   errorMsg.value = ''
   try {
     const publishedAt = inputToDbDate(form.published_at)
+    const relatedIds = relatedArticles.value.map(a => a.id)
     const payload: Record<string, unknown> = {
       title: form.title,
       slug: form.slug,
@@ -130,6 +170,7 @@ async function handleSubmit() {
       youtube_url: form.youtube_url,
       youtube_video_id: form.youtube_video_id,
       youtube_thumbnail: form.youtube_thumbnail,
+      related_article_ids: JSON.stringify(relatedIds),
       author_id: auth.user?.id ?? 0,
     }
     if (publishedAt !== null) {
@@ -167,6 +208,20 @@ onMounted(async () => {
       form.youtube_thumbnail = a.youtube_thumbnail ?? ''
       youtubeInput.value = a.youtube_url ?? ''
       slugManuallyEdited = true
+
+      if (a.related_article_ids) {
+        try {
+          const ids: number[] = JSON.parse(a.related_article_ids)
+          if (Array.isArray(ids) && ids.length > 0) {
+            const fetched = await Promise.all(
+              ids.slice(0, 3).map(id => articlesApi.get(id).catch(() => null))
+            )
+            relatedArticles.value = fetched.filter((x): x is Article => x !== null)
+          }
+        } catch {
+          // ignore parse errors
+        }
+      }
     }
   }
 })
@@ -339,6 +394,70 @@ onMounted(async () => {
         <section class="bg-white rounded-lg border border-gray-200 p-5">
           <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4">説明文・補足テキスト</h3>
           <TinyMceEditor v-model="form.content" :height="400" />
+        </section>
+
+        <!-- 関連記事 -->
+        <section class="bg-white rounded-lg border border-gray-200 p-5 space-y-4">
+          <div>
+            <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide">関連記事</h3>
+            <p class="text-xs text-gray-400 mt-0.5">最大3件まで設定できます（任意）</p>
+          </div>
+
+          <!-- 設定済み関連記事 -->
+          <div v-if="relatedArticles.length > 0" class="space-y-2">
+            <div
+              v-for="article in relatedArticles"
+              :key="article.id"
+              class="flex items-center justify-between gap-3 px-3 py-2 bg-gray-50 border border-gray-200 rounded-md"
+            >
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="text-xs text-gray-400 font-mono flex-shrink-0">ID:{{ article.id }}</span>
+                <span class="text-sm text-gray-700 truncate">{{ article.title }}</span>
+              </div>
+              <button
+                type="button"
+                @click="removeRelatedArticle(article.id)"
+                class="flex-shrink-0 text-xs text-red-500 hover:text-red-700"
+              >削除</button>
+            </div>
+          </div>
+
+          <!-- 検索フォーム -->
+          <div v-if="relatedArticles.length < 3">
+            <label class="block text-xs font-semibold text-gray-600 mb-1">記事を検索（IDまたはタイトル）</label>
+            <div class="flex gap-2">
+              <input
+                v-model="relatedSearchQuery"
+                type="text"
+                placeholder="記事IDまたはタイトルを入力"
+                class="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                @keydown.enter.prevent="searchRelatedArticles"
+              />
+              <button
+                type="button"
+                @click="searchRelatedArticles"
+                :disabled="relatedSearching"
+                class="px-4 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 disabled:opacity-50"
+              >{{ relatedSearching ? '検索中…' : '検索' }}</button>
+            </div>
+
+            <ul v-if="relatedSearchResults.length > 0" class="mt-2 border border-gray-200 rounded-md divide-y divide-gray-100 bg-white shadow-sm">
+              <li
+                v-for="result in relatedSearchResults"
+                :key="result.id"
+                class="flex items-center justify-between gap-3 px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                @click="addRelatedArticle(result)"
+              >
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="text-xs text-gray-400 font-mono flex-shrink-0">ID:{{ result.id }}</span>
+                  <span class="text-sm text-gray-700 truncate">{{ result.title }}</span>
+                </div>
+                <span class="flex-shrink-0 text-xs text-blue-500">追加</span>
+              </li>
+            </ul>
+            <p v-else-if="!relatedSearching && relatedSearchQuery && relatedSearchResults.length === 0"
+               class="mt-1 text-xs text-gray-400">該当する記事が見つかりませんでした</p>
+          </div>
         </section>
 
       </div>

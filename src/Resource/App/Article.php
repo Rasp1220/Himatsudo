@@ -34,12 +34,23 @@ class Article extends ResourceObject
             );
         }
 
+        $relatedArticles = [];
+        if (!empty($article['related_article_ids'])) {
+            $ids = json_decode((string) $article['related_article_ids'], true);
+            if (is_array($ids) && !empty($ids)) {
+                $relatedArticles = $this->articleService->getByIds(
+                    array_slice(array_map('intval', $ids), 0, 3)
+                );
+            }
+        }
+
         $this->body = [
-            'article'    => $article,
-            'prev'       => $prevNext['prev'],
-            'next'       => $prevNext['next'],
-            'categories' => $this->categoryService->getAll(),
-            'page_title' => (string) $article['title'],
+            'article'          => $article,
+            'prev'             => $prevNext['prev'],
+            'next'             => $prevNext['next'],
+            'categories'       => $this->categoryService->getAll(),
+            'page_title'       => (string) $article['title'],
+            'related_articles' => $relatedArticles,
         ];
 
         return $this;
