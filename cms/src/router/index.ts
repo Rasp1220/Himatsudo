@@ -5,7 +5,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/LoginView.vue'),
+    component: () => import('@/views/Login.vue'),
     meta: { public: true },
   },
   {
@@ -19,46 +19,46 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'dashboard',
         name: 'Dashboard',
-        component: () => import('@/views/DashboardView.vue'),
+        component: () => import('@/views/Dashboard.vue'),
       },
       {
         path: 'articles',
         name: 'ArticlesList',
-        component: () => import('@/views/articles/ArticlesListView.vue'),
+        component: () => import('@/views/articles/ArticlesList.vue'),
       },
       {
         path: 'articles/new',
         name: 'ArticleNew',
-        component: () => import('@/views/articles/ArticleEditView.vue'),
+        component: () => import('@/views/articles/ArticleNew.vue'),
         meta: { fullscreen: true },
       },
       {
         path: 'articles/:id/edit',
         name: 'ArticleEdit',
-        component: () => import('@/views/articles/ArticleEditView.vue'),
+        component: () => import('@/views/articles/ArticleEdit.vue'),
         meta: { fullscreen: true },
       },
       {
         path: 'articles/youtube/new',
         name: 'YoutubeArticleNew',
-        component: () => import('@/views/articles/YoutubeArticleEditView.vue'),
+        component: () => import('@/views/articles/YoutubeArticleEdit.vue'),
         meta: { fullscreen: true },
       },
       {
         path: 'articles/youtube/:id/edit',
         name: 'YoutubeArticleEdit',
-        component: () => import('@/views/articles/YoutubeArticleEditView.vue'),
+        component: () => import('@/views/articles/YoutubeArticleEdit.vue'),
         meta: { fullscreen: true },
       },
       {
         path: 'categories',
         name: 'Categories',
-        component: () => import('@/views/categories/CategoriesView.vue'),
+        component: () => import('@/views/categories/Categories.vue'),
       },
       {
         path: 'users',
         name: 'Users',
-        component: () => import('@/views/users/UsersView.vue'),
+        component: () => import('@/views/users/Users.vue'),
         meta: { adminOnly: true },
       },
     ],

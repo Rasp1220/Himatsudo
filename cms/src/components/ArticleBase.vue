@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, computed, onMounted } from 'vue'
+import { reactive, ref, onMounted, toRefs } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import BlockEditor from '@/components/blocks/BlockEditor.vue'
@@ -9,13 +9,14 @@ import { useAuthStore } from '@/stores/auth'
 import { uploadApi } from '@/api/client'
 import type { ArticleStatus } from '@/types'
 
+const props = defineProps<{ isEdit: boolean }>()
+const { isEdit } = toRefs(props)
+
 const route = useRoute()
 const router = useRouter()
 const articlesStore = useArticlesStore()
 const categoriesStore = useCategoriesStore()
 const auth = useAuthStore()
-
-const isEdit = computed(() => !!route.params.id)
 
 // アップロードされた画像はルート相対パス (/uploads/...) で返るため、
 // CMS が別ポートで動いている場合も正しく表示できるよう backend origin を付与する
