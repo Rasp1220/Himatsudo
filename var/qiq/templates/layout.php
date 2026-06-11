@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 </head>
 <body>
-{{ $this->setLayout(null) }}
+{{ $this->setLayout(null); // prevent recursion }}
 {{= $this->render('components/header') }}
 <main class="main-content">
     <div class="container">

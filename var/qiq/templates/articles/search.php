@@ -10,12 +10,12 @@
 $this->setLayout('layout');
 $this->page_title = $page_title ?? 'サイト内検索';
 
-$articleUrl = static function (array $article): string {
+$articleUrl = function (array $article): string {
     $prefix = ($article['category_type'] ?? 'custom') === 'blog' ? '/blog' : '/articles';
     return $prefix . '/' . rawurlencode((string) $article['slug']);
 };
 
-$pageUrl = static function (int $p, string $q): string {
+$pageUrl = function (int $p, string $q): string {
     return '/search?q=' . rawurlencode($q) . ($p > 1 ? '&page=' . $p : '');
 };
 }}

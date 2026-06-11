@@ -3,7 +3,7 @@
  * @var array<string, mixed>|null $prev
  * @var array<string, mixed>|null $next
  */
-$navUrl = static function (array $a): string {
+$navUrl = function (array $a): string {
     $prefix = ($a['category_type'] ?? 'custom') === 'blog' ? '/blog' : '/articles';
     return $prefix . '/' . rawurlencode((string) $a['slug']);
 };

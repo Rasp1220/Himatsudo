@@ -12,7 +12,8 @@ class Search extends ResourceObject
 
     public function onGet(string $q = '', int $page = 1): static
     {
-        $q = trim($q);
+        $q    = trim($q);
+        $page = max(1, $page);
 
         if ($q === '') {
             $this->body = [
