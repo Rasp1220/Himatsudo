@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Resource\Page;
@@ -8,7 +9,9 @@ use Himatsudo\Interfaces\ArticleInterface;
 
 class Search extends ResourceObject
 {
-    public function __construct(private readonly ArticleInterface $articleService) {}
+    public function __construct(private readonly ArticleInterface $articleService)
+    {
+    }
 
     public function onGet(string $q = '', int $page = 1): static
     {
