@@ -229,6 +229,12 @@
       <code><![CDATA[onGet]]></code>
     </PossiblyUnusedMethod>
   </file>
+  <file src="src/Resource/Page/Search.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+    </PossiblyUnusedMethod>
+  </file>
   <file src="src/Service/ArticleService.php">
     <MissingOverrideAttribute>
       <code><![CDATA[public function create(array $data): array]]></code>
@@ -240,6 +246,8 @@
       <code><![CDATA[public function getLatestByCategory(int $categoryId, int $limit = 8): array]]></code>
       <code><![CDATA[public function getLatestExcludeType(string $excludeType, int $limit = 20): array]]></code>
       <code><![CDATA[public function getList(int $page = 1, int $perPage = 15, ?int $categoryId = null, string $status = 'published'): array]]></code>
+      <code><![CDATA[public function getPrevNext(int $id, string $publishedAt): array]]></code>
+      <code><![CDATA[public function search(string $keyword, int $page = 1, int $perPage = 12): array]]></code>
       <code><![CDATA[public function update(int $id, array $data): ?array]]></code>
     </MissingOverrideAttribute>
     <PossiblyUnusedMethod>
