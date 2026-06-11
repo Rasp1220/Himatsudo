@@ -82,7 +82,7 @@ jobs:
   php-unit:
     name: PHP Unit Tests
     runs-on: ubuntu-latest
-    needs: [psalm]
+    needs: [php-format]
 
     steps:
       - uses: actions/checkout@v4
