@@ -29,13 +29,14 @@ $uri   = $_SERVER['REQUEST_URI'] ?? '/';
 $isApi = str_starts_with(strtok($uri, '?'), '/admin/api/');
 
 if (!$isApi) {
-    $path = strtok($uri, '?');
-    $qs   = (string) strstr($uri, '?');
-    if (preg_match('#^/articles/([a-zA-Z0-9][a-zA-Z0-9\-]*)$#', (string) $path, $m)) {
+    $path        = strtok($uri, '?');
+    $qs          = (string) strstr($uri, '?');
+    $decodedPath = urldecode((string) $path);
+    if (preg_match('#^/articles/([^/]+)$#u', $decodedPath, $m)) {
         // /articles/{article-slug} → article detail
         $_SERVER['REQUEST_URI'] = '/article?slug=' . urlencode($m[1]);
         $_GET['slug'] = $m[1];
-    } elseif (preg_match('#^/blog/([a-zA-Z0-9][a-zA-Z0-9\-]*)$#', (string) $path, $m)) {
+    } elseif (preg_match('#^/blog/([^/]+)$#u', $decodedPath, $m)) {
         // /blog/{article-slug} → blog article detail
         $_SERVER['REQUEST_URI'] = '/article?slug=' . urlencode($m[1]);
         $_GET['slug'] = $m[1];
