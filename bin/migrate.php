@@ -41,7 +41,6 @@ if ($fresh) {
 }
 
 // 適用済みマイグレーションを記録するテーブル。
-// これにより各マイグレーションは一度だけ実行され、再実行でも安全にスキップされる。
 $pdo->exec(
     'CREATE TABLE IF NOT EXISTS schema_migrations (
         filename   VARCHAR(255) NOT NULL,
@@ -53,6 +52,61 @@ $pdo->exec(
 $applied = array_flip(
     $pdo->query('SELECT filename FROM schema_migrations')->fetchAll(PDO::FETCH_COLUMN)
 );
+
+// ── ブートストラップ ─────────────────────────────────────────────────────────
+// schema_migrations が空のとき（トラッキング導入前に適用済みのDBに初回実行する場合）、
+// INFORMATION_SCHEMA でスキーマを検査し、既に存在するテーブル・カラムを持つ
+// マイグレーションを自動的に「適用済み」として記録する。
+// これにより、既存DBで「Duplicate column / Table already exists」で止まらずに
+// 未適用の新しいマイグレーションだけを実行できる。
+if (empty($applied)) {
+    $colExists = static function (string $table, string $column) use ($pdo): bool {
+        $stmt = $pdo->prepare(
+            'SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?'
+        );
+        $stmt->execute([$table, $column]);
+        return (bool) $stmt->fetchColumn();
+    };
+
+    $tblExists = static function (string $table) use ($pdo): bool {
+        $stmt = $pdo->prepare(
+            'SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES
+             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?'
+        );
+        $stmt->execute([$table]);
+        return (bool) $stmt->fetchColumn();
+    };
+
+    // 各マイグレーションファイルが適用済みかどうかを判定するクロージャのマップ。
+    // 追加したマイグレーションファイルに対応するエントリをここに追加すること。
+    $legacyMap = [
+        '001_create_users_table.sql'          => fn () => $tblExists('users'),
+        '002_create_categories_table.sql'     => fn () => $tblExists('categories'),
+        '003_create_articles_table.sql'       => fn () => $tblExists('articles'),
+        '004_create_refresh_tokens_table.sql' => fn () => $tblExists('refresh_tokens'),
+        '005_add_related_articles.sql'        => fn () => $colExists('articles', 'related_article_ids'),
+        '006_add_user_profile.sql'            => fn () => $colExists('users', 'avatar'),
+        '007_add_user_sns.sql'                => fn () => $colExists('users', 'instagram_url'),
+    ];
+
+    $insertStmt  = $pdo->prepare('INSERT IGNORE INTO schema_migrations (filename) VALUES (?)');
+    $bootstrapped = [];
+    foreach ($legacyMap as $filename => $check) {
+        if ($check()) {
+            $insertStmt->execute([$filename]);
+            $applied[$filename] = true;
+            $bootstrapped[]     = $filename;
+        }
+    }
+
+    if (!empty($bootstrapped)) {
+        echo "\n\033[33m▶ 既存スキーマを検出して記録しました（初回トラッキング）\033[0m\n";
+        foreach ($bootstrapped as $f) {
+            echo "  \033[90m•\033[0m {$f}\n";
+        }
+    }
+}
 
 // ── migrations（適用済みはスキップ、未適用のみ実行して記録） ──
 echo "\n\033[33m▶ migrations\033[0m\n";
