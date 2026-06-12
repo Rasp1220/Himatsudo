@@ -120,6 +120,8 @@
         </div>
     {{ endif; }}
 
+    {{= $this->render('components/sns-share') }}
+
     <div class="article-footer">
         <a href="{{h $listUrl }}">&larr; {{h $listLabel }}に戻る</a>
     </div>
