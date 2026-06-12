@@ -82,8 +82,6 @@ function addRelatedArticle(article: Article) {
   if (relatedArticles.value.length >= 3) return
   if (relatedArticles.value.some(a => a.id === article.id)) return
   relatedArticles.value.push(article)
-  relatedSearchResults.value = []
-  relatedSearchQuery.value = ''
 }
 
 function removeRelatedArticle(id: number) {
@@ -427,14 +425,24 @@ onMounted(async () => {
               <li
                 v-for="result in relatedSearchResults"
                 :key="result.id"
-                class="flex items-center justify-between gap-3 px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                :class="[
+                  'flex items-center justify-between gap-3 px-3 py-2',
+                  relatedArticles.some(a => a.id === result.id)
+                    ? 'opacity-50 cursor-not-allowed bg-gray-50'
+                    : 'hover:bg-gray-50 cursor-pointer'
+                ]"
                 @click="addRelatedArticle(result)"
               >
                 <div class="flex items-center gap-2 min-w-0">
                   <span class="text-xs text-gray-400 font-mono flex-shrink-0">ID:{{ result.id }}</span>
                   <span class="text-sm text-gray-700 truncate">{{ result.title }}</span>
                 </div>
-                <span class="flex-shrink-0 text-xs text-blue-500">追加</span>
+                <span
+                  :class="[
+                    'flex-shrink-0 text-xs',
+                    relatedArticles.some(a => a.id === result.id) ? 'text-gray-400' : 'text-blue-500'
+                  ]"
+                >{{ relatedArticles.some(a => a.id === result.id) ? '追加済み' : '追加' }}</span>
               </li>
             </ul>
             <p v-else-if="!relatedSearching && relatedSearchQuery && relatedSearchResults.length === 0"
