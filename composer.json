@@ -9,7 +9,7 @@
         "bear/package": "^1.8",
         "ray/aura-sql-module": "^1.11",
         "aura/sql": "^6.0",
-        "doctrine/cache": "^1.0",
+        "doctrine/cache": "^2.0",
         "lcobucci/jwt": "^5.4",
         "lcobucci/clock": "^3.0",
         "qiq/qiq": "^3.0",
@@ -17,7 +17,7 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.95",
-        "phpunit/phpunit": "^10.5",
+        "phpunit/phpunit": "^13.0",
         "vimeo/psalm": "^6.0"
     },
     "autoload": {
