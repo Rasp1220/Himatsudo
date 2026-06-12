@@ -5,6 +5,9 @@ export interface User {
   role: 'admin' | 'editor'
   avatar?: string | null
   bio?: string | null
+  instagram_url?: string | null
+  twitter_url?: string | null
+  tiktok_url?: string | null
   created_at: string
   updated_at: string
 }
@@ -14,6 +17,9 @@ export interface ProfileFormData {
   email: string
   avatar: string
   bio: string
+  instagram_url?: string
+  twitter_url?: string
+  tiktok_url?: string
   password?: string
 }
 

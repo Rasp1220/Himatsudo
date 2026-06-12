@@ -160,4 +160,24 @@ describe('useAuthStore', () => {
     expect(vi.mocked(authApi.updateProfile)).toHaveBeenCalledOnce()
     expect(store.user).toEqual(updated)
   })
+
+  it('updateProfile forwards SNS fields', async () => {
+    const updated = { ...mockUser, instagram_url: 'https://instagram.com/test', twitter_url: 'https://x.com/test', tiktok_url: 'https://tiktok.com/@test' }
+    vi.mocked(authApi.updateProfile).mockResolvedValue(updated)
+
+    const store = useAuthStore()
+    store.user = mockUser
+    await store.updateProfile({
+      name: mockUser.name,
+      email: mockUser.email,
+      avatar: '',
+      bio: '',
+      instagram_url: 'https://instagram.com/test',
+      twitter_url: 'https://x.com/test',
+      tiktok_url: 'https://tiktok.com/@test',
+    })
+
+    expect(store.user).toEqual(updated)
+    expect(store.user?.instagram_url).toBe('https://instagram.com/test')
+  })
 })

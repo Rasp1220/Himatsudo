@@ -41,8 +41,7 @@ if ($fresh) {
 }
 
 // 適用済みマイグレーションを記録するテーブル。
-// これにより各マイグレーションは一度だけ実行され、再実行で
-// 「Duplicate column / Table already exists」で止まらなくなる。
+// これにより各マイグレーションは一度だけ実行され、再実行でも安全にスキップされる。
 $pdo->exec(
     'CREATE TABLE IF NOT EXISTS schema_migrations (
         filename   VARCHAR(255) NOT NULL,
@@ -55,31 +54,7 @@ $applied = array_flip(
     $pdo->query('SELECT filename FROM schema_migrations')->fetchAll(PDO::FETCH_COLUMN)
 );
 
-// 既存DBに対して初めてトラッキングを導入する場合に備え、
-// 「既に存在する」系のエラーは冪等なものとして読み飛ばす。
-$benignCodes = [
-    1050, // Table already exists
-    1060, // Duplicate column name
-    1061, // Duplicate key name
-    1062, // Duplicate entry
-    1091, // Can't DROP ...; check that it exists
-    1022, // Duplicate key
-    1826, // Duplicate foreign key constraint name
-];
-
-$execStmt = static function (string $stmt) use ($pdo, $benignCodes): void {
-    try {
-        $pdo->exec($stmt);
-    } catch (PDOException $e) {
-        $code = (int) ($e->errorInfo[1] ?? 0);
-        if (!in_array($code, $benignCodes, true)) {
-            throw $e;
-        }
-        // 冪等なエラー（既に適用済み）は無視して継続する。
-    }
-};
-
-// ── migrations（適用済みはスキップ、適用後に記録） ──
+// ── migrations（適用済みはスキップ、未適用のみ実行して記録） ──
 echo "\n\033[33m▶ migrations\033[0m\n";
 $files = glob($root . '/var/db/migrations/*.sql');
 sort($files);
@@ -92,7 +67,7 @@ foreach ($files as $file) {
     try {
         $sql = (string) file_get_contents($file);
         foreach (array_filter(array_map('trim', explode(';', $sql))) as $stmt) {
-            $execStmt($stmt);
+            $pdo->exec($stmt);
         }
         $pdo->prepare('INSERT IGNORE INTO schema_migrations (filename) VALUES (?)')->execute([$name]);
         echo "  \033[32m✓\033[0m {$name}\n";
@@ -111,7 +86,7 @@ foreach ($files as $file) {
     try {
         $sql = (string) file_get_contents($file);
         foreach (array_filter(array_map('trim', explode(';', $sql))) as $stmt) {
-            $execStmt($stmt);
+            $pdo->exec($stmt);
         }
         echo "  \033[32m✓\033[0m {$name}\n";
     } catch (PDOException $e) {

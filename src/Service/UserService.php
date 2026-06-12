@@ -66,7 +66,7 @@ final class UserService implements UserInterface
     {
         $sets = [];
         $bind = ['id' => $id];
-        foreach (['name', 'email', 'role', 'avatar', 'bio'] as $field) {
+        foreach (['name', 'email', 'role', 'avatar', 'bio', 'instagram_url', 'twitter_url', 'tiktok_url'] as $field) {
             if (isset($data[$field])) {
                 $sets[]       = "{$field} = :{$field}";
                 $bind[$field] = $data[$field];

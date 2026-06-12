@@ -111,6 +111,50 @@
     }
 }
 
+// ─── 運営プロフィール SNSリンク ─────────────────────────────
+.author-sns-links {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    align-items: center;
+}
+
+.author-sns-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+
+    svg {
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
+    }
+
+    &:hover {
+        opacity: 0.8;
+        transform: translateY(-2px);
+    }
+}
+
+.author-sns-instagram {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    color: #fff;
+}
+
+.author-sns-x {
+    background: #000;
+    color: #fff;
+}
+
+.author-sns-tiktok {
+    background: #010101;
+    color: #fff;
+}
+
 @media (max-width: $bp-mobile) {
     .author-profile {
         flex-direction: column;

@@ -29,7 +29,7 @@ class Profile extends ResourceObject
     }
 
     #[RequireAuth]
-    public function onPut(?string $name = null, ?string $email = null, ?string $password = null, ?string $avatar = null, ?string $bio = null): static
+    public function onPut(?string $name = null, ?string $email = null, ?string $password = null, ?string $avatar = null, ?string $bio = null, ?string $instagram_url = null, ?string $twitter_url = null, ?string $tiktok_url = null): static
     {
         // プロフィール設定はログイン中の本人のみ。対象は常に認証ユーザー自身。
         $uid = (int) ($_REQUEST['_auth_uid'] ?? 0);
@@ -41,7 +41,7 @@ class Profile extends ResourceObject
 
         // role は本人からは変更させない（権限昇格防止）
         $data = array_filter(
-            compact('name', 'email', 'password', 'avatar', 'bio'),
+            compact('name', 'email', 'password', 'avatar', 'bio', 'instagram_url', 'twitter_url', 'tiktok_url'),
             fn ($v) => $v !== null
         );
 

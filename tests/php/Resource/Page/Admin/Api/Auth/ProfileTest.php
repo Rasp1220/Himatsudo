@@ -63,4 +63,33 @@ class ProfileTest extends TestCase
 
         $this->assertSame(401, $result->code);
     }
+
+    public function testOnPutForwardsSnsFields(): void
+    {
+        $_REQUEST['_auth_uid'] = 3;
+        $user                  = ['id' => 3, 'name' => 'Bob', 'email' => 'bob@example.com', 'role' => 'editor'];
+        $this->userService->method('getById')->willReturn($user);
+
+        $this->userService->expects($this->once())
+            ->method('update')
+            ->with(3, [
+                'instagram_url' => 'https://instagram.com/bob',
+                'twitter_url'   => 'https://x.com/bob',
+                'tiktok_url'    => 'https://tiktok.com/@bob',
+            ])
+            ->willReturn(array_merge($user, [
+                'instagram_url' => 'https://instagram.com/bob',
+                'twitter_url'   => 'https://x.com/bob',
+                'tiktok_url'    => 'https://tiktok.com/@bob',
+            ]));
+
+        $result = $this->resource->onPut(
+            instagram_url: 'https://instagram.com/bob',
+            twitter_url: 'https://x.com/bob',
+            tiktok_url: 'https://tiktok.com/@bob',
+        );
+
+        $this->assertSame(200, $result->code);
+        $this->assertSame('https://instagram.com/bob', $result->body['instagram_url']);
+    }
 }

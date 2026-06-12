@@ -125,6 +125,28 @@ class UserServiceTest extends TestCase
         $this->assertStringContainsString('bio = :bio', $capturedSql);
     }
 
+    public function testUpdateAllowsSnsFields(): void
+    {
+        $capturedSql = null;
+        $stmt        = $this->createMock(PDOStatement::class);
+        $this->pdo->method('perform')
+            ->willReturnCallback(function (string $sql) use ($stmt, &$capturedSql) {
+                $capturedSql = $sql;
+                return $stmt;
+            });
+        $this->pdo->method('fetchOne')->willReturn($this->makeUser());
+
+        $this->service->update(1, [
+            'instagram_url' => 'https://instagram.com/test',
+            'twitter_url'   => 'https://x.com/test',
+            'tiktok_url'    => 'https://tiktok.com/@test',
+        ]);
+
+        $this->assertStringContainsString('instagram_url = :instagram_url', $capturedSql);
+        $this->assertStringContainsString('twitter_url = :twitter_url', $capturedSql);
+        $this->assertStringContainsString('tiktok_url = :tiktok_url', $capturedSql);
+    }
+
     public function testGetByEmailReturnsUserWhenFound(): void
     {
         $user = $this->makeUser();
