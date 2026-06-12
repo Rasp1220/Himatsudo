@@ -82,8 +82,6 @@ function addRelatedArticle(article: Article) {
   if (relatedArticles.value.length >= 3) return
   if (relatedArticles.value.some(a => a.id === article.id)) return
   relatedArticles.value.push(article)
-  relatedSearchResults.value = []
-  relatedSearchQuery.value = ''
 }
 
 function removeRelatedArticle(id: number) {
