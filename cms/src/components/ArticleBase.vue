@@ -157,8 +157,12 @@ async function handleSubmit(overrideStatus?: ArticleStatus) {
       youtube_url: '',
       youtube_video_id: '',
       youtube_thumbnail: '',
-      related_article_ids: JSON.stringify(relatedIds),
       author_id: auth.user?.id ?? 0,
+    }
+    if (relatedIds.length > 0) {
+      payload.related_article_ids = JSON.stringify(relatedIds)
+    } else if (isEdit.value && articlesStore.current?.related_article_ids != null) {
+      payload.related_article_ids = '[]'
     }
     if (publishedAt !== null) {
       payload.published_at = publishedAt
