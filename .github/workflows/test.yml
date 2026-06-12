@@ -5,9 +5,6 @@ on:
     branches:
       - main
       - 'claude/**'
-  pull_request:
-    branches:
-      - main
 
 # Prevent multiple CI runs overlapping on the same branch
 concurrency:
