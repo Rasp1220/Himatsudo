@@ -260,6 +260,83 @@
   color: $c-text-muted;
 }
 
+// ─── SNS Share Buttons ────────────────────────────────────────
+.sns-share {
+  margin: 2.5rem 0 1.5rem;
+  padding: 1.5rem;
+  background: $c-white;
+  border: 1px solid $c-border-light;
+  border-radius: .75rem;
+}
+
+.sns-share-label {
+  font-size: .8rem;
+  font-weight: 600;
+  color: $c-text-muted;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin: 0 0 .85rem;
+}
+
+.sns-share-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+}
+
+.sns-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .55rem 1.1rem;
+  border-radius: 2rem;
+  border: none;
+  cursor: pointer;
+  font-size: .88rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity .2s, transform .15s;
+  white-space: nowrap;
+  font-family: inherit;
+
+  &:hover {
+    opacity: .85;
+    transform: translateY(-1px);
+    text-decoration: none;
+  }
+
+  &:active { transform: translateY(0); }
+}
+
+.sns-icon {
+  width: 1.1em;
+  height: 1.1em;
+  flex-shrink: 0;
+}
+
+.sns-line {
+  background: #06C755;
+  color: #fff;
+}
+
+.sns-x {
+  background: #000;
+  color: #fff;
+}
+
+.sns-instagram {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  color: #fff;
+}
+
+.sns-tiktok {
+  background: #010101;
+  color: #fff;
+}
+
 // ─── Category tag links ───────────────────────────────────────
 .category-link {
   padding: .5rem 1.25rem;
