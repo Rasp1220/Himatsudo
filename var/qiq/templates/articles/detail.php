@@ -124,5 +124,6 @@
         <a href="{{h $listUrl }}">&larr; {{h $listLabel }}に戻る</a>
     </div>
 
+    {{= $this->render('components/related-articles') }}
     {{= $this->render('components/article-nav') }}
 </article>

@@ -361,6 +361,35 @@
   }
 }
 
+// ─── Related articles ─────────────────────────────────────────
+.related-articles {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid $c-border-light;
+}
+
+.related-articles-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $c-text;
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.related-articles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+
+  @media (max-width: $bp-tablet) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: $bp-mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
 // ─── Article prev/next navigation ─────────────────────────────
 .article-nav {
   display: flex;

@@ -36,6 +36,7 @@ export interface Article {
   youtube_url: string | null
   youtube_video_id: string | null
   youtube_thumbnail: string | null
+  related_article_ids: string | null
   published_at: string | null
   created_at: string
   updated_at: string
@@ -120,6 +121,7 @@ export interface ArticleFormData {
   youtube_url: string
   youtube_video_id: string
   youtube_thumbnail: string
+  related_article_ids?: string | null
 }
 
 export interface YoutubeImportResult {

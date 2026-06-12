@@ -191,6 +191,20 @@ final class ArticleService implements ArticleInterface
         return $this->getById($id);
     }
 
+    public function getByIds(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+        $ids  = array_values(array_map('intval', $ids));
+        $in   = implode(', ', $ids);
+        $base = $this->sql('articles/get_list_base.sql');
+        return $this->pdo->fetchAll(
+            $base . " WHERE a.id IN ({$in}) AND a.status = 'published' ORDER BY FIELD(a.id, {$in})",
+            []
+        );
+    }
+
     public function delete(int $id): bool
     {
         return (bool) $this->pdo->perform($this->sql('articles/delete.sql'), ['id' => $id])->rowCount();
