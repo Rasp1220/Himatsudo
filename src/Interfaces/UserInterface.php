@@ -18,6 +18,14 @@ interface UserInterface
     #[SqlQuery('users/get_by_id.sql', ['id'])]
     public function getById(int $id): ?array;
 
+    /** @return array<int, array<string, mixed>> */
+    #[SqlQuery('users/get_public_list.sql', [])]
+    public function getPublicList(): array;
+
+    /** @return array<string, mixed>|null */
+    #[SqlQuery('users/get_public_by_id.sql', ['id'])]
+    public function getPublicById(int $id): ?array;
+
     /** @return array<string, mixed>|null */
     #[SqlQuery('users/get_by_email.sql', ['email'])]
     public function getByEmail(string $email): ?array;

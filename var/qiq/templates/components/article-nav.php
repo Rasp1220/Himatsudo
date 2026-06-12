@@ -2,8 +2,14 @@
 /**
  * @var array<string, mixed>|null $prev
  * @var array<string, mixed>|null $next
+ * @var array<string, mixed>|null $author_context
  */
-$navUrl = function (array $a): string {
+$navAuthorId = !empty($author_context) ? (int) $author_context['id'] : null;
+$navUrl = function (array $a) use ($navAuthorId): string {
+    // 運営プロフィール経由の場合は運営別の記事URLに合わせる
+    if ($navAuthorId !== null) {
+        return '/author/' . $navAuthorId . '/' . rawurlencode((string) $a['slug']);
+    }
     $prefix = ($a['category_type'] ?? 'custom') === 'blog' ? '/blog' : '/articles';
     return $prefix . '/' . rawurlencode((string) $a['slug']);
 };

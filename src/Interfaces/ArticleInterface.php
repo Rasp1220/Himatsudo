@@ -20,6 +20,19 @@ interface ArticleInterface
     #[SqlQuery('articles/get_admin_list_base.sql', ['limit', 'offset', 'status', 'category_id', 'keyword'])]
     public function getAdminList(int $page = 1, int $perPage = 20, ?int $categoryId = null, ?string $status = null, ?string $keyword = null): array;
 
+    /**
+     * @return array{items: array<int, array<string, mixed>>, total: int, page: int, per_page: int, last_page: int}
+     */
+    #[SqlQuery('articles/get_list_base.sql', ['status', 'author_id', 'limit', 'offset'])]
+    public function getListByAuthor(int $authorId, int $page = 1, int $perPage = 12, string $status = 'published'): array;
+
+    /**
+     * @return array{prev: array<string, mixed>|null, next: array<string, mixed>|null}
+     */
+    #[SqlQuery('articles/get_prev_by_author.sql', ['published_at', 'id', 'author_id'])]
+    #[SqlQuery('articles/get_next_by_author.sql', ['published_at', 'id', 'author_id'])]
+    public function getPrevNextByAuthor(int $id, string $publishedAt, int $authorId): array;
+
     /** @return array<string, mixed>|null */
     #[SqlQuery('articles/get_by_slug.sql', ['slug'])]
     public function getBySlug(string $slug, bool $publishedOnly = true): ?array;

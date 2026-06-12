@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
@@ -16,6 +16,7 @@ const pageTitles: Record<string, string> = {
   YoutubeArticleEdit: 'YouTube記事 編集',
   Categories: 'カテゴリ管理',
   Users: 'ユーザー管理',
+  Profile: 'プロフィール設定',
 }
 
 const pageTitle = computed(() => pageTitles[String(route.name ?? '')] ?? 'CMS')
@@ -31,7 +32,7 @@ async function handleLogout() {
     <h1 class="text-lg font-semibold text-gray-700">{{ pageTitle }}</h1>
     <div class="flex items-center gap-4">
       <span v-if="auth.user" class="text-sm text-gray-500">
-        {{ auth.user.name }}
+        <RouterLink to="/profile" class="hover:text-gray-800 hover:underline">{{ auth.user.name }}</RouterLink>
         <span class="ml-1 px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-medium">
           {{ auth.user.role === 'admin' ? '管理者' : '編集者' }}
         </span>

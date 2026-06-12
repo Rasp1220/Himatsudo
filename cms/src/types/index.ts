@@ -3,8 +3,18 @@ export interface User {
   name: string
   email: string
   role: 'admin' | 'editor'
+  avatar?: string | null
+  bio?: string | null
   created_at: string
   updated_at: string
+}
+
+export interface ProfileFormData {
+  name: string
+  email: string
+  avatar: string
+  bio: string
+  password?: string
 }
 
 export interface Category {
