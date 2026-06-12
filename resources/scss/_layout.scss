@@ -373,12 +373,17 @@
   font-weight: 700;
   color: $c-text;
   margin-bottom: 1.25rem;
+  text-align: center;
 }
 
 .related-articles-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.25rem;
+
+  @media (max-width: $bp-tablet) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 
   @media (max-width: $bp-mobile) {
     grid-template-columns: 1fr;
