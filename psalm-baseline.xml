@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="6.16.1@f1f5de594dc76faf8784e02d3dc4716c91c6f6ac">
+  <file src="src/Annotation/SqlQuery.php">
+    <PossiblyUnusedProperty>
+      <code><![CDATA[$file]]></code>
+      <code><![CDATA[$params]]></code>
+    </PossiblyUnusedProperty>
+  </file>
+  <file src="src/Auth/JwtService.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Domain/Article.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[fromArray]]></code>
+      <code><![CDATA[toArray]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Domain/Category.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[fromArray]]></code>
+      <code><![CDATA[toArray]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Domain/User.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[fromArray]]></code>
+      <code><![CDATA[toArray]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Interceptor/AuthInterceptor.php">
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function invoke(MethodInvocation $invocation): mixed]]></code>
+    </MissingOverrideAttribute>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Interfaces/ArticleInterface.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[getLatestExcludeType]]></code>
+    </PossiblyUnusedMethod>
+    <PossiblyUnusedReturnValue>
+      <code><![CDATA[bool]]></code>
+    </PossiblyUnusedReturnValue>
+  </file>
+  <file src="src/Interfaces/CategoryInterface.php">
+    <PossiblyUnusedReturnValue>
+      <code><![CDATA[bool]]></code>
+    </PossiblyUnusedReturnValue>
+  </file>
+  <file src="src/Interfaces/UserInterface.php">
+    <PossiblyUnusedReturnValue>
+      <code><![CDATA[bool]]></code>
+    </PossiblyUnusedReturnValue>
+  </file>
+  <file src="src/Module/ApiModule.php">
+    <MissingOverrideAttribute>
+      <code><![CDATA[protected function configure(): void]]></code>
+    </MissingOverrideAttribute>
+    <UnusedClass>
+      <code><![CDATA[ApiModule]]></code>
+    </UnusedClass>
+  </file>
+  <file src="src/Module/App.php">
+    <UnusedClass>
+      <code><![CDATA[App]]></code>
+    </UnusedClass>
+  </file>
+  <file src="src/Module/AppModule.php">
+    <MissingOverrideAttribute>
+      <code><![CDATA[protected function configure(): void]]></code>
+    </MissingOverrideAttribute>
+    <UnusedClass>
+      <code><![CDATA[AppModule]]></code>
+    </UnusedClass>
+  </file>
+  <file src="src/Module/HtmlModule.php">
+    <MissingOverrideAttribute>
+      <code><![CDATA[protected function configure(): void]]></code>
+    </MissingOverrideAttribute>
+    <UnusedClass>
+      <code><![CDATA[HtmlModule]]></code>
+    </UnusedClass>
+  </file>
+  <file src="src/Renderer/QiqRenderer.php">
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function render(ResourceObject $ro): string]]></code>
+    </MissingOverrideAttribute>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/App/Article.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/App/Articles.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/App/Index.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Admin/Api/Article.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onDelete]]></code>
+      <code><![CDATA[onGet]]></code>
+      <code><![CDATA[onPut]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Admin/Api/Articles.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+      <code><![CDATA[onPost]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Admin/Api/Articles/YoutubeImport.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onPost]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Admin/Api/Auth/Login.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onPost]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Admin/Api/Auth/Logout.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onPost]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Admin/Api/Auth/Me.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Admin/Api/Auth/Refresh.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onPost]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Admin/Api/Categories.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+      <code><![CDATA[onPost]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Admin/Api/Category.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onDelete]]></code>
+      <code><![CDATA[onGet]]></code>
+      <code><![CDATA[onPut]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Admin/Api/Upload.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[onPost]]></code>
+    </PossiblyUnusedMethod>
+    <PossiblyUnusedParam>
+      <code><![CDATA[$name]]></code>
+    </PossiblyUnusedParam>
+  </file>
+  <file src="src/Resource/Page/Admin/Api/User.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onDelete]]></code>
+      <code><![CDATA[onGet]]></code>
+      <code><![CDATA[onPut]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Admin/Api/Users.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+      <code><![CDATA[onPost]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Article.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Articles.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Blog.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Category.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Index.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Youtube.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Search.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Service/ArticleService.php">
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function create(array $data): array]]></code>
+      <code><![CDATA[public function delete(int $id): bool]]></code>
+      <code><![CDATA[public function getAdminList(int $page = 1, int $perPage = 20, ?int $categoryId = null, ?string $status = null, ?string $keyword = null): array]]></code>
+      <code><![CDATA[public function getById(int $id): ?array]]></code>
+      <code><![CDATA[public function getBySlug(string $slug, bool $publishedOnly = true): ?array]]></code>
+      <code><![CDATA[public function getLatest(int $limit = 10): array]]></code>
+      <code><![CDATA[public function getLatestByCategory(int $categoryId, int $limit = 8): array]]></code>
+      <code><![CDATA[public function getLatestExcludeType(string $excludeType, int $limit = 20): array]]></code>
+      <code><![CDATA[public function getList(int $page = 1, int $perPage = 15, ?int $categoryId = null, string $status = 'published'): array]]></code>
+      <code><![CDATA[public function getPrevNext(int $id, string $publishedAt): array]]></code>
+      <code><![CDATA[public function search(string $keyword, int $page = 1, int $perPage = 12): array]]></code>
+      <code><![CDATA[public function update(int $id, array $data): ?array]]></code>
+    </MissingOverrideAttribute>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Service/CategoryService.php">
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function create(string $name, string $slug, string $type = 'custom', int $sortOrder = 0): array]]></code>
+      <code><![CDATA[public function delete(int $id): bool]]></code>
+      <code><![CDATA[public function getAll(): array]]></code>
+      <code><![CDATA[public function getById(int $id): ?array]]></code>
+      <code><![CDATA[public function getBySlug(string $slug): ?array]]></code>
+      <code><![CDATA[public function getByType(string $type): ?array]]></code>
+      <code><![CDATA[public function update(int $id, array $data): ?array]]></code>
+    </MissingOverrideAttribute>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Service/RefreshTokenService.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[deleteExpired]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Service/UserService.php">
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function create(string $name, string $email, string $password, string $role = 'editor'): array]]></code>
+      <code><![CDATA[public function delete(int $id): bool]]></code>
+      <code><![CDATA[public function getByEmail(string $email): ?array]]></code>
+      <code><![CDATA[public function getById(int $id): ?array]]></code>
+      <code><![CDATA[public function getList(int $page = 1, int $perPage = 20): array]]></code>
+      <code><![CDATA[public function update(int $id, array $data): ?array]]></code>
+      <code><![CDATA[public function verifyPassword(string $plain, string $hash): bool]]></code>
+    </MissingOverrideAttribute>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Service/YoutubeService.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+</files>

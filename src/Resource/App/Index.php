@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Resource\App;
@@ -12,7 +13,8 @@ class Index extends ResourceObject
     public function __construct(
         private readonly ArticleInterface  $articleService,
         private readonly CategoryInterface $categoryService,
-    ) {}
+    ) {
+    }
 
     public function onGet(): static
     {

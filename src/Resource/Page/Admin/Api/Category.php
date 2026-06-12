@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Resource\Page\Admin\Api;
@@ -33,7 +34,7 @@ class Category extends ResourceObject
             $this->body = ['error' => 'Category not found'];
             return $this;
         }
-        $data = array_filter(compact('name', 'slug', 'type', 'sort_order'), fn($v) => $v !== null);
+        $data       = array_filter(compact('name', 'slug', 'type', 'sort_order'), fn ($v) => $v !== null);
         $this->body = $this->categoryService->update($id, $data);
         return $this;
     }

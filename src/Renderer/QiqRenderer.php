@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Renderer;
@@ -13,10 +14,10 @@ final class QiqRenderer implements RenderInterface
 
     public function __construct()
     {
-        $appDir  = dirname(__DIR__, 2);
+        $appDir   = dirname(__DIR__, 2);
         $cacheDir = $appDir . '/var/tmp';
         if (!is_dir($cacheDir)) {
-            mkdir($cacheDir, 0755, true);
+            mkdir($cacheDir, 0o755, true);
         }
         $this->template = Template::new(
             paths: [$appDir . '/var/qiq/templates'],

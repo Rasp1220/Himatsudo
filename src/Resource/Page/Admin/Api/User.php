@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Resource\Page\Admin\Api;
@@ -40,7 +41,7 @@ class User extends ResourceObject
             $this->body = ['error' => 'User not found'];
             return $this;
         }
-        $data = array_filter(compact('name', 'email', 'password', 'role'), fn($v) => $v !== null);
+        $data = array_filter(compact('name', 'email', 'password', 'role'), fn ($v) => $v !== null);
         if ($role !== null && !in_array($role, ['admin', 'editor'], true)) {
             $this->code = 422;
             $this->body = ['error' => 'Invalid role'];

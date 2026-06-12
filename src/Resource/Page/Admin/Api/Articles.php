@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Resource\Page\Admin\Api;
@@ -15,11 +16,11 @@ class Articles extends ResourceObject
 
     #[RequireAuth]
     public function onGet(
-        int     $page        = 1,
-        int     $per_page    = 20,
+        int     $page = 1,
+        int     $per_page = 20,
         ?int    $category_id = null,
-        ?string $status      = null,
-        ?string $keyword     = null
+        ?string $status = null,
+        ?string $keyword = null
     ): static {
         $this->body = $this->articleService->getAdminList($page, $per_page, $category_id, $status, $keyword);
         return $this;
@@ -30,16 +31,16 @@ class Articles extends ResourceObject
         string  $title,
         string  $slug,
         int     $author_id,
-        string  $status            = 'draft',
-        ?string $content           = null,
-        ?string $blocks            = null,
-        ?string $excerpt           = null,
-        ?string $eye_catch_image   = null,
-        ?int    $category_id       = null,
-        ?string $youtube_url       = null,
-        ?string $youtube_video_id  = null,
+        string  $status = 'draft',
+        ?string $content = null,
+        ?string $blocks = null,
+        ?string $excerpt = null,
+        ?string $eye_catch_image = null,
+        ?int    $category_id = null,
+        ?string $youtube_url = null,
+        ?string $youtube_video_id = null,
         ?string $youtube_thumbnail = null,
-        ?string $published_at      = null
+        ?string $published_at = null
     ): static {
         if ($category_id === null || $category_id === 0) {
             $this->code = 422;
@@ -47,13 +48,22 @@ class Articles extends ResourceObject
             return $this;
         }
         $data = array_filter(compact(
-            'title', 'slug', 'author_id', 'status', 'content', 'blocks', 'excerpt',
-            'eye_catch_image', 'youtube_url', 'youtube_video_id', 'youtube_thumbnail',
+            'title',
+            'slug',
+            'author_id',
+            'status',
+            'content',
+            'blocks',
+            'excerpt',
+            'eye_catch_image',
+            'youtube_url',
+            'youtube_video_id',
+            'youtube_thumbnail',
             'published_at'
-        ), fn($v) => $v !== null && $v !== '');
+        ), fn ($v) => $v !== null && $v !== '');
         $data['category_id'] = $category_id;
-        $this->code = 201;
-        $this->body = $this->articleService->create($data);
+        $this->code          = 201;
+        $this->body          = $this->articleService->create($data);
         return $this;
     }
 }

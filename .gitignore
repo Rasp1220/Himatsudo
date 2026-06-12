@@ -13,3 +13,12 @@ var/tmp/
 
 # Environment
 .env
+
+# Test caches
+.phpunit.result.cache
+.php-cs-fixer.cache
+tests/e2e/playwright-report/
+tests/e2e/test-results/
+
+# Upload directory (contains user-uploaded and test-generated files)
+public/uploads/

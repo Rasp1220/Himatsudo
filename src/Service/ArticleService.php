@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Service;
@@ -11,7 +12,9 @@ final class ArticleService implements ArticleInterface
 {
     use SqlFileTrait;
 
-    public function __construct(private readonly ExtendedPdoInterface $pdo) {}
+    public function __construct(private readonly ExtendedPdoInterface $pdo)
+    {
+    }
 
     public function getList(int $page = 1, int $perPage = 15, ?int $categoryId = null, string $status = 'published'): array
     {
@@ -71,7 +74,7 @@ final class ArticleService implements ArticleInterface
             $bind
         );
 
-        $countBind = array_filter($bind, fn($k) => !in_array($k, ['limit', 'offset']), ARRAY_FILTER_USE_KEY);
+        $countBind = array_filter($bind, fn ($k) => !in_array($k, ['limit', 'offset']), ARRAY_FILTER_USE_KEY);
         $total     = (int) $this->pdo->fetchValue("SELECT COUNT(*) FROM articles a {$where}", $countBind);
 
         return [
@@ -182,7 +185,7 @@ final class ArticleService implements ArticleInterface
                 $data['published_at'] = (new DateTimeImmutable())->format('Y-m-d H:i:s');
             }
         }
-        $sets      = array_map(fn($f) => "{$f} = :{$f}", array_keys($data));
+        $sets       = array_map(fn ($f) => "{$f} = :{$f}", array_keys($data));
         $data['id'] = $id;
         $this->pdo->perform('UPDATE articles SET ' . implode(', ', $sets) . ' WHERE id = :id', $data);
         return $this->getById($id);

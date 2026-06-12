@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Resource\Page\Admin\Api;
@@ -28,18 +29,18 @@ class Article extends ResourceObject
     #[RequireAuth]
     public function onPut(
         int     $id,
-        ?string $title         = null,
-        ?string $slug          = null,
-        ?string $status        = null,
-        ?string $content       = null,
-        ?string $blocks        = null,
-        ?string $excerpt       = null,
+        ?string $title = null,
+        ?string $slug = null,
+        ?string $status = null,
+        ?string $content = null,
+        ?string $blocks = null,
+        ?string $excerpt = null,
         ?string $eye_catch_image = null,
-        ?int    $category_id   = null,
-        ?string $youtube_url   = null,
-        ?string $youtube_video_id  = null,
+        ?int    $category_id = null,
+        ?string $youtube_url = null,
+        ?string $youtube_video_id = null,
         ?string $youtube_thumbnail = null,
-        ?string $published_at  = null
+        ?string $published_at = null
     ): static {
         if ($this->articleService->getById($id) === null) {
             $this->code = 404;
@@ -47,9 +48,18 @@ class Article extends ResourceObject
             return $this;
         }
         $data = array_filter(compact(
-            'title', 'slug', 'status', 'content', 'blocks', 'excerpt', 'eye_catch_image',
-            'youtube_url', 'youtube_video_id', 'youtube_thumbnail', 'published_at'
-        ), fn($v) => $v !== null && $v !== '');
+            'title',
+            'slug',
+            'status',
+            'content',
+            'blocks',
+            'excerpt',
+            'eye_catch_image',
+            'youtube_url',
+            'youtube_video_id',
+            'youtube_thumbnail',
+            'published_at'
+        ), fn ($v) => $v !== null && $v !== '');
         if ($category_id !== null) {
             if ($category_id === 0) {
                 $this->code = 422;

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Resource\Page;
@@ -12,7 +13,8 @@ class Category extends ResourceObject
     public function __construct(
         private readonly ResourceInterface $resource,
         private readonly CategoryInterface $categoryService,
-    ) {}
+    ) {
+    }
 
     public function onGet(string $slug, int $page = 1, int $per_page = 12): static
     {
@@ -28,8 +30,8 @@ class Category extends ResourceObject
             ->withQuery(['page' => $page, 'per_page' => $per_page, 'category_id' => $category['id']])
             ->eager->request();
 
-        $this->body                = $ro->body;
-        $this->body['_template']   = 'articles/index';
+        $this->body                  = $ro->body;
+        $this->body['_template']     = 'articles/index';
         $this->body['category_slug'] = $slug;
         return $this;
     }

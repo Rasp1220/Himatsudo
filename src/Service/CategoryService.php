@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Himatsudo\Service;
@@ -10,7 +11,9 @@ final class CategoryService implements CategoryInterface
 {
     use SqlFileTrait;
 
-    public function __construct(private readonly ExtendedPdoInterface $pdo) {}
+    public function __construct(private readonly ExtendedPdoInterface $pdo)
+    {
+    }
 
     public function getAll(): array
     {
