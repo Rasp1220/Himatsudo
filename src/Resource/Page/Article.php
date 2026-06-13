@@ -13,9 +13,13 @@ class Article extends ResourceObject
     {
     }
 
-    public function onGet(string $slug): static
+    public function onGet(string $slug, ?int $author_id = null): static
     {
-        $ro = $this->resource->get->uri('app://self/article')->withQuery(['slug' => $slug])->eager->request();
+        $query = ['slug' => $slug];
+        if ($author_id !== null) {
+            $query['author_id'] = $author_id;
+        }
+        $ro = $this->resource->get->uri('app://self/article')->withQuery($query)->eager->request();
 
         if ($ro->code === 404) {
             $this->code = 404;

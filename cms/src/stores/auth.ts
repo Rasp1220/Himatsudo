@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { authApi } from '@/api/client'
-import type { User, LoginPayload } from '@/types'
+import type { User, LoginPayload, ProfileFormData } from '@/types'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
@@ -46,5 +46,29 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  return { user, accessToken, refreshToken, isAuthenticated, login, logout, rehydrate }
+  // ログイン中の本人のプロフィールを取得（avatar / bio を含む最新状態）
+  async function fetchProfile() {
+    const data = await authApi.getProfile()
+    user.value = data
+    return data
+  }
+
+  // ログイン中の本人のプロフィールを更新
+  async function updateProfile(payload: ProfileFormData) {
+    const data = await authApi.updateProfile(payload)
+    user.value = data
+    return data
+  }
+
+  return {
+    user,
+    accessToken,
+    refreshToken,
+    isAuthenticated,
+    login,
+    logout,
+    rehydrate,
+    fetchProfile,
+    updateProfile,
+  }
 })

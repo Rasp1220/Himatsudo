@@ -32,6 +32,17 @@ final class UserService implements UserInterface
         return $row ? User::fromArray($row)->toArray() : null;
     }
 
+    public function getPublicList(): array
+    {
+        return $this->pdo->fetchAll($this->sql('users/get_public_list.sql'));
+    }
+
+    public function getPublicById(int $id): ?array
+    {
+        $row = $this->pdo->fetchOne($this->sql('users/get_public_by_id.sql'), ['id' => $id]);
+        return $row ?: null;
+    }
+
     public function getByEmail(string $email): ?array
     {
         $row = $this->pdo->fetchOne($this->sql('users/get_by_email.sql'), ['email' => $email]);
@@ -51,7 +62,7 @@ final class UserService implements UserInterface
     {
         $sets = [];
         $bind = ['id' => $id];
-        foreach (['name', 'email', 'role'] as $field) {
+        foreach (['name', 'email', 'role', 'avatar', 'bio', 'instagram_url', 'twitter_url', 'tiktok_url'] as $field) {
             if (isset($data[$field])) {
                 $sets[]       = "{$field} = :{$field}";
                 $bind[$field] = $data[$field];

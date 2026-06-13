@@ -69,6 +69,46 @@ class ArticleServiceTest extends TestCase
         $this->assertSame(3, $result['last_page']);
     }
 
+    public function testGetListByAuthorReturnsPaginatedResult(): void
+    {
+        $this->pdo->method('fetchAll')->willReturn([$this->makeArticle()]);
+        $this->pdo->method('fetchValue')->willReturn('1');
+
+        $result = $this->service->getListByAuthor(1, 1, 12);
+
+        $this->assertArrayHasKey('items', $result);
+        $this->assertSame(1, $result['total']);
+        $this->assertCount(1, $result['items']);
+    }
+
+    public function testGetListByAuthorFiltersByAuthorId(): void
+    {
+        $capturedBind = null;
+        $this->pdo->method('fetchAll')
+            ->willReturnCallback(function (string $sql, array $bind) use (&$capturedBind) {
+                $capturedBind = $bind;
+                return [];
+            });
+        $this->pdo->method('fetchValue')->willReturn('0');
+
+        $this->service->getListByAuthor(7, 1, 12);
+
+        $this->assertSame(7, $capturedBind['author_id']);
+        $this->assertSame('published', $capturedBind['status']);
+    }
+
+    public function testGetPrevNextByAuthorReturnsPrevAndNext(): void
+    {
+        $prev = $this->makeArticle(2);
+        $next = $this->makeArticle(3);
+        $this->pdo->method('fetchOne')->willReturn($prev, $next);
+
+        $result = $this->service->getPrevNextByAuthor(1, '2024-01-01 00:00:00', 1);
+
+        $this->assertSame(2, $result['prev']['id']);
+        $this->assertSame(3, $result['next']['id']);
+    }
+
     public function testGetAdminListFiltersByStatus(): void
     {
         $capturedSql = '';

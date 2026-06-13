@@ -8,6 +8,7 @@ const navItems = [
   { name: 'ArticlesList', label: '記事管理', icon: '📝', to: '/articles' },
   { name: 'Categories', label: 'カテゴリ管理', icon: '🗂️', to: '/categories' },
   { name: 'Users', label: 'ユーザー管理', icon: '👤', to: '/users' },
+  { name: 'Profile', label: 'プロフィール設定', icon: '⚙️', to: '/profile' },
 ]
 
 function isActive(name: string): boolean {

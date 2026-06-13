@@ -82,7 +82,7 @@ php bin/serve.php
 
 ## Database Schema
 
-- `users` — id, email, password_hash, name, role, created_at, updated_at
+- `users` — id, email, password_hash, name, role, avatar, bio, created_at, updated_at
 - `categories` — id, name, slug, type, description, created_at, updated_at
 - `articles` — title, slug, status, content, blocks (JSON), excerpt, eye_catch_image, category_id (FK), author_id (FK), youtube_url, youtube_video_id, youtube_thumbnail, published_at, created_at, updated_at
 - `refresh_tokens` — id, user_id (FK), token, expires_at, created_at

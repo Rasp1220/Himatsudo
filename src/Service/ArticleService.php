@@ -46,6 +46,47 @@ final class ArticleService implements ArticleInterface
         return $this->paginate($items, $total, $page, $perPage);
     }
 
+    public function getListByAuthor(int $authorId, int $page = 1, int $perPage = 12, string $status = 'published'): array
+    {
+        $offset = ($page - 1) * $perPage;
+        $where  = 'WHERE a.status = :status AND a.author_id = :author_id';
+        $bind   = ['status' => $status, 'author_id' => $authorId, 'limit' => $perPage, 'offset' => $offset];
+
+        $base  = $this->sql('articles/get_list_base.sql');
+        $items = $this->pdo->fetchAll(
+            $base . " {$where} ORDER BY a.published_at DESC, a.created_at DESC LIMIT :limit OFFSET :offset",
+            $bind
+        );
+
+        $total = (int) $this->pdo->fetchValue(
+            'SELECT COUNT(*) FROM articles WHERE status = :status AND author_id = :author_id',
+            ['status' => $status, 'author_id' => $authorId]
+        );
+
+        return [
+            'items'     => $items,
+            'total'     => $total,
+            'page'      => $page,
+            'per_page'  => $perPage,
+            'last_page' => (int) ceil($total / max(1, $perPage)),
+        ];
+    }
+
+    public function getPrevNextByAuthor(int $id, string $publishedAt, int $authorId): array
+    {
+        $prev = $this->pdo->fetchOne(
+            $this->sql('articles/get_prev_by_author.sql'),
+            ['id' => $id, 'published_at' => $publishedAt, 'author_id' => $authorId]
+        ) ?: null;
+
+        $next = $this->pdo->fetchOne(
+            $this->sql('articles/get_next_by_author.sql'),
+            ['id' => $id, 'published_at' => $publishedAt, 'author_id' => $authorId]
+        ) ?: null;
+
+        return ['prev' => $prev, 'next' => $next];
+    }
+
     public function getAdminList(int $page = 1, int $perPage = 20, ?int $categoryId = null, ?string $status = null, ?string $keyword = null): array
     {
         $where = 'WHERE 1=1';

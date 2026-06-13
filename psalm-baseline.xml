@@ -128,6 +128,13 @@
       <code><![CDATA[onGet]]></code>
     </PossiblyUnusedMethod>
   </file>
+  <file src="src/Resource/Page/Admin/Api/Auth/Profile.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+      <code><![CDATA[onPut]]></code>
+    </PossiblyUnusedMethod>
+  </file>
   <file src="src/Resource/Page/Admin/Api/Auth/Refresh.php">
     <PossiblyUnusedMethod>
       <code><![CDATA[__construct]]></code>
@@ -184,6 +191,12 @@
       <code><![CDATA[onGet]]></code>
     </PossiblyUnusedMethod>
   </file>
+  <file src="src/Resource/Page/Author.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+    </PossiblyUnusedMethod>
+  </file>
   <file src="src/Resource/Page/Blog.php">
     <PossiblyUnusedMethod>
       <code><![CDATA[__construct]]></code>
@@ -202,13 +215,19 @@
       <code><![CDATA[onGet]]></code>
     </PossiblyUnusedMethod>
   </file>
-  <file src="src/Resource/Page/Youtube.php">
+  <file src="src/Resource/Page/Search.php">
     <PossiblyUnusedMethod>
       <code><![CDATA[__construct]]></code>
       <code><![CDATA[onGet]]></code>
     </PossiblyUnusedMethod>
   </file>
-  <file src="src/Resource/Page/Search.php">
+  <file src="src/Resource/Page/Staff.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[onGet]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Resource/Page/Youtube.php">
     <PossiblyUnusedMethod>
       <code><![CDATA[__construct]]></code>
       <code><![CDATA[onGet]]></code>
@@ -225,7 +244,9 @@
       <code><![CDATA[public function getLatest(int $limit = 10): array]]></code>
       <code><![CDATA[public function getLatestByCategory(int $categoryId, int $limit = 8): array]]></code>
       <code><![CDATA[public function getList(int $page = 1, int $perPage = 15, ?int $categoryId = null, string $status = 'published'): array]]></code>
+      <code><![CDATA[public function getListByAuthor(int $authorId, int $page = 1, int $perPage = 12, string $status = 'published'): array]]></code>
       <code><![CDATA[public function getPrevNext(int $id, string $publishedAt): array]]></code>
+      <code><![CDATA[public function getPrevNextByAuthor(int $id, string $publishedAt, int $authorId): array]]></code>
       <code><![CDATA[public function search(string $keyword, int $page = 1, int $perPage = 12): array]]></code>
       <code><![CDATA[public function update(int $id, array $data): ?array]]></code>
     </MissingOverrideAttribute>
@@ -260,6 +281,8 @@
       <code><![CDATA[public function getByEmail(string $email): ?array]]></code>
       <code><![CDATA[public function getById(int $id): ?array]]></code>
       <code><![CDATA[public function getList(int $page = 1, int $perPage = 20): array]]></code>
+      <code><![CDATA[public function getPublicById(int $id): ?array]]></code>
+      <code><![CDATA[public function getPublicList(): array]]></code>
       <code><![CDATA[public function update(int $id, array $data): ?array]]></code>
       <code><![CDATA[public function verifyPassword(string $plain, string $hash): bool]]></code>
     </MissingOverrideAttribute>
