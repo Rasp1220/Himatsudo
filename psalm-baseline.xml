@@ -11,24 +11,6 @@
       <code><![CDATA[__construct]]></code>
     </PossiblyUnusedMethod>
   </file>
-  <file src="src/Domain/Article.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[fromArray]]></code>
-      <code><![CDATA[toArray]]></code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="src/Domain/Category.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[fromArray]]></code>
-      <code><![CDATA[toArray]]></code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="src/Domain/User.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[fromArray]]></code>
-      <code><![CDATA[toArray]]></code>
-    </PossiblyUnusedMethod>
-  </file>
   <file src="src/Interceptor/AuthInterceptor.php">
     <MissingOverrideAttribute>
       <code><![CDATA[public function invoke(MethodInvocation $invocation): mixed]]></code>
@@ -38,9 +20,6 @@
     </PossiblyUnusedMethod>
   </file>
   <file src="src/Interfaces/ArticleInterface.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[getLatestExcludeType]]></code>
-    </PossiblyUnusedMethod>
     <PossiblyUnusedReturnValue>
       <code><![CDATA[bool]]></code>
     </PossiblyUnusedReturnValue>
@@ -264,7 +243,6 @@
       <code><![CDATA[public function getBySlug(string $slug, bool $publishedOnly = true): ?array]]></code>
       <code><![CDATA[public function getLatest(int $limit = 10): array]]></code>
       <code><![CDATA[public function getLatestByCategory(int $categoryId, int $limit = 8): array]]></code>
-      <code><![CDATA[public function getLatestExcludeType(string $excludeType, int $limit = 20): array]]></code>
       <code><![CDATA[public function getList(int $page = 1, int $perPage = 15, ?int $categoryId = null, string $status = 'published'): array]]></code>
       <code><![CDATA[public function getListByAuthor(int $authorId, int $page = 1, int $perPage = 12, string $status = 'published'): array]]></code>
       <code><![CDATA[public function getPrevNext(int $id, string $publishedAt): array]]></code>

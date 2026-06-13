@@ -92,4 +92,40 @@ class ProfileTest extends TestCase
         $this->assertSame(200, $result->code);
         $this->assertSame('https://instagram.com/bob', $result->body['instagram_url']);
     }
+
+    public function testOnPutRejectsDangerousSnsUrl(): void
+    {
+        $_REQUEST['_auth_uid'] = 3;
+        $user                  = ['id' => 3, 'name' => 'Bob', 'email' => 'bob@example.com', 'role' => 'editor'];
+        $this->userService->method('getById')->willReturn($user);
+        $this->userService->expects($this->never())->method('update');
+
+        $result = $this->resource->onPut(twitter_url: 'javascript:alert(document.cookie)');
+
+        $this->assertSame(422, $result->code);
+    }
+
+    public function testOnPutRejectsDangerousAvatar(): void
+    {
+        $_REQUEST['_auth_uid'] = 3;
+        $user                  = ['id' => 3, 'name' => 'Bob', 'email' => 'bob@example.com', 'role' => 'editor'];
+        $this->userService->method('getById')->willReturn($user);
+        $this->userService->expects($this->never())->method('update');
+
+        $result = $this->resource->onPut(avatar: 'data:text/html;base64,PHNjcmlwdD4=');
+
+        $this->assertSame(422, $result->code);
+    }
+
+    public function testOnPutAcceptsSiteRelativeAvatar(): void
+    {
+        $_REQUEST['_auth_uid'] = 3;
+        $user                  = ['id' => 3, 'name' => 'Bob', 'email' => 'bob@example.com', 'role' => 'editor'];
+        $this->userService->method('getById')->willReturn($user);
+        $this->userService->method('update')->willReturn(array_merge($user, ['avatar' => '/uploads/a.webp']));
+
+        $result = $this->resource->onPut(avatar: '/uploads/a.webp');
+
+        $this->assertSame(200, $result->code);
+    }
 }

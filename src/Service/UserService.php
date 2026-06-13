@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Himatsudo\Service;
 
 use Aura\Sql\ExtendedPdoInterface;
+use Himatsudo\Domain\User;
 use Himatsudo\Interfaces\UserInterface;
 
 final class UserService implements UserInterface
 {
     use SqlFileTrait;
+    use PaginationTrait;
 
     public function __construct(private readonly ExtendedPdoInterface $pdo)
     {
@@ -18,21 +20,16 @@ final class UserService implements UserInterface
     public function getList(int $page = 1, int $perPage = 20): array
     {
         $offset = ($page - 1) * $perPage;
-        $items  = $this->pdo->fetchAll($this->sql('users/get_list.sql'), ['limit' => $perPage, 'offset' => $offset]);
+        $rows   = $this->pdo->fetchAll($this->sql('users/get_list.sql'), ['limit' => $perPage, 'offset' => $offset]);
+        $items  = array_map(static fn (array $row) => User::fromArray($row)->toArray(), $rows);
         $total  = (int) $this->pdo->fetchValue('SELECT COUNT(*) FROM users');
-        return [
-            'items'     => $items,
-            'total'     => $total,
-            'page'      => $page,
-            'per_page'  => $perPage,
-            'last_page' => (int) ceil($total / max(1, $perPage)),
-        ];
+        return $this->paginate($items, $total, $page, $perPage);
     }
 
     public function getById(int $id): ?array
     {
         $row = $this->pdo->fetchOne($this->sql('users/get_by_id.sql'), ['id' => $id]);
-        return $row ?: null;
+        return $row ? User::fromArray($row)->toArray() : null;
     }
 
     public function getPublicList(): array
@@ -54,10 +51,9 @@ final class UserService implements UserInterface
 
     public function create(string $name, string $email, string $password, string $role = 'editor'): array
     {
-        $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
         $this->pdo->perform(
             'INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)',
-            ['name' => $name, 'email' => $email, 'password' => $hash, 'role' => $role]
+            ['name' => $name, 'email' => $email, 'password' => $this->hashPassword($password), 'role' => $role]
         );
         return $this->getById((int) $this->pdo->lastInsertId()) ?? [];
     }
@@ -74,7 +70,7 @@ final class UserService implements UserInterface
         }
         if (isset($data['password'])) {
             $sets[]           = 'password = :password';
-            $bind['password'] = password_hash((string) $data['password'], PASSWORD_BCRYPT, ['cost' => 12]);
+            $bind['password'] = $this->hashPassword((string) $data['password']);
         }
         if (!empty($sets)) {
             $this->pdo->perform('UPDATE users SET ' . implode(', ', $sets) . ' WHERE id = :id', $bind);
@@ -90,5 +86,10 @@ final class UserService implements UserInterface
     public function verifyPassword(string $plain, string $hash): bool
     {
         return password_verify($plain, $hash);
+    }
+
+    private function hashPassword(string $plain): string
+    {
+        return password_hash($plain, PASSWORD_BCRYPT, ['cost' => 12]);
     }
 }

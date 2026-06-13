@@ -32,7 +32,6 @@ class ArticleInterfaceTest extends TestCase
             'getById',
             'getLatest',
             'getLatestByCategory',
-            'getLatestExcludeType',
             'search',
             'create',
             'update',

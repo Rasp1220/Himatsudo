@@ -6,11 +6,13 @@ namespace Himatsudo\Service;
 
 use Aura\Sql\ExtendedPdoInterface;
 use DateTimeImmutable;
+use Himatsudo\Domain\Article;
 use Himatsudo\Interfaces\ArticleInterface;
 
 final class ArticleService implements ArticleInterface
 {
     use SqlFileTrait;
+    use PaginationTrait;
 
     public function __construct(private readonly ExtendedPdoInterface $pdo)
     {
@@ -41,13 +43,7 @@ final class ArticleService implements ArticleInterface
         }
         $total = (int) $this->pdo->fetchValue("SELECT COUNT(*) FROM articles {$countWhere}", $countBind);
 
-        return [
-            'items'     => $items,
-            'total'     => $total,
-            'page'      => $page,
-            'per_page'  => $perPage,
-            'last_page' => (int) ceil($total / max(1, $perPage)),
-        ];
+        return $this->paginate($items, $total, $page, $perPage);
     }
 
     public function getListByAuthor(int $authorId, int $page = 1, int $perPage = 12, string $status = 'published'): array
@@ -67,13 +63,7 @@ final class ArticleService implements ArticleInterface
             ['status' => $status, 'author_id' => $authorId]
         );
 
-        return [
-            'items'     => $items,
-            'total'     => $total,
-            'page'      => $page,
-            'per_page'  => $perPage,
-            'last_page' => (int) ceil($total / max(1, $perPage)),
-        ];
+        return $this->paginate($items, $total, $page, $perPage);
     }
 
     public function getPrevNextByAuthor(int $id, string $publishedAt, int $authorId): array
@@ -118,13 +108,7 @@ final class ArticleService implements ArticleInterface
         $countBind = array_filter($bind, fn ($k) => !in_array($k, ['limit', 'offset']), ARRAY_FILTER_USE_KEY);
         $total     = (int) $this->pdo->fetchValue("SELECT COUNT(*) FROM articles a {$where}", $countBind);
 
-        return [
-            'items'     => $items,
-            'total'     => $total,
-            'page'      => $page,
-            'per_page'  => $perPage,
-            'last_page' => (int) ceil($total / max(1, $perPage)),
-        ];
+        return $this->paginate($items, $total, $page, $perPage);
     }
 
     public function getBySlug(string $slug, bool $publishedOnly = true): ?array
@@ -134,13 +118,13 @@ final class ArticleService implements ArticleInterface
             $sql = str_replace('WHERE a.slug = :slug', "WHERE a.slug = :slug AND a.status = 'published'", $sql);
         }
         $row = $this->pdo->fetchOne($sql, ['slug' => $slug]);
-        return $row ?: null;
+        return $row ? Article::fromArray($row)->toArray() : null;
     }
 
     public function getById(int $id): ?array
     {
         $row = $this->pdo->fetchOne($this->sql('articles/get_by_id.sql'), ['id' => $id]);
-        return $row ?: null;
+        return $row ? Article::fromArray($row)->toArray() : null;
     }
 
     public function getLatest(int $limit = 10): array
@@ -153,14 +137,6 @@ final class ArticleService implements ArticleInterface
         return $this->pdo->fetchAll(
             $this->sql('articles/get_latest_by_category.sql'),
             ['category_id' => $categoryId, 'limit' => $limit]
-        );
-    }
-
-    public function getLatestExcludeType(string $excludeType, int $limit = 20): array
-    {
-        return $this->pdo->fetchAll(
-            $this->sql('articles/get_latest_exclude_type.sql'),
-            ['exclude_type' => $excludeType, 'limit' => $limit]
         );
     }
 
@@ -196,13 +172,7 @@ final class ArticleService implements ArticleInterface
             ['keyword' => '%' . $keyword . '%']
         );
 
-        return [
-            'items'     => $items,
-            'total'     => $total,
-            'page'      => $page,
-            'per_page'  => $perPage,
-            'last_page' => (int) ceil($total / max(1, $perPage)),
-        ];
+        return $this->paginate($items, $total, $page, $perPage);
     }
 
     public function create(array $data): array
