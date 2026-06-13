@@ -7,6 +7,7 @@ import type {
   LoginResponse,
   RefreshResponse,
   PaginatedResponse,
+  ProfileFormData,
   User,
   YoutubeImportResult,
 } from '@/types'
@@ -70,6 +71,12 @@ export const authApi = {
     http.post<RefreshResponse>('/auth/refresh', { refresh_token: refreshToken }).then((r) => r.data),
 
   me: () => http.get<User>('/auth/me').then((r) => r.data),
+
+  // 自分のプロフィール取得・更新（ログイン中の本人のみ。対象はトークンの uid）
+  getProfile: () => http.get<User>('/auth/profile').then((r) => r.data),
+
+  updateProfile: (data: ProfileFormData) =>
+    http.put<User>('/auth/profile', data).then((r) => r.data),
 }
 
 // Users

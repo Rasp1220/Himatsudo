@@ -21,17 +21,30 @@
         $richHtml = (string) $article['content'];
     }
 
+    // 運営プロフィール経由かどうか。経由していれば「戻る先」を運営別一覧に合わせる。
+    $authorContext = $author_context ?? null;
+
     $catType = $article['category_type'] ?? 'custom';
-    [$listUrl, $listLabel] = match ($catType) {
-        'blog'    => ['/blog',     'ブログ一覧'],
-        'youtube' => ['/youtube',  'YouTube'],
-        default   => ['/articles', '記事一覧'],
-    };
+    if (!empty($authorContext)) {
+        $listUrl   = '/author/' . (int) $authorContext['id'];
+        $listLabel = (string) $authorContext['name'] . 'の記事';
+    } else {
+        [$listUrl, $listLabel] = match ($catType) {
+            'blog'    => ['/blog',     'ブログ一覧'],
+            'youtube' => ['/youtube',  'YouTube'],
+            default   => ['/articles', '記事一覧'],
+        };
+    }
 }}
 <nav class="breadcrumb" aria-label="パンくずリスト">
     <ol class="breadcrumb-list">
         <li class="breadcrumb-item"><a href="/">ホーム</a></li>
-        <li class="breadcrumb-item"><a href="{{h $listUrl }}">{{h $listLabel }}</a></li>
+        {{ if (!empty($authorContext)): }}
+            <li class="breadcrumb-item"><a href="/staff">運営一覧</a></li>
+            <li class="breadcrumb-item"><a href="{{h $listUrl }}">{{h $authorContext['name'] }}</a></li>
+        {{ else: }}
+            <li class="breadcrumb-item"><a href="{{h $listUrl }}">{{h $listLabel }}</a></li>
+        {{ endif; }}
         <li class="breadcrumb-item breadcrumb-current" aria-current="page">
             {{h mb_strimwidth((string) $article['title'], 0, 40, '…') }}
         </li>
@@ -51,7 +64,11 @@
 
     <div class="article-meta">
         {{ if (!empty($article['author_name'])): }}
-            <span>by {{h $article['author_name'] }}</span>
+            {{ if (!empty($article['author_id'])): }}
+                <span>by <a href="/author/{{h $article['author_id'] }}" class="article-author-link">{{h $article['author_name'] }}</a></span>
+            {{ else: }}
+                <span>by {{h $article['author_name'] }}</span>
+            {{ endif; }}
         {{ endif; }}
         {{ if (!empty($article['published_at'])): }}
             <span>{{h date('Y年m月d日', strtotime((string) $article['published_at'])) }}</span>

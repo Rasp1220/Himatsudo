@@ -7,6 +7,7 @@
                     <li><a href="/articles">記事一覧</a></li>
                     <li><a href="/blog">ブログ</a></li>
                     <li><a href="/youtube">YouTube</a></li>
+                    <li><a href="/staff">運営一覧</a></li>
                 </ul>
             </nav>
             <form class="header-search" action="/search" method="get" role="search">
@@ -33,6 +34,7 @@
         <li><a href="/articles">記事一覧</a></li>
         <li><a href="/blog">ブログ</a></li>
         <li><a href="/youtube">YouTube</a></li>
+        <li><a href="/staff">運営一覧</a></li>
     </ul>
 </nav>
 

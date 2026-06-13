@@ -80,6 +80,73 @@ class UserServiceTest extends TestCase
         $this->assertNull($result);
     }
 
+    public function testGetPublicListReturnsRows(): void
+    {
+        $rows = [
+            ['id' => 1, 'name' => 'Admin', 'avatar' => null, 'bio' => null],
+            ['id' => 2, 'name' => 'Editor', 'avatar' => '/a.png', 'bio' => 'hi'],
+        ];
+        $this->pdo->method('fetchAll')->willReturn($rows);
+
+        $this->assertSame($rows, $this->service->getPublicList());
+    }
+
+    public function testGetPublicByIdReturnsUserWhenFound(): void
+    {
+        $row = ['id' => 5, 'name' => 'Author', 'avatar' => null, 'bio' => 'bio'];
+        $this->pdo->method('fetchOne')->willReturn($row);
+
+        $result = $this->service->getPublicById(5);
+
+        $this->assertSame(5, $result['id']);
+    }
+
+    public function testGetPublicByIdReturnsNullWhenNotFound(): void
+    {
+        $this->pdo->method('fetchOne')->willReturn(false);
+
+        $this->assertNull($this->service->getPublicById(999));
+    }
+
+    public function testUpdateAllowsAvatarAndBioFields(): void
+    {
+        $capturedSql = null;
+        $stmt        = $this->createMock(PDOStatement::class);
+        $this->pdo->method('perform')
+            ->willReturnCallback(function (string $sql) use ($stmt, &$capturedSql) {
+                $capturedSql = $sql;
+                return $stmt;
+            });
+        $this->pdo->method('fetchOne')->willReturn($this->makeUser());
+
+        $this->service->update(1, ['avatar' => '/x.png', 'bio' => 'about me']);
+
+        $this->assertStringContainsString('avatar = :avatar', $capturedSql);
+        $this->assertStringContainsString('bio = :bio', $capturedSql);
+    }
+
+    public function testUpdateAllowsSnsFields(): void
+    {
+        $capturedSql = null;
+        $stmt        = $this->createMock(PDOStatement::class);
+        $this->pdo->method('perform')
+            ->willReturnCallback(function (string $sql) use ($stmt, &$capturedSql) {
+                $capturedSql = $sql;
+                return $stmt;
+            });
+        $this->pdo->method('fetchOne')->willReturn($this->makeUser());
+
+        $this->service->update(1, [
+            'instagram_url' => 'https://instagram.com/test',
+            'twitter_url'   => 'https://x.com/test',
+            'tiktok_url'    => 'https://tiktok.com/@test',
+        ]);
+
+        $this->assertStringContainsString('instagram_url = :instagram_url', $capturedSql);
+        $this->assertStringContainsString('twitter_url = :twitter_url', $capturedSql);
+        $this->assertStringContainsString('tiktok_url = :tiktok_url', $capturedSql);
+    }
+
     public function testGetByEmailReturnsUserWhenFound(): void
     {
         $user = $this->makeUser();

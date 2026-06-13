@@ -10,6 +10,8 @@ vi.mock('@/api/client', () => ({
     login: vi.fn(),
     logout: vi.fn(),
     me: vi.fn(),
+    getProfile: vi.fn(),
+    updateProfile: vi.fn(),
   },
 }))
 
@@ -134,5 +136,48 @@ describe('useAuthStore', () => {
     await store.rehydrate()
 
     expect(vi.mocked(authApi.me)).not.toHaveBeenCalled()
+  })
+
+  it('fetchProfile loads the current user into state', async () => {
+    const profile = { ...mockUser, avatar: '/img/a.png', bio: 'hello' }
+    vi.mocked(authApi.getProfile).mockResolvedValue(profile)
+
+    const store = useAuthStore()
+    const result = await store.fetchProfile()
+
+    expect(store.user).toEqual(profile)
+    expect(result).toEqual(profile)
+  })
+
+  it('updateProfile saves and refreshes the user in state', async () => {
+    const updated = { ...mockUser, name: 'Renamed', bio: 'updated' }
+    vi.mocked(authApi.updateProfile).mockResolvedValue(updated)
+
+    const store = useAuthStore()
+    store.user = mockUser
+    await store.updateProfile({ name: 'Renamed', email: mockUser.email, avatar: '', bio: 'updated' })
+
+    expect(vi.mocked(authApi.updateProfile)).toHaveBeenCalledOnce()
+    expect(store.user).toEqual(updated)
+  })
+
+  it('updateProfile forwards SNS fields', async () => {
+    const updated = { ...mockUser, instagram_url: 'https://instagram.com/test', twitter_url: 'https://x.com/test', tiktok_url: 'https://tiktok.com/@test' }
+    vi.mocked(authApi.updateProfile).mockResolvedValue(updated)
+
+    const store = useAuthStore()
+    store.user = mockUser
+    await store.updateProfile({
+      name: mockUser.name,
+      email: mockUser.email,
+      avatar: '',
+      bio: '',
+      instagram_url: 'https://instagram.com/test',
+      twitter_url: 'https://x.com/test',
+      tiktok_url: 'https://tiktok.com/@test',
+    })
+
+    expect(store.user).toEqual(updated)
+    expect(store.user?.instagram_url).toBe('https://instagram.com/test')
   })
 })

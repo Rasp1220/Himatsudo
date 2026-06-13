@@ -40,8 +40,17 @@ if (!$isApi) {
         // /blog/{article-slug} → blog article detail
         $_SERVER['REQUEST_URI'] = '/article?slug=' . urlencode($m[1]);
         $_GET['slug'] = $m[1];
+    } elseif (preg_match('#^/author/(\d+)/([^/]+)$#u', $decodedPath, $m)) {
+        // /author/{id}/{article-slug} → 運営別の記事詳細（前後・パンくずを運営別に）
+        $_SERVER['REQUEST_URI'] = '/article?slug=' . urlencode($m[2]) . '&author_id=' . $m[1];
+        $_GET['slug']      = $m[2];
+        $_GET['author_id'] = $m[1];
+    } elseif (preg_match('#^/author/(\d+)$#u', $decodedPath, $m)) {
+        // /author/{id} → 運営プロフィール兼・運営別ブログ一覧
+        $_SERVER['REQUEST_URI'] = '/author?id=' . $m[1] . ($qs ? '&' . ltrim($qs, '?') : '');
+        $_GET['id'] = $m[1];
     } elseif (preg_match('#^/([a-z][a-z0-9\-]*)$#', (string) $path, $m)
-              && !in_array($path, ['/articles', '/article', '/search'], true)) {
+              && !in_array($path, ['/articles', '/article', '/search', '/staff', '/author'], true)) {
         // /{category-slug} → category article list
         $_SERVER['REQUEST_URI'] = '/category?slug=' . urlencode($m[1]) . ($qs ? '&' . ltrim($qs, '?') : '');
         $_GET['slug'] = $m[1];

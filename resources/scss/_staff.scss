@@ -1,0 +1,163 @@
+@use 'variables' as *;
+
+// ─── 運営一覧 (Staff list) ──────────────────────────────────
+.staff-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.staff-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: $c-text;
+    transition: transform 0.15s ease;
+
+    &:hover {
+        transform: translateY(-3px);
+
+        .staff-name {
+            color: $c-primary;
+        }
+    }
+}
+
+.staff-avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: $c-primary-light;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px $c-shadow;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.staff-avatar-fallback {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: $c-primary-dark;
+}
+
+.staff-name {
+    margin-top: 0.6rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: color 0.15s ease;
+}
+
+// ─── 運営プロフィール (Author profile header) ───────────────
+.author-profile {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    margin: 1rem 0 1.5rem;
+    background: $c-white;
+    border: 1px solid $c-border-light;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px $c-shadow;
+}
+
+.author-profile-avatar {
+    flex-shrink: 0;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: $c-primary-light;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.author-profile-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.author-profile-bio {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: $c-text-muted;
+    line-height: 1.6;
+}
+
+.article-author-link {
+    color: $c-primary-dark;
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+// ─── 運営プロフィール SNSリンク ─────────────────────────────
+.author-sns-links {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    align-items: center;
+}
+
+.author-sns-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+
+    svg {
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
+    }
+
+    &:hover {
+        opacity: 0.8;
+        transform: translateY(-2px);
+    }
+}
+
+.author-sns-instagram {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    color: #fff;
+}
+
+.author-sns-x {
+    background: #000;
+    color: #fff;
+}
+
+.author-sns-tiktok {
+    background: #010101;
+    color: #fff;
+}
+
+@media (max-width: $bp-mobile) {
+    .author-profile {
+        flex-direction: column;
+        text-align: center;
+    }
+}
