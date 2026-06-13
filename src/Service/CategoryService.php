@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Himatsudo\Service;
 
 use Aura\Sql\ExtendedPdoInterface;
+use Himatsudo\Domain\Category;
 use Himatsudo\Interfaces\CategoryInterface;
 
 final class CategoryService implements CategoryInterface
@@ -17,13 +18,14 @@ final class CategoryService implements CategoryInterface
 
     public function getAll(): array
     {
-        return $this->pdo->fetchAll($this->sql('categories/get_all.sql'));
+        $rows = $this->pdo->fetchAll($this->sql('categories/get_all.sql'));
+        return array_map(static fn (array $row) => Category::fromArray($row)->toArray(), $rows);
     }
 
     public function getById(int $id): ?array
     {
         $row = $this->pdo->fetchOne($this->sql('categories/get_by_id.sql'), ['id' => $id]);
-        return $row ?: null;
+        return $row ? Category::fromArray($row)->toArray() : null;
     }
 
     public function getByType(string $type): ?array
@@ -39,7 +41,7 @@ final class CategoryService implements CategoryInterface
     public function getBySlug(string $slug): ?array
     {
         $row = $this->pdo->fetchOne($this->sql('categories/get_by_slug.sql'), ['slug' => $slug]);
-        return $row ?: null;
+        return $row ? Category::fromArray($row)->toArray() : null;
     }
 
     public function create(string $name, string $slug, string $type = 'custom', int $sortOrder = 0): array
