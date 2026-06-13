@@ -45,7 +45,38 @@ class Profile extends ResourceObject
             fn ($v) => $v !== null
         );
 
+        // 公開ページに <a href> / <img src> として描画されるため、危険なスキーム
+        // (javascript: data: 等) の混入を防ぐ。クライアント側の type="url" は回避可能。
+        foreach (['instagram_url', 'twitter_url', 'tiktok_url'] as $field) {
+            if (!empty($data[$field]) && !$this->isHttpUrl((string) $data[$field])) {
+                $this->code = 422;
+                $this->body = ['error' => 'SNSリンクは http(s) の URL を指定してください'];
+                return $this;
+            }
+        }
+        if (!empty($data['avatar']) && !$this->isSafeImageSrc((string) $data['avatar'])) {
+            $this->code = 422;
+            $this->body = ['error' => '不正な画像URLです'];
+            return $this;
+        }
+
         $this->body = $this->userService->update($uid, $data);
         return $this;
+    }
+
+    /** http(s) の絶対URLのみ許可する。 */
+    private function isHttpUrl(string $url): bool
+    {
+        return preg_match('#^https?://#i', $url) === 1
+            && filter_var($url, FILTER_VALIDATE_URL) !== false;
+    }
+
+    /** 自前アップロードのサイト相対パス、または http(s) URL のみ許可する。 */
+    private function isSafeImageSrc(string $src): bool
+    {
+        if (str_starts_with($src, '/') && !str_starts_with($src, '//')) {
+            return true;
+        }
+        return $this->isHttpUrl($src);
     }
 }

@@ -63,13 +63,7 @@ final class ArticleService implements ArticleInterface
             ['status' => $status, 'author_id' => $authorId]
         );
 
-        return [
-            'items'     => $items,
-            'total'     => $total,
-            'page'      => $page,
-            'per_page'  => $perPage,
-            'last_page' => (int) ceil($total / max(1, $perPage)),
-        ];
+        return $this->paginate($items, $total, $page, $perPage);
     }
 
     public function getPrevNextByAuthor(int $id, string $publishedAt, int $authorId): array
